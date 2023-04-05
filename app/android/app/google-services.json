@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "929871007002",
+    "project_id": "ayamkita-dba66",
+    "storage_bucket": "ayamkita-dba66.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929871007002:android:d26439c32ae0771e9130a3",
+        "android_client_info": {
+          "package_name": "com.relio.ayamkita"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929871007002-hu4hnil9qipfmtc1vr4dco4tl4l5dutr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhUkTeLaYGYT6td33Gb86envgukWEh4wo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929871007002-hu4hnil9qipfmtc1vr4dco4tl4l5dutr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
