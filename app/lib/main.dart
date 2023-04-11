@@ -1,17 +1,32 @@
-import 'dart:convert';
-import 'package:app/model/weather.dart';
+import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/weathercontroller.dart';
 import 'package:app/view/auth/login.dart';
 import 'package:app/view/auth/register.dart';
+import 'package:app/view/features/weather/weatherlist.dart';
+import 'package:app/view/home/dashboard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => UserController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => WeatherController(),
+        )
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -37,99 +52,109 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
+      home: StreamBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.data != null) {
+            return DashBoard();
+          } else {
+            return LoginPage();
+          }
+        },
+        stream: FirebaseAuth.instance.authStateChanges(),
+      ),
       routes: {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
+        '/weather-list': (context) => WeatherList(),
       },
     );
   }
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+// class Home extends StatelessWidget {
+//   const Home({super.key});
 
-  Future<List<Weather>> getWeatherData() async {
-    List<Weather> temp = [];
-    final url = Uri.parse(
-        "https://api.openweathermap.org/data/2.5/forecast?q=london&appid=81ffc2ddca6b4448afce3e5018be62a9&units=metric");
+//   Future<List<Weather>> getWeatherData() async {
+//     List<Weather> temp = [];
+//     final url = Uri.parse(
+//         "https://api.openweathermap.org/data/2.5/forecast?q=london&appid=81ffc2ddca6b4448afce3e5018be62a9&units=metric");
 
-    final result = await http.get(url);
-    if (result.statusCode == 200) {
-      final parsedJson = jsonDecode(result.body) as Map<String, dynamic>;
-      for (var i = 0; i < 8; i++) {
-        temp.add(Weather.fromJson(parsedJson["list"][i]));
-      }
-    }
-    return temp;
-  }
+//     final result = await http.get(url);
+//     if (result.statusCode == 200) {
+//       final parsedJson = jsonDecode(result.body) as Map<String, dynamic>;
+//       for (var i = 0; i < 8; i++) {
+//         temp.add(Weather.fromJson(parsedJson["list"][i]));
+//       }
+//     }
+//     return temp;
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('AyamKita'),
-      ),
-      // body: ElevatedButton(child: Text('ss'), onPressed: getWeatherData),
-      body: FutureBuilder(
-          future: getWeatherData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return Column(
-              children: [
-                Container(
-                  color: Colors.green,
-                  height: 150,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) => Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      height: 120,
-                      width: 70,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10)),
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cloudy_snowing,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          FittedBox(
-                            child: Text(
-                                "${snapshot.data![index].main.temp.toString()}°C"),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          FittedBox(
-                            child: Text(
-                              DateFormat('hh:mm a').format(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                          snapshot.data![index].dt * 1000,
-                                          isUtc: true)
-                                      .toLocal()),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('AyamKita'),
+//       ),
+//       // body: ElevatedButton(child: Text('ss'), onPressed: getWeatherData),
+//       body: FutureBuilder(
+//           future: getWeatherData(),
+//           builder: (context, snapshot) {
+//             if (snapshot.connectionState == ConnectionState.waiting) {
+//               return Center(child: CircularProgressIndicator());
+//             }
+//             return Column(
+//               children: [
+//                 Container(
+//                   color: Colors.green,
+//                   height: 150,
+//                   alignment: Alignment.center,
+//                   padding: EdgeInsets.symmetric(vertical: 20),
+//                   child: ListView.builder(
+//                     padding: EdgeInsets.symmetric(horizontal: 10),
+//                     scrollDirection: Axis.horizontal,
+//                     itemCount: snapshot.data!.length,
+//                     itemBuilder: (context, index) => Container(
+//                       margin: EdgeInsets.symmetric(horizontal: 10),
+//                       height: 120,
+//                       width: 70,
+//                       decoration: BoxDecoration(
+//                           color: Colors.white,
+//                           borderRadius: BorderRadius.circular(10)),
+//                       alignment: Alignment.center,
+//                       padding: EdgeInsets.all(12),
+//                       child: Column(
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           Icon(
+//                             Icons.cloudy_snowing,
+//                           ),
+//                           SizedBox(
+//                             height: 10,
+//                           ),
+//                           FittedBox(
+//                             child: Text(
+//                                 "${snapshot.data![index].main.temp.toString()}°C"),
+//                           ),
+//                           SizedBox(
+//                             height: 5,
+//                           ),
+//                           FittedBox(
+//                             child: Text(
+//                               DateFormat('hh:mm a').format(
+//                                   DateTime.fromMillisecondsSinceEpoch(
+//                                           snapshot.data![index].dt * 1000,
+//                                           isUtc: true)
+//                                       .toLocal()),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             );
+//           }),
+//     );
+//   }
+// }

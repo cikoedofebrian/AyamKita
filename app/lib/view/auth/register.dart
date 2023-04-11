@@ -1,4 +1,7 @@
 import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/role.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -9,20 +12,42 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  var isRememberMe = false;
   var isVisible = true;
+  final formKey = GlobalKey<FormState>();
+  var name = '';
+  var email = '';
+  var password = '';
+  var roleValue = UserRole.pengelola;
+
   @override
   Widget build(BuildContext context) {
-    void rememberMe() {
-      setState(() {
-        isRememberMe = !isRememberMe;
-      });
-    }
-
     void visible() {
       setState(() {
         isVisible = !isVisible;
       });
+    }
+
+    void trySignUp(BuildContext context) async {
+      if (formKey.currentState!.validate()) {
+        formKey.currentState!.save();
+        FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password)
+            .then((value) {
+          FirebaseFirestore.instance
+              .collection('account')
+              .doc(value.user!.uid)
+              .set(
+            {"role": roleValue, "name": name, "email": email},
+          ).then((value) => Navigator.pop(context));
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => const AlertDialog(
+            content: Text('Something went wrong, Please try again!'),
+          ),
+        );
+      }
     }
 
     final size = MediaQuery.of(context).size;
@@ -84,6 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(20),
                             child: Form(
+                              key: formKey,
                               child: Column(
                                 children: [
                                   Stack(
@@ -96,6 +122,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         width: 260,
                                         top: 10,
                                         child: TextFormField(
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "";
+                                            }
+                                          },
+                                          onSaved: (newValue) =>
+                                              name = newValue!,
                                           decoration: const InputDecoration(
                                               contentPadding:
                                                   EdgeInsets.symmetric(
@@ -110,7 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 7),
                                           child: const Text(
-                                            'Username',
+                                            'Nama',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
@@ -131,6 +164,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         width: 260,
                                         top: 10,
                                         child: TextFormField(
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "";
+                                            }
+                                          },
+                                          onSaved: (newValue) =>
+                                              email = newValue!,
                                           decoration: const InputDecoration(
                                               contentPadding:
                                                   EdgeInsets.symmetric(
@@ -167,6 +207,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         top: 10,
                                         child: TextFormField(
                                           obscureText: isVisible,
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "";
+                                            }
+                                          },
+                                          onSaved: (newValue) =>
+                                              password = newValue!,
                                           decoration: InputDecoration(
                                               suffixIcon: IconButton(
                                                   onPressed: visible,
@@ -209,19 +256,21 @@ class _RegisterPageState extends State<RegisterPage> {
                                         width: 260,
                                         top: 10,
                                         child: DropdownButtonFormField(
-                                          onChanged: (value) => null,
+                                          value: roleValue,
+                                          onChanged: (value) =>
+                                              roleValue = value!,
                                           items: [
                                             DropdownMenuItem(
                                               child: Text('Pemilik'),
-                                              value: "Pemilik",
+                                              value: UserRole.pemilik,
                                             ),
                                             DropdownMenuItem(
                                               child: Text('Pengelola'),
-                                              value: "Pengelola",
+                                              value: UserRole.pengelola,
                                             ),
                                             DropdownMenuItem(
                                               child: Text('Dokter'),
-                                              value: "Dokter",
+                                              value: UserRole.dokter,
                                             )
                                           ],
                                           // decoration: InputDecoration(
@@ -251,19 +300,22 @@ class _RegisterPageState extends State<RegisterPage> {
                                   const SizedBox(
                                     height: 20,
                                   ),
-                                  Container(
-                                    width: 260,
-                                    height: 40,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: AppColor.secondary,
-                                    ),
-                                    child: const Text(
-                                      'Sign Up',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900),
+                                  InkWell(
+                                    onTap: () => trySignUp(context),
+                                    child: Container(
+                                      width: 260,
+                                      height: 40,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: AppColor.secondary,
+                                      ),
+                                      child: const Text(
+                                        'Sign Up',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(

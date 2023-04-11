@@ -12,35 +12,32 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var isRememberMe = false;
   var isVisible = true;
+  final formKey = GlobalKey<FormState>();
+  void rememberMe() {
+    setState(() {
+      isRememberMe = !isRememberMe;
+    });
+  }
+
+  void visible() {
+    setState(() {
+      isVisible = !isVisible;
+    });
+  }
+
+  final emailCon = TextEditingController();
+  final passwordCon = TextEditingController();
+  void tryLogin(BuildContext context) async {
+    formKey.currentState!.validate();
+    if (emailCon.text.isNotEmpty && passwordCon.text.isNotEmpty) {
+      final result = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailCon.text, password: passwordCon.text);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    void rememberMe() {
-      setState(() {
-        isRememberMe = !isRememberMe;
-      });
-    }
-
-    void visible() {
-      setState(() {
-        isVisible = !isVisible;
-      });
-    }
-
-    final formKey = GlobalKey<FormState>();
     final size = MediaQuery.of(context).size;
-
-    void tryLogin(BuildContext context) async {
-      final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: "ciko@gmail.com", password: "cikociko");
-      if (result != null) {
-        print(result.user);
-      }
-      // showDialog(
-      //     context: context,
-      //     builder: (context) => AlertDialog(
-      //           content: Text("Email can't be empty!"),
-      //         ));
-    }
 
     return Scaffold(
       body: LayoutBuilder(
@@ -54,6 +51,11 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        print(FirebaseAuth.instance.currentUser);
+                      },
+                      child: Text('tries')),
                   Image.asset("assets/images/login_image.png", width: 120),
                   SizedBox(height: 30),
                   Container(
@@ -85,6 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                                   width: 260,
                                   top: 10,
                                   child: TextFormField(
+                                    controller: emailCon,
                                     validator: (value) =>
                                         "Please input some value",
                                     decoration: const InputDecoration(
@@ -121,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                                   width: 260,
                                   top: 10,
                                   child: TextFormField(
+                                    controller: passwordCon,
                                     obscureText: isVisible,
                                     decoration: InputDecoration(
                                         suffixIcon: IconButton(
