@@ -1,3 +1,5 @@
+import 'package:app/controller/chickenpricecontroller.dart';
+import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
 import 'package:app/view/auth/login.dart';
@@ -8,25 +10,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:intl/date_symbol_data_local.dart';
+// import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => UserController(),
+  initializeDateFormatting('id_ID').then((_) => runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (context) => UserController(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => WeatherController(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => ChickenPriceController(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => FeedController(),
+            )
+          ],
+          child: const MyApp(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => WeatherController(),
-        )
-      ],
-      child: const MyApp(),
-    ),
-  );
+      ));
 }
 
 class MyApp extends StatelessWidget {
@@ -55,17 +64,17 @@ class MyApp extends StatelessWidget {
       home: StreamBuilder(
         builder: (context, snapshot) {
           if (snapshot.data != null) {
-            return DashBoard();
+            return const DashBoard();
           } else {
-            return LoginPage();
+            return const LoginPage();
           }
         },
         stream: FirebaseAuth.instance.authStateChanges(),
       ),
       routes: {
-        '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
-        '/weather-list': (context) => WeatherList(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/weather-list': (context) => const WeatherList(),
       },
     );
   }

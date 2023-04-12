@@ -51,13 +51,13 @@ class WeatherHome extends StatelessWidget {
                                   .getConditionIcon(),
                               color: Colors.white,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Text(
                               "${weathercontroller.list[index + 1].getDateTime()} - ${weathercontroller.list[index + 1].getConditionName()}",
                               // 'Hari ini - Berawan',
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             )
                           ],
                         ),
@@ -134,11 +134,11 @@ class WeatherHome extends StatelessWidget {
                     Text(
                       "${weathercontroller.list[0].main.round()}° C - ${weathercontroller.list[0].getConditionName()}",
                       // '28° - Berawan',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
               ],
