@@ -10,15 +10,20 @@ class DailyController extends ChangeNotifier {
   List<DataHarianModel> get list => _list;
 
   Future<void> fetchData(String farmId) async {
-    final result = await FirebaseFirestore.instance
-        .collection('data_harian')
-        .where('farmId', isEqualTo: farmId)
-        .get();
-    for (var i in result.docs) {
-      final newData = DataHarianModel.fromJson(i.data());
-      _list.add(newData);
+    try {
+      print(farmId);
+      final result = await FirebaseFirestore.instance
+          .collection('data_harian')
+          .where('farmId', isEqualTo: farmId)
+          .get();
+      for (var i in result.docs) {
+        final newData = DataHarianModel.fromJson(i.data());
+        _list.add(newData);
+      }
+      notifyListeners();
+    } catch (error) {
+      print(error);
     }
-    notifyListeners();
   }
 
   Future<DataHarianModel?> checkDate(DateTime date) async {
@@ -68,6 +73,8 @@ class DailyController extends ChangeNotifier {
     } catch (error) {
       if (error is FirebaseException) {
         throw CustomException(error.message!);
+      } else {
+        print(error);
       }
     }
   }

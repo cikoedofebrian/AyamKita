@@ -1,3 +1,4 @@
+import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -86,7 +87,7 @@ class Profile extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
                     image: const DecorationImage(
-                        image: AssetImage("assets/images/daily_background.png"),
+                        image: AssetImage("assets/images/request_bg.png"),
                         fit: BoxFit.cover),
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -94,7 +95,7 @@ class Profile extends StatelessWidget {
                   child: const Text(
                     'Usul Konsultasi',
                     style: TextStyle(
-                        color: Color.fromRGBO(255, 195, 85, 1),
+                        color: AppColor.secondary,
                         fontWeight: FontWeight.bold,
                         fontSize: 24),
                   ),

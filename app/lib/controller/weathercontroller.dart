@@ -11,14 +11,17 @@ class WeatherController extends ChangeNotifier {
   String _cityName = '';
   String get cityName => _cityName;
   Future<void> fetchData() async {
-    final url = Uri.parse(Api.url);
-    // print(url);
-    final result = await http.get(url);
-    final parsedJSON = jsonDecode(result.body);
-    // print(parsedJSON['city']['name']);
-    _cityName = parsedJSON['city']['name'];
-    for (var i in parsedJSON['list']) {
-      _list.add(Weather.fromJson(i));
+    try {
+      final url = Uri.parse(Api.url);
+      final result = await http.get(url);
+      final parsedJSON = jsonDecode(result.body);
+      _cityName = parsedJSON['city']['name'];
+      for (var i in parsedJSON['list']) {
+        _list.add(Weather.fromJson(i));
+      }
+      print(_list.length);
+    } catch (error) {
+      print(error);
     }
   }
 }

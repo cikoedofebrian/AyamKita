@@ -72,6 +72,6 @@ class Weather {
 
   factory Weather.fromJson(Map<String, dynamic> json) => Weather(
       dt: json["dt"],
-      main: json['main']['temp'],
+      main: json['main']['temp'].toDouble(),
       weather: json['weather'][0]['id']);
 }

@@ -1,6 +1,5 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_material_symbols/flutter_material_symbols.dart';
 
 class WeatherList extends StatelessWidget {
   const WeatherList(
