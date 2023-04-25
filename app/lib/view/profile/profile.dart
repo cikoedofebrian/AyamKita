@@ -1,5 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/usercontroller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserController>(context, listen: false);
+    final userData = Provider.of<UserController>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
       child: Column(
@@ -38,7 +39,17 @@ class Profile extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset("assets/images/profile.png", scale: 1.3),
+                      SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: userData.imageUrl.isEmpty
+                            ? Image.asset(
+                                "assets/images/profile.png",
+                              )
+                            : CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(userData.imageUrl)),
+                      ),
                       const SizedBox(
                         width: 12,
                       ),
@@ -82,22 +93,25 @@ class Profile extends StatelessWidget {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: Container(
-                  padding: const EdgeInsets.only(left: 20),
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
-                        image: AssetImage("assets/images/request_bg.png"),
-                        fit: BoxFit.cover),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  height: 80,
-                  child: const Text(
-                    'Usul Konsultasi',
-                    style: TextStyle(
-                        color: AppColor.secondary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24),
+                child: InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/request'),
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image: AssetImage("assets/images/request_bg.png"),
+                          fit: BoxFit.cover),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    height: 80,
+                    child: const Text(
+                      'Usul Konsultasi',
+                      style: TextStyle(
+                          color: AppColor.secondary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
+                    ),
                   ),
                 ),
               ),
@@ -122,23 +136,27 @@ class Profile extends StatelessWidget {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: Container(
-                  padding: const EdgeInsets.only(left: 20),
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
-                        image: AssetImage("assets/images/daily_background.png"),
-                        fit: BoxFit.cover),
-                    // color: const Color.fromRGBO(213, 13, 0, 1),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  height: 80,
-                  child: const Text(
-                    'Data Harian',
-                    style: TextStyle(
-                        color: Color.fromRGBO(255, 195, 85, 1),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24),
+                child: InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/data-history'),
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image:
+                              AssetImage("assets/images/daily_background.png"),
+                          fit: BoxFit.cover),
+                      // color: const Color.fromRGBO(213, 13, 0, 1),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    height: 80,
+                    child: const Text(
+                      'Data Harian',
+                      style: TextStyle(
+                          color: Color.fromRGBO(255, 195, 85, 1),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
+                    ),
                   ),
                 ),
               ),
@@ -162,24 +180,27 @@ class Profile extends StatelessWidget {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: Container(
-                  padding: const EdgeInsets.only(left: 20),
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
-                        image:
-                            AssetImage("assets/images/logout_background.png"),
-                        fit: BoxFit.cover),
-                    // color: const Color.fromRGBO(213, 13, 0, 1),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  height: 80,
-                  child: const Text(
-                    'Keluar',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24),
+                child: InkWell(
+                  onTap: () => FirebaseAuth.instance.signOut(),
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image:
+                              AssetImage("assets/images/logout_background.png"),
+                          fit: BoxFit.cover),
+                      // color: const Color.fromRGBO(213, 13, 0, 1),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    height: 80,
+                    child: const Text(
+                      'Keluar',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
+                    ),
                   ),
                 ),
               ),

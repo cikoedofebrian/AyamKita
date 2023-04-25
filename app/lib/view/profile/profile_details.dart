@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +26,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   late String farmName;
   late String since;
   late String imageUrl;
+  // XFile? newPhoto;
+  File? photo;
   bool isEditable = false;
   final formKey = GlobalKey<FormState>();
 
@@ -44,8 +49,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   Widget build(BuildContext context) {
     void showImagePicker() {
       final ImagePicker picker = ImagePicker();
-      final XFile? photo;
-
       showModalBottomSheet(
           context: context,
           builder: (BuildContext context) {
@@ -64,8 +67,14 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     leading: const Icon(Icons.camera_alt),
                     title: const Text('Ambil foto baru'),
                     onTap: () async {
-                      await picker.pickImage(source: ImageSource.camera);
-                      Navigator.of(context).pop();
+                      final XFile? pickedPhoto =
+                          await picker.pickImage(source: ImageSource.camera);
+                      if (pickedPhoto != null) {
+                        setState(() {
+                          photo = File(pickedPhoto.path);
+                        });
+                        Navigator.pop(context);
+                      }
                     },
                   ),
                   ListTile(
@@ -73,9 +82,14 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     leading: const Icon(Icons.image),
                     title: const Text('Pilih dari galeri'),
                     onTap: () async {
-                      await picker.pickImage(source: ImageSource.gallery);
-
-                      Navigator.of(context).pop();
+                      final XFile? pickedPhoto =
+                          await picker.pickImage(source: ImageSource.gallery);
+                      if (pickedPhoto != null) {
+                        setState(() {
+                          photo = File(pickedPhoto.path);
+                        });
+                        Navigator.pop(context);
+                      }
                     },
                   ),
                   const SizedBox(
@@ -90,6 +104,16 @@ class _ProfileDetailsState extends State<ProfileDetails> {
     void trySave() async {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
+        if (photo != null) {
+          final upload = await FirebaseStorage.instance
+              .ref('/profile-images/${FirebaseAuth.instance.currentUser!.uid}')
+              .putFile(
+                File(photo!.path),
+              );
+          final url = await upload.ref.getDownloadURL();
+          imageUrl = url;
+        }
+
         final userController =
             Provider.of<UserController>(context, listen: false);
         final trimmedname = name.trim();
@@ -147,14 +171,13 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     child: Stack(
                       children: [
                         SizedBox(
-                          height: 190,
-                          width: double.infinity,
-                          child: Image.asset(
-                            'assets/images/profile_bg.png',
-                            fit: BoxFit.cover,
-                            alignment: Alignment.bottomCenter,
-                          ),
-                        ),
+                            height: 190,
+                            width: double.infinity,
+                            child: Image.asset(
+                              'assets/images/profile_bg.png',
+                              fit: BoxFit.cover,
+                              alignment: Alignment.bottomCenter,
+                            )),
                         // Positioned(
                         //   top: 110,
                         //   left: MediaQuery.of(context).size.width * 0.5 - 50,
@@ -171,7 +194,23 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             children: [
                               SizedBox(
                                 width: 100,
-                                child: Image.asset("assets/images/profile.png"),
+                                child: imageUrl.isEmpty && photo == null
+                                    ? Image.asset("assets/images/profile.png")
+                                    : Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          image: DecorationImage(
+                                            image: photo != null
+                                                ? FileImage(photo!)
+                                                : NetworkImage(imageUrl)
+                                                    as ImageProvider,
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                        height: 100,
+                                        width: 100,
+                                      ),
                               ),
                               if (isEditable)
                                 Positioned(
@@ -207,7 +246,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                 fontSize: 24),
                           ),
                         ),
-                        const CustomBackButton(),
+                        const CustomBackButton(color: AppColor.quaternary),
                         Positioned(
                           right: 30,
                           top: 50,

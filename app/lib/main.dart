@@ -6,6 +6,8 @@ import 'package:app/controller/weathercontroller.dart';
 import 'package:app/view/auth/login.dart';
 import 'package:app/view/auth/register.dart';
 import 'package:app/view/features/farms/add_data.dart';
+import 'package:app/view/features/farms/datahistory.dart';
+import 'package:app/view/features/request/request.dart';
 import 'package:app/view/features/weather/weather_hours.dart';
 import 'package:app/view/home/home.dart';
 import 'package:app/view/profile/profile_details.dart';
@@ -85,6 +87,8 @@ class MyApp extends StatelessWidget {
         '/weather-hours': (context) => const WeatherHours(),
         '/add-data': (context) => const AddData(),
         '/profile-details': (context) => const ProfileDetails(),
+        '/data-history': (context) => const DataHistory(),
+        '/request': (context) => const Request(),
       },
     );
   }

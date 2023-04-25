@@ -63,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomBackButton(),
+                  CustomBackButton(color: AppColor.secondary),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

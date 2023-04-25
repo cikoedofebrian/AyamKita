@@ -1,13 +1,8 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
-import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
-import 'package:app/helper/customexception.dart';
 import 'package:app/widget/feedschedule.dart';
-import 'package:app/widget/requestbutton.dart';
 import 'package:app/widget/weatherhome.dart';
 import 'package:flutter/material.dart';
-import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
 
 class DashBoard extends StatelessWidget {
@@ -23,39 +18,40 @@ class DashBoard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Material(
-                    elevation: 4,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColor.formborder),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          hintText: "Cari Dokter",
-                          hintStyle: TextStyle(color: AppColor.formborder),
-                          icon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
+            if (userController.role == "Dokter")
+              Row(
+                children: [
+                  Expanded(
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColor.formborder),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const TextField(
+                          decoration: InputDecoration(
+                            hintText: "Cari Dokter",
+                            hintStyle: TextStyle(color: AppColor.formborder),
+                            icon: Icon(Icons.search),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 30),
-                SizedBox(
-                  height: 40,
-                  child: Image.asset("assets/images/data.png"),
-                ),
-                const SizedBox(width: 10),
-              ],
-            ),
+                  const SizedBox(width: 30),
+                  SizedBox(
+                    height: 40,
+                    child: Image.asset("assets/images/data.png"),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
             const SizedBox(
               height: 25,
             ),
@@ -63,7 +59,12 @@ class DashBoard extends StatelessWidget {
               children: [
                 SizedBox(
                   height: 60,
-                  child: Image.asset("assets/images/profile.png"),
+                  width: 60,
+                  child: userController.imageUrl.isNotEmpty
+                      ? CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(userController.imageUrl))
+                      : Image.asset("assets/images/profile.png"),
                 ),
                 const SizedBox(
                   width: 15,
@@ -102,7 +103,7 @@ class DashBoard extends StatelessWidget {
             const SizedBox(
               height: 25,
             ),
-            const RequestButton(),
+            // const RequestButton(),
             const SizedBox(height: 100),
           ],
         ),

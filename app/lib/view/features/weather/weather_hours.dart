@@ -1,3 +1,4 @@
+import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/weathercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/weatherlist.dart';
@@ -17,7 +18,8 @@ class WeatherHours extends StatelessWidget {
         SizedBox(
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(
-              padding: const EdgeInsets.only(top: 120, bottom: 20),
+              padding: const EdgeInsets.only(
+                  top: 120, bottom: 20, left: 10, right: 10),
               itemCount: 8,
               itemBuilder: (context, index) => WeatherList(
                   days: weatherData[index].getDays(),
@@ -25,7 +27,9 @@ class WeatherHours extends StatelessWidget {
                   icons: weatherData[index].getConditionIcon(),
                   temp: weatherData[index].main),
             )),
-        const CustomBackButton(),
+        const CustomBackButton(
+          color: AppColor.secondary,
+        ),
       ],
     ));
   }

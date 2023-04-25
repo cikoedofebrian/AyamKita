@@ -11,9 +11,9 @@ class DailyController extends ChangeNotifier {
 
   Future<void> fetchData(String farmId) async {
     try {
-      print(farmId);
       final result = await FirebaseFirestore.instance
           .collection('data_harian')
+          .orderBy('tanggal', descending: true)
           .where('farmId', isEqualTo: farmId)
           .get();
       for (var i in result.docs) {
@@ -58,6 +58,7 @@ class DailyController extends ChangeNotifier {
         'kematian': kematian,
         'panen': panen,
         'farmId': farmId,
+        'obat': obat,
       });
       _list.add(DataHarianModel(
           tanggal: tanggal,
