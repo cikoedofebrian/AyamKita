@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:app/controller/weathercontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_icons/weather_icons.dart';
 
 class WeatherHome extends StatelessWidget {
   const WeatherHome({super.key});
@@ -38,7 +35,6 @@ class WeatherHome extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
-
                       ...List.generate(
                         3,
                         (index) => Row(
@@ -62,61 +58,6 @@ class WeatherHome extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // Row(
-                      //   children: [
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     Icon(
-                      //       Icons.cloud,
-                      //       color: Colors.white,
-                      //     ),
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     Text(
-                      //       weathercontroller.list[0].weather.toString(),
-                      //       // 'Hari ini - Berawan',
-                      //       style: TextStyle(color: Colors.white),
-                      //     )
-                      //   ],
-                      // ),
-                      // Row(
-                      //   children: const [
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     Icon(
-                      //       Icons.cloud,
-                      //       color: Colors.white,
-                      //     ),
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     Text(
-                      //       'Hari ini - Berawan',
-                      //       style: TextStyle(color: Colors.white),
-                      //     )
-                      //   ],
-                      // ),
-                      // Row(
-                      //   children: const [
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     Icon(
-                      //       Icons.cloud,
-                      //       color: Colors.white,
-                      //     ),
-                      //     SizedBox(
-                      //       width: 10,
-                      //     ),
-                      //     Text(
-                      //       'Hari ini - Berawan',
-                      //       style: TextStyle(color: Colors.white),
-                      //     )
-                      //   ],
-                      // ),
                     ],
                   ),
                 ),
@@ -128,12 +69,8 @@ class WeatherHome extends StatelessWidget {
                       size: 80,
                       color: Colors.white,
                     ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
                     Text(
                       "${weathercontroller.list[0].main.round()}° C - ${weathercontroller.list[0].getConditionName()}",
-                      // '28° - Berawan',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ],
@@ -146,7 +83,7 @@ class WeatherHome extends StatelessWidget {
           ),
         ),
         InkWell(
-          onTap: () => Navigator.pushNamed(context, '/weather-list'),
+          onTap: () => Navigator.pushNamed(context, '/weather-hours'),
           child: Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

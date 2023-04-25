@@ -1,22 +1,3 @@
-// class Weather {
-//   Weather({
-//     required this.dt,
-//     required this.main,
-//     required this.weather,
-//   });
-
-//   final int dt;
-//   final Main main;
-//   final List<WeatherElement> weather;
-
-//   factory Weather.fromJson(Map<String, dynamic> json) => Weather(
-//         dt: json["dt"],
-//         main: Main.fromJson(json["main"]),
-//         weather: List<WeatherElement>.from(
-//             json["weather"].map((x) => WeatherElement.fromJson(x))),
-//       );
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_material_symbols/flutter_material_symbols.dart';
 import 'package:intl/intl.dart';
@@ -34,6 +15,11 @@ class Weather {
 
   String getDateTime() {
     return DateFormat('HH:mm').format(
+        DateTime.fromMillisecondsSinceEpoch(dt * 1000, isUtc: true).toLocal());
+  }
+
+  String getDays() {
+    return DateFormat('EEEE', 'id_ID').format(
         DateTime.fromMillisecondsSinceEpoch(dt * 1000, isUtc: true).toLocal());
   }
 
@@ -58,9 +44,9 @@ class Weather {
       // return "sun.max";
     } else if (weather >= 801 && weather <= 804) {
       // return "cloud.bolt";
-      return Icons.wb_cloudy;
+      return Icons.wb_cloudy_outlined;
     } else {
-      return Icons.wb_cloudy;
+      return Icons.wb_cloudy_outlined;
     }
   }
 
@@ -89,27 +75,3 @@ class Weather {
       main: json['main']['temp'],
       weather: json['weather'][0]['id']);
 }
-
-// class Main {
-//   Main({
-//     required this.temp,
-//   });
-
-//   final double temp;
-
-//   factory Main.fromJson(Map<String, dynamic> json) => Main(
-//         temp: json["temp"]?.toDouble(),
-//       );
-// }
-
-// class WeatherElement {
-//   WeatherElement({
-//     required this.id,
-//   });
-
-//   final int id;
-
-//   factory WeatherElement.fromJson(Map<String, dynamic> json) => WeatherElement(
-//         id: json["id"],
-//       );
-// }

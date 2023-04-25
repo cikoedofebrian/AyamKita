@@ -21,7 +21,5 @@ class FeedModel {
         time: exjson['time'],
         weight: exjson['weight'],
         id: id,
-        // time: extrajson['time'],
-        // weight: extrajson['weight'],
       );
 }

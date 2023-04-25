@@ -1,11 +1,14 @@
 import 'package:app/controller/chickenpricecontroller.dart';
+import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
 import 'package:app/view/auth/login.dart';
 import 'package:app/view/auth/register.dart';
-import 'package:app/view/features/weather/weatherlist.dart';
-import 'package:app/view/home/dashboard.dart';
+import 'package:app/view/features/farms/add_data.dart';
+import 'package:app/view/features/weather/weather_hours.dart';
+import 'package:app/view/home/home.dart';
+import 'package:app/view/profile/profile_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,25 +20,30 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  initializeDateFormatting('id_ID').then((_) => runApp(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider(
-              create: (context) => UserController(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => WeatherController(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => ChickenPriceController(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) => FeedController(),
-            )
-          ],
-          child: const MyApp(),
-        ),
-      ));
+  initializeDateFormatting('id_ID').then(
+    (_) => runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => UserController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => DailyController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => WeatherController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => ChickenPriceController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => FeedController(),
+          )
+        ],
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -64,7 +72,7 @@ class MyApp extends StatelessWidget {
       home: StreamBuilder(
         builder: (context, snapshot) {
           if (snapshot.data != null) {
-            return const DashBoard();
+            return const Home();
           } else {
             return const LoginPage();
           }
@@ -74,7 +82,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
-        '/weather-list': (context) => const WeatherList(),
+        '/weather-hours': (context) => const WeatherHours(),
+        '/add-data': (context) => const AddData(),
+        '/profile-details': (context) => const ProfileDetails(),
       },
     );
   }

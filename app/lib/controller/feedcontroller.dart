@@ -1,3 +1,5 @@
+import 'package:app/constant/appformat.dart';
+import 'package:app/helper/customexception.dart';
 import 'package:app/model/feedmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -54,14 +56,10 @@ class FeedController extends ChangeNotifier {
     }
   }
 
-  bool fillAbsence() {
+  void fillAbsence() {
     final date = DateTime.now();
-    final first = DateFormat("HH:mm").parse(_list[0].time['first']);
-    final parsedFirst =
-        DateTime(date.year, date.month, date.day, first.hour, first.minute);
-    final second = DateFormat("HH:mm").parse(_list[0].time['second']);
-    final parsedSecond =
-        DateTime(date.year, date.month, date.day, second.hour, second.minute);
+    final parsedFirst = AppFormat.currentDate(_list[0].time['first']);
+    final parsedSecond = AppFormat.currentDate(_list[0].time['second']);
 
     if (date.isAfter(parsedFirst) &&
         date.isBefore(
@@ -70,7 +68,7 @@ class FeedController extends ChangeNotifier {
           ),
         )) {
       if (_list[0].isfeeded[0] == true) {
-        return false;
+        throw CustomException("Presensi pakan pertama telah terisi!");
       }
       absenceTrigger(0);
     } else if (date.isAfter(parsedSecond) &&
@@ -80,13 +78,12 @@ class FeedController extends ChangeNotifier {
           ),
         )) {
       if (_list[0].isfeeded[1] == true) {
-        return false;
+        throw CustomException("Presensi pakan kedua telah terisi!");
       }
       absenceTrigger(1);
-      return true;
+    } else {
+      throw CustomException("Kamu sudah melewatkan jam presensi pakan!");
     }
-    print('ada ada sadja');
-    return false;
   }
 
   void absenceTrigger(int index) async {
@@ -95,5 +92,7 @@ class FeedController extends ChangeNotifier {
         .collection('feed_date')
         .doc(_list[0].id)
         .update({'isfeeded': _list[0].isfeeded});
+
+    notifyListeners();
   }
 }

@@ -51,11 +51,11 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        print(FirebaseAuth.instance.currentUser);
-                      },
-                      child: Text('tries')),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       print(FirebaseAuth.instance.currentUser);
+                  //     },
+                  //     child: Text('tries')),
                   Image.asset("assets/images/login_image.png", width: 120),
                   SizedBox(height: 30),
                   Container(

@@ -1,5 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
+import 'package:app/widget/custombackbutton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -62,30 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-                      child: Material(
-                        borderRadius: BorderRadius.circular(100),
-                        elevation: 4,
-                        child: CircleAvatar(
-                          radius: 27,
-                          backgroundColor: AppColor.tertiary,
-                          child: CircleAvatar(
-                            radius: 25,
-                            backgroundColor: AppColor.secondary,
-                            child: IconButton(
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                Icons.navigate_before_rounded,
-                                color: AppColor.tertiary,
-                              ),
-                              iconSize: 45,
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ),
-                        ),
-                      )),
+                  const CustomBackButton(),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.black12,
                                 blurRadius: 0.6,

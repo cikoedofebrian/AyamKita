@@ -6,10 +6,12 @@ class UserController extends ChangeNotifier {
   String _name = '';
   String _role = '';
   String _email = '';
+  String _farmId = '';
 
   String get name => _name;
   String get role => _role;
   String get email => _email;
+  String get farmId => _farmId;
 
   Future<void> fetchData() async {
     if (FirebaseAuth.instance.currentUser != null) {
@@ -20,6 +22,7 @@ class UserController extends ChangeNotifier {
       _name = result['name'];
       _role = result['role'];
       _email = result['email'];
+      _farmId = result['farmId'];
     }
   }
 }
