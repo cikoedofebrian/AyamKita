@@ -9,7 +9,7 @@ class CustomBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+      padding: const EdgeInsets.only(left: 30, top: 50),
       child: Material(
         borderRadius: BorderRadius.circular(100),
         elevation: 4,

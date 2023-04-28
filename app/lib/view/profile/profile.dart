@@ -86,15 +86,15 @@ class Profile extends StatelessWidget {
           const SizedBox(
             height: 6,
           ),
-          SizedBox(
-            height: 90,
-            child: Stack(children: [
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: InkWell(
-                  onTap: () => Navigator.pushNamed(context, '/request'),
+          InkWell(
+            onTap: () => Navigator.pushNamed(context, '/request-list'),
+            child: SizedBox(
+              height: 90,
+              child: Stack(children: [
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   child: Container(
                     padding: const EdgeInsets.only(left: 20),
                     alignment: Alignment.centerLeft,
@@ -114,18 +114,18 @@ class Profile extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 0,
-                right: 18,
-                child: Image.asset(
-                  "assets/images/req.png",
-                  scale: 6,
+                Positioned(
+                  top: 0,
+                  right: 18,
+                  child: Image.asset(
+                    "assets/images/req.png",
+                    scale: 6,
+                  ),
                 ),
-              ),
-            ]),
+              ]),
+            ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           // Expanded(child: Container())

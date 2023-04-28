@@ -1,4 +1,5 @@
 import 'package:app/controller/chickenpricecontroller.dart';
+import 'package:app/controller/consultationrequest.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
@@ -8,6 +9,7 @@ import 'package:app/view/auth/register.dart';
 import 'package:app/view/features/farms/add_data.dart';
 import 'package:app/view/features/farms/datahistory.dart';
 import 'package:app/view/features/request/request.dart';
+import 'package:app/view/features/request/requestlist.dart';
 import 'package:app/view/features/weather/weather_hours.dart';
 import 'package:app/view/home/home.dart';
 import 'package:app/view/profile/profile_details.dart';
@@ -40,6 +42,9 @@ void main() async {
           ),
           ChangeNotifierProvider(
             create: (context) => FeedController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => ConsultationRequestController(),
           )
         ],
         child: const MyApp(),
@@ -89,6 +94,7 @@ class MyApp extends StatelessWidget {
         '/profile-details': (context) => const ProfileDetails(),
         '/data-history': (context) => const DataHistory(),
         '/request': (context) => const Request(),
+        '/request-list': (context) => const RequestList(),
       },
     );
   }

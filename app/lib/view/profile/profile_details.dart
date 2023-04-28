@@ -3,11 +3,11 @@ import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
+import 'package:app/widget/imagepicker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -47,60 +47,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
 
   @override
   Widget build(BuildContext context) {
-    void showImagePicker() {
-      final ImagePicker picker = ImagePicker();
-      showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) {
-            return SafeArea(
-              child: Wrap(
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                    child: Text(
-                      'Pilih salah satu metode dibawah :',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-                    leading: const Icon(Icons.camera_alt),
-                    title: const Text('Ambil foto baru'),
-                    onTap: () async {
-                      final XFile? pickedPhoto =
-                          await picker.pickImage(source: ImageSource.camera);
-                      if (pickedPhoto != null) {
-                        setState(() {
-                          photo = File(pickedPhoto.path);
-                        });
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-                    leading: const Icon(Icons.image),
-                    title: const Text('Pilih dari galeri'),
-                    onTap: () async {
-                      final XFile? pickedPhoto =
-                          await picker.pickImage(source: ImageSource.gallery);
-                      if (pickedPhoto != null) {
-                        setState(() {
-                          photo = File(pickedPhoto.path);
-                        });
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 100,
-                  ),
-                ],
-              ),
-            );
-          });
-    }
-
     void trySave() async {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -217,7 +163,15 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                   bottom: 0,
                                   right: 0,
                                   child: InkWell(
-                                    onTap: showImagePicker,
+                                    onTap: () async {
+                                      File? result =
+                                          await showImagePicker(context);
+                                      if (result != null) {
+                                        setState(() {
+                                          photo = result;
+                                        });
+                                      }
+                                    },
                                     child: const CircleAvatar(
                                       radius: 16,
                                       backgroundColor: AppColor.tertiary,

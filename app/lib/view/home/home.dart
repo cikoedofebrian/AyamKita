@@ -3,7 +3,6 @@ import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
-import 'package:app/view/farm/farmdata.dart';
 import 'package:app/view/features/farms/add_data.dart';
 import 'package:app/view/home/dashboard.dart';
 import 'package:app/view/profile/profile.dart';
@@ -74,8 +73,9 @@ class _HomeState extends State<Home> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
-                  child: LoadingAnimationWidget.inkDrop(
-                      color: Colors.orange, size: 60));
+                child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.orange, size: 60),
+              );
             }
             return SingleChildScrollView(
               child: SizedBox(
