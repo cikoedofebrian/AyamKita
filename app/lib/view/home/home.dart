@@ -3,7 +3,7 @@ import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
-import 'package:app/view/features/farms/add_data.dart';
+import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/home/dashboard.dart';
 import 'package:app/view/profile/profile.dart';
 import 'package:app/widget/customnavbar.dart';
@@ -22,31 +22,26 @@ class _HomeState extends State<Home> {
   late Future future;
   @override
   void initState() {
-    future = Future.wait([
-      Provider.of<UserController>(
-        context,
-        listen: false,
-      ).fetchData().then(
-            (value) => Provider.of<DailyController>(
-              context,
-              listen: false,
-            ).fetchData(
-                Provider.of<UserController>(context, listen: false).farmId),
-          ),
-      Provider.of<WeatherController>(
-        context,
-        listen: false,
-      ).fetchData(),
-      Provider.of<ChickenPriceController>(
-        context,
-        listen: false,
-      ).fetchData(),
-      Provider.of<FeedController>(
-        context,
-        listen: false,
-      ).fetchData()
-    ]);
+    future = getUserData();
     super.initState();
+  }
+
+  Future<void> getUserData() async {
+    final userController = Provider.of<UserController>(context, listen: false);
+    await userController.fetchData().then(
+          (value) => future = Future.wait(
+            [
+              Provider.of<FeedController>(context, listen: false)
+                  .fetchData(userController.user.peternakanId),
+              Provider.of<DailyController>(context, listen: false)
+                  .fetchData(userController.user.peternakanId),
+              Provider.of<WeatherController>(context, listen: false)
+                  .fetchData(),
+              Provider.of<ChickenPriceController>(context, listen: false)
+                  .fetchData(),
+            ],
+          ),
+        );
   }
 
   final List<Widget> _page = const [
@@ -61,8 +56,6 @@ class _HomeState extends State<Home> {
     setState(() {
       _selectedPage = index;
     });
-
-    print(_selectedPage);
   }
 
   @override

@@ -1,43 +1,35 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/controller/consultationrequest.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/farmcontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/requestwidget.dart';
+import 'package:app/widget/pengelolawidget.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
-class RequestList extends StatelessWidget {
-  const RequestList({super.key});
+class PengelolaList extends StatelessWidget {
+  const PengelolaList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final requestController =
-        Provider.of<ConsultationRequestController>(context);
-    final isPengelola = ModalRoute.of(context)!.settings.arguments as bool;
+    final peternakanController = Provider.of<PeternakanController>(context);
     return Scaffold(
-      floatingActionButton: isPengelola
-          ? Container(
-              padding: const EdgeInsets.all(12),
-              child: FloatingActionButton.extended(
-                  label: const Text(
-                    'Tambah',
-                    style: TextStyle(
-                        color: AppColor.secondary, fontWeight: FontWeight.bold),
-                  ),
-                  backgroundColor: AppColor.tertiary,
-                  icon: const Icon(
-                    Icons.add,
-                    color: AppColor.secondary,
-                  ),
-                  onPressed: () => Navigator.of(context).pushNamed('/request')),
-            )
-          : null,
+      floatingActionButton: Container(
+        padding: const EdgeInsets.all(12),
+        child: FloatingActionButton.extended(
+            label: const Text(
+              'Tambah',
+              style: TextStyle(
+                  color: AppColor.secondary, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: AppColor.tertiary,
+            icon: const Icon(
+              Icons.add,
+              color: AppColor.secondary,
+            ),
+            onPressed: () => Navigator.of(context).pushNamed('/request')),
+      ),
       body: FutureBuilder(
-          future: requestController.fetchData(
-              Provider.of<UserController>(context, listen: false)
-                  .user
-                  .peternakanId),
+          future: peternakanController.seePengelola(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
@@ -60,7 +52,7 @@ class RequestList extends StatelessWidget {
                         child: const Padding(
                           padding: EdgeInsets.only(left: 105, top: 25),
                           child: Text(
-                            'Usulan Konsultasi',
+                            'Daftar Pengelola',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -73,20 +65,38 @@ class RequestList extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                    child: requestController.list.isNotEmpty
-                        ? ListView.builder(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 20),
-                            itemBuilder: (context, index) => RequestWidget(
-                                data: requestController.list[index]),
-                            // Text(requestController.list[index].deskripsi),
-                            itemCount: requestController.list.length,
+                    child: snapshot.data!.isNotEmpty
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 20, top: 10),
+                                child: Text(
+                                  'Jumlah Pengelola : ${snapshot.data!.length}',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: snapshot.data!.length,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 20),
+                                  itemBuilder: (context, index) =>
+                                      PengelolaWidget(
+                                    data: snapshot.data![index],
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
                               Text(
-                                'Belum ada usulan konsultasi',
+                                'Belum ada pengelola',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
@@ -94,7 +104,7 @@ class RequestList extends StatelessWidget {
                                 height: 5,
                               ),
                               Text(
-                                'Klik tambah untuk menambahkan usulan konsultasi baru',
+                                'Buat akun pengelola baru menggunakan ID Peternakan',
                                 style: TextStyle(fontSize: 16),
                                 textAlign: TextAlign.center,
                               ),

@@ -15,6 +15,10 @@ class AppFormat {
     return DateFormat("d MMMM yyyy", 'id_ID').format(dateTime);
   }
 
+  static String intDateFromDateTime(DateTime dateTime) {
+    return DateFormat("dd-MM-yyyy", 'id_ID').format(dateTime);
+  }
+
   static String fDate(String stringDate) {
     final dateTime = DateFormat("dd-MM-yyy").parse(stringDate);
     return DateFormat('d MMMM yyyy', 'id_ID').format(dateTime);

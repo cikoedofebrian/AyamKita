@@ -11,6 +11,7 @@ class DashBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userController = Provider.of<UserController>(context);
+    // print(userController.user);
     // final feedController = Provider.of<FeedController>(context);
     return SingleChildScrollView(
       child: Padding(
@@ -18,7 +19,7 @@ class DashBoard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (userController.role == "Dokter")
+            if (userController.user.role == "Dokter")
               Row(
                 children: [
                   Expanded(
@@ -60,10 +61,10 @@ class DashBoard extends StatelessWidget {
                 SizedBox(
                   height: 60,
                   width: 60,
-                  child: userController.imageUrl.isNotEmpty
+                  child: userController.user.downloadUrl.isNotEmpty
                       ? CircleAvatar(
                           backgroundImage:
-                              NetworkImage(userController.imageUrl))
+                              NetworkImage(userController.user.downloadUrl))
                       : Image.asset("assets/images/profile.png"),
                 ),
                 const SizedBox(
@@ -77,7 +78,7 @@ class DashBoard extends StatelessWidget {
                       style: TextStyle(color: Colors.grey),
                     ),
                     Text(
-                      userController.name,
+                      userController.user.nama,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20),
                     )
@@ -100,6 +101,7 @@ class DashBoard extends StatelessWidget {
               height: 10,
             ),
             const FeedSchedule(),
+
             const SizedBox(
               height: 25,
             ),

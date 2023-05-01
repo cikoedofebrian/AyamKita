@@ -23,8 +23,8 @@ Future<File?> showImagePicker(BuildContext context) async {
               leading: const Icon(Icons.camera_alt),
               title: const Text('Ambil foto baru'),
               onTap: () async {
-                final XFile? pickedPhoto =
-                    await picker.pickImage(source: ImageSource.camera);
+                final XFile? pickedPhoto = await picker.pickImage(
+                    source: ImageSource.camera, imageQuality: 50);
                 if (pickedPhoto != null) {
                   photo = File(pickedPhoto.path);
                   // ignore: use_build_context_synchronously
@@ -37,8 +37,8 @@ Future<File?> showImagePicker(BuildContext context) async {
               leading: const Icon(Icons.image),
               title: const Text('Pilih dari galeri'),
               onTap: () async {
-                final XFile? pickedPhoto =
-                    await picker.pickImage(source: ImageSource.gallery);
+                final XFile? pickedPhoto = await picker.pickImage(
+                    source: ImageSource.gallery, imageQuality: 50);
                 if (pickedPhoto != null) {
                   photo = File(pickedPhoto.path);
                   // ignore: use_build_context_synchronously

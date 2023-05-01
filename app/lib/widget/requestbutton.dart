@@ -11,7 +11,9 @@ class RequestButton extends StatelessWidget {
       width: double.infinity,
       child: InkWell(
         onTap: () {
-          print(Provider.of<UserController>(context, listen: false).farmId);
+          print(Provider.of<UserController>(context, listen: false)
+              .user
+              .peternakanId);
         },
         child: Material(
           elevation: 4,

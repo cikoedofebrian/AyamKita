@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
 
-void customDialog(BuildContext context, String title, String content) {
+Future<void> customDialog(
+    BuildContext context, String title, String content) async {
+  final completer = Completer<void>();
   NDialog(
           dialogStyle: DialogStyle(titleDivider: true),
           title: Text(
@@ -15,11 +19,15 @@ void customDialog(BuildContext context, String title, String content) {
                   "Tutup",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                onPressed: () => Navigator.pop(context)),
+                onPressed: () {
+                  Navigator.pop(context);
+                  completer.complete();
+                }),
           ],
           content: Container(
               padding: const EdgeInsets.all(12),
               width: MediaQuery.of(context).size.width * 0.6,
               child: Text(content)))
       .show(context);
+  return completer.future;
 }

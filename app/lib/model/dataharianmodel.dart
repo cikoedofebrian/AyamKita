@@ -1,38 +1,35 @@
 import 'package:intl/intl.dart';
 
 class DataHarianModel {
-  final DateTime tanggal;
+  final String tanggal;
   final int umur;
-  final int datang;
-  final int pakai;
-  final int std;
-  final int stok;
+  final double pakan;
+  final int hargaPakan;
   final int kematian;
-  final int panen;
+  final int keluar;
   final String obat;
+  final int hargaObat;
 
-  DataHarianModel(
-      {required this.tanggal,
-      required this.umur,
-      required this.datang,
-      required this.pakai,
-      required this.std,
-      required this.stok,
-      required this.kematian,
-      required this.panen,
-      required this.obat});
+  DataHarianModel({
+    required this.tanggal,
+    required this.umur,
+    required this.hargaObat,
+    required this.hargaPakan,
+    required this.keluar,
+    required this.obat,
+    required this.pakan,
+    required this.kematian,
+  });
 
   factory DataHarianModel.fromJson(Map<String, dynamic> json) {
     return DataHarianModel(
-      kematian: json['kematian'],
-      datang: json['datang'],
-      std: json['std'],
-      umur: json['umur'],
-      pakai: json['pakai'],
-      stok: json['stok'],
-      tanggal: DateFormat('dd-MM-yyyy').parse(json['tanggal']),
-      panen: json['panen'],
-      obat: json['obat'] ?? '',
-    );
+        tanggal: json['tanggal'],
+        kematian: json['kematian'],
+        umur: json['umur'],
+        pakan: json['pakan'],
+        keluar: json['keluar'],
+        obat: json['obat'] ?? '',
+        hargaObat: json['harga_obat'],
+        hargaPakan: json['harga_pakan']);
   }
 }

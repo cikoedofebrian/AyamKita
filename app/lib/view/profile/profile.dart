@@ -1,4 +1,5 @@
 import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/role.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserController>(context);
+    final isPemilik = userData.user.role == UserRole.pemilik;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
       child: Column(
@@ -42,40 +44,39 @@ class Profile extends StatelessWidget {
                       SizedBox(
                         height: 100,
                         width: 100,
-                        child: userData.imageUrl.isEmpty
+                        child: userData.user.downloadUrl.isEmpty
                             ? Image.asset(
                                 "assets/images/profile.png",
                               )
                             : CircleAvatar(
                                 backgroundImage:
-                                    NetworkImage(userData.imageUrl)),
+                                    NetworkImage(userData.user.downloadUrl)),
                       ),
                       const SizedBox(
                         width: 12,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          SizedBox(
-                            width: 180,
-                            child: FittedBox(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            FittedBox(
                               child: Text(
-                                userData.name,
+                                userData.user.nama,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 24,
                                     color: Colors.white),
                               ),
                             ),
-                          ),
-                          Text(
-                            userData.role,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+                            Text(
+                              userData.user.role,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -87,7 +88,52 @@ class Profile extends StatelessWidget {
             height: 6,
           ),
           InkWell(
-            onTap: () => Navigator.pushNamed(context, '/request-list'),
+            onTap: () => Navigator.pushNamed(context, '/farm-data',
+                arguments:
+                    userData.user.role == UserRole.pemilik ? true : false),
+            child: SizedBox(
+              height: 90,
+              child: Stack(children: [
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image: AssetImage("assets/images/request_bg.png"),
+                          fit: BoxFit.cover),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    height: 80,
+                    child: const Text(
+                      'Profil Peternakan',
+                      style: TextStyle(
+                          color: AppColor.secondary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 18,
+                  child: Image.asset(
+                    "assets/images/req.png",
+                    scale: 6,
+                  ),
+                ),
+              ]),
+            ),
+          ),
+          const SizedBox(
+            height: 6,
+          ),
+          InkWell(
+            onTap: () => Navigator.pushNamed(context, '/request-list',
+                arguments: isPemilik ? false : true),
             child: SizedBox(
               height: 90,
               child: Stack(children: [
@@ -137,7 +183,7 @@ class Profile extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: InkWell(
-                  onTap: () => Navigator.pushNamed(context, '/data-history'),
+                  onTap: () => Navigator.pushNamed(context, '/season-list'),
                   child: Container(
                     padding: const EdgeInsets.only(left: 20),
                     alignment: Alignment.centerLeft,

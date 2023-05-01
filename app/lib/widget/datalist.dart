@@ -4,25 +4,24 @@ import 'package:app/widget/datalistdetails.dart';
 import 'package:flutter/material.dart';
 
 class DataList extends StatefulWidget {
-  const DataList(
-      {super.key,
-      required this.tanggal,
-      required this.umur,
-      required this.datang,
-      required this.pakai,
-      required this.std,
-      required this.stok,
-      required this.kematian,
-      required this.panen,
-      required this.obat});
+  const DataList({
+    super.key,
+    required this.tanggal,
+    required this.umur,
+    required this.keluar,
+    required this.pakan,
+    required this.hargaObat,
+    required this.hargaPakan,
+    required this.kematian,
+    required this.obat,
+  });
   final DateTime tanggal;
   final int umur;
-  final int datang;
-  final int pakai;
-  final int std;
-  final int stok;
+  final int keluar;
+  final double pakan;
+  final int hargaObat;
+  final int hargaPakan;
   final int kematian;
-  final int panen;
   final String obat;
   @override
   State<DataList> createState() => _DataListState();
@@ -76,18 +75,15 @@ class _DataListState extends State<DataList> {
                   type: 'Umur Ayam', number: widget.umur.toString()),
               DataListDetails(
                   type: 'Kematian', number: widget.kematian.toString()),
-              DataListDetails(type: 'Panen', number: widget.panen.toString()),
               DataListDetails(
                   type: 'Obat',
                   number: widget.obat.isEmpty ? '-' : widget.obat),
-              const Text(
-                'Makanan',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              DataListDetails(type: 'Datang', number: widget.datang.toString()),
-              DataListDetails(type: 'Pakai', number: widget.pakai.toString()),
-              DataListDetails(type: 'STD', number: widget.std.toString()),
-              DataListDetails(type: 'Stok', number: widget.stok.toString()),
+              DataListDetails(type: 'Keluar', number: widget.keluar.toString()),
+              DataListDetails(type: 'Pakan', number: widget.pakan.toString()),
+              DataListDetails(
+                  type: 'Harga Obat', number: widget.hargaObat.toString()),
+              DataListDetails(
+                  type: 'Harga Pakan', number: widget.hargaPakan.toString()),
             ],
           )
       ]),

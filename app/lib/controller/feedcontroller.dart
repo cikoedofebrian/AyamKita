@@ -12,54 +12,62 @@ class FeedController extends ChangeNotifier {
   List<FeedModel> _list = [];
   List<FeedModel> get list => _list;
 
-  Future<void> fetchData() async {
-    _list = [];
-    final date = DateFormat('dd-MM-yyy').format(DateTime.now());
-    final chickens = await FirebaseFirestore.instance
-        .collection('feed_date')
-        .where('date', isEqualTo: date)
-        .get();
-
-    if (chickens.docs.isEmpty) {
-      final latestSchema = await FirebaseFirestore.instance
-          .collection('feed_schema')
-          .orderBy('date_created', descending: true)
-          .limit(1)
+  Future<void> fetchData(String peternakanId) async {
+    try {
+      // print('feed started');
+      _list = [];
+      final date = DateFormat('dd-MM-yyyy').format(DateTime.now());
+      final chickens = await FirebaseFirestore.instance
+          .collection('data_pakan')
+          .where('peternakanId', isEqualTo: peternakanId)
+          .where('tanggal', isEqualTo: date)
           .get();
-      await FirebaseFirestore.instance.collection('feed_date').add({
-        "date": date,
-        "isfeeded": [false, false],
-        "schema_id": latestSchema.docs.first.id,
-      });
-    }
-    final rawData = await FirebaseFirestore.instance
-        .collection('feed_date')
-        .orderBy('date', descending: true)
-        .limit(7)
-        .get();
-    var schemaId = '';
-    Map<String, dynamic> schemaData = {};
-    for (var i in rawData.docs) {
-      if (i['schema_id'] != schemaId) {
-        schemaId = i['schema_id'];
-        final data = await FirebaseFirestore.instance
-            .collection('feed_schema')
-            .doc(schemaId)
+      // print(chickens.docs[0].data());
+      if (chickens.docs.isEmpty) {
+        final latestSchema = await FirebaseFirestore.instance
+            .collection('skema_jadwal')
+            .orderBy('tanggal_dibuat', descending: true)
+            .limit(1)
             .get();
-        schemaData = data.data()!;
+        await FirebaseFirestore.instance.collection('data_pakan').add({
+          "tanggal": date,
+          "pagi": false,
+          "sore": false,
+          "skemaJadwalId": latestSchema.docs.first.id,
+          'peternakanId': peternakanId,
+        });
       }
-      try {
+      final rawData = await FirebaseFirestore.instance
+          .collection('data_pakan')
+          .where('peternakanId', isEqualTo: peternakanId)
+          .orderBy('tanggal', descending: false)
+          .limit(7)
+          .get();
+
+      var schemaId = '';
+      Map<String, dynamic> schemaData = {};
+      for (var i in rawData.docs) {
+        if (i['skemaJadwalId'] != schemaId) {
+          schemaId = i['skemaJadwalId'];
+          final data = await FirebaseFirestore.instance
+              .collection('skema_jadwal')
+              .doc(schemaId)
+              .get();
+          schemaData = data.data()!;
+        }
+
         _list.add(FeedModel.fromJson(i.data(), schemaData, i.id));
-      } catch (error) {
-        print(error);
+        // print('feed ended');
       }
+    } catch (error) {
+      print(error);
     }
   }
 
   void fillAbsence() {
     final date = DateTime.now();
-    final parsedFirst = AppFormat.currentDate(_list[0].time['first']);
-    final parsedSecond = AppFormat.currentDate(_list[0].time['second']);
+    final parsedFirst = AppFormat.currentDate(_list[0].jamPagi);
+    final parsedSecond = AppFormat.currentDate(_list[0].jamSore);
 
     if (date.isAfter(parsedFirst) &&
         date.isBefore(
@@ -67,31 +75,36 @@ class FeedController extends ChangeNotifier {
             const Duration(hours: 1),
           ),
         )) {
-      if (_list[0].isfeeded[0] == true) {
+      if (_list[0].pagi == true) {
         throw CustomException("Presensi pakan pertama telah terisi!");
       }
-      absenceTrigger(0);
+      absenceTrigger("pagi");
     } else if (date.isAfter(parsedSecond) &&
         date.isBefore(
           parsedSecond.add(
             const Duration(hours: 1),
           ),
         )) {
-      if (_list[0].isfeeded[1] == true) {
+      if (_list[0].sore == true) {
         throw CustomException("Presensi pakan kedua telah terisi!");
       }
-      absenceTrigger(1);
+      absenceTrigger("sore");
     } else {
       throw CustomException("Kamu sudah melewatkan jam presensi pakan!");
     }
   }
 
-  void absenceTrigger(int index) async {
-    _list[0].isfeeded[index] = true;
+  void absenceTrigger(String jam) async {
+    if (jam == "pagi") {
+      _list[0].pagi = true;
+    } else {
+      _list[0].sore = true;
+    }
+
     await FirebaseFirestore.instance
-        .collection('feed_date')
-        .doc(_list[0].id)
-        .update({'isfeeded': _list[0].isfeeded});
+        .collection('data_pakan')
+        .doc(_list[0].dataPakanId)
+        .update({jam: true});
 
     notifyListeners();
   }

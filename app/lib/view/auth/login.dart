@@ -1,4 +1,6 @@
 import 'package:app/constant/appcolor.dart';
+import 'package:app/widget/customdialog.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -28,10 +30,24 @@ class _LoginPageState extends State<LoginPage> {
   final emailCon = TextEditingController();
   final passwordCon = TextEditingController();
   void tryLogin(BuildContext context) async {
-    formKey.currentState!.validate();
-    if (emailCon.text.isNotEmpty && passwordCon.text.isNotEmpty) {
-      final result = await FirebaseAuth.instance.signInWithEmailAndPassword(
+    formKey.currentState!.save();
+    if (emailCon.text.isEmpty || passwordCon.text.isEmpty) {
+      customDialog(context, 'Gagal', 'Data tidak bolek kosong!');
+      return;
+    } else if (!EmailValidator.validate(emailCon.text)) {
+      customDialog(context, 'Gagal', 'Data tidak valid!');
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailCon.text, password: passwordCon.text);
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'wrong-password' || error.code == 'user-not-found') {
+        customDialog(context, 'Gagal', 'Email/Password salah!');
+      } else {
+        customDialog(
+            context, 'Gagal', 'Terdapat kesalahan sistem, coba lagi nanti');
+      }
     }
   }
 
@@ -158,53 +174,6 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(
                               height: 15,
                             ),
-                            SizedBox(
-                              width: 260,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        height: 5,
-                                        width: 20,
-                                        child: Transform.scale(
-                                          scale: 0.9,
-                                          child: Checkbox(
-                                            checkColor: Colors.white,
-                                            activeColor: AppColor.secondary,
-                                            materialTapTargetSize:
-                                                MaterialTapTargetSize
-                                                    .shrinkWrap,
-                                            value: isRememberMe,
-                                            onChanged: (value) => rememberMe(),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        'Remember me?',
-                                        style: TextStyle(fontSize: 11),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    'Forgot password?',
-                                    style: TextStyle(fontSize: 11),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
                             InkWell(
                               onTap: () => tryLogin(context),
                               child: Container(
@@ -238,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
                                 InkWell(
                                   onTap: () =>
                                       Navigator.pushNamed(context, '/register'),
-                                  child: Text(
+                                  child: const Text(
                                     'Sign Up',
                                     style: TextStyle(
                                         color: Colors.blue,

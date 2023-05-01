@@ -1,41 +1,44 @@
+import 'package:app/model/usermodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class ConsultationRequestModel {
   String peternakanId;
-  String pengelolaId;
   String judul;
   String deskripsi;
   String tanggal;
+  String status;
+  String downloadUrl;
+  String pengelolaId;
+  String usulanKonsultasiId;
 
   ConsultationRequestModel({
+    required this.usulanKonsultasiId,
     required this.peternakanId,
+    required this.pengelolaId,
     required this.deskripsi,
     required this.judul,
-    required this.pengelolaId,
+    required this.downloadUrl,
+    required this.status,
     required this.tanggal,
   });
 
-  factory ConsultationRequestModel.fromJson(Map<String, dynamic> json) {
+  factory ConsultationRequestModel.fromJson(Map<String, dynamic> json, id) {
     return ConsultationRequestModel(
-        deskripsi: json['deskripsi'] ?? '',
-        judul: json['judul'] ?? '',
-        pengelolaId: json['pengelolaId'] ?? '',
-        peternakanId: json['peternakanId'] ?? '',
-        tanggal: json['tanggal'] ?? '');
+        usulanKonsultasiId: id,
+        pengelolaId: json['pengelolaId'],
+        deskripsi: json['deskripsi'],
+        status: json['status'],
+        judul: json['judul'],
+        downloadUrl: json['downloadUrl'],
+        peternakanId: json['peternakanId'],
+        tanggal: json['tanggal']);
   }
 
-  Future<String?> imageUrl() async {
-    try {
-      final result = await FirebaseFirestore.instance
-          .collection('account')
-          .doc(pengelolaId)
-          .get();
-      return result.data()!['imageUrl'];
-      // final imageUrl = result.data()![0]['imageUrl'];
-    } catch (error) {
-      print(error);
-      return null;
-    }
+  Future<UserModel> imageUrl() async {
+    final result = await FirebaseFirestore.instance
+        .collection('akun')
+        .doc(pengelolaId)
+        .get();
+    return UserModel.fromJson(result.data()!);
   }
 }

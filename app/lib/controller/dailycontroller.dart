@@ -1,5 +1,7 @@
+import 'package:app/constant/appformat.dart';
 import 'package:app/helper/customexception.dart';
 import 'package:app/model/dataharianmodel.dart';
+import 'package:app/model/musimmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,16 +11,29 @@ class DailyController extends ChangeNotifier {
 
   List<DataHarianModel> get list => _list;
 
+  List<MusimModel> _musimList = [];
+
+  List<MusimModel> get musimList => _musimList;
+
   Future<void> fetchData(String farmId) async {
     try {
-      final result = await FirebaseFirestore.instance
-          .collection('data_harian')
-          .orderBy('tanggal', descending: true)
-          .where('farmId', isEqualTo: farmId)
+      final musim = await FirebaseFirestore.instance
+          .collection('musim')
+          .where('peternakanId', isEqualTo: farmId)
           .get();
-      for (var i in result.docs) {
-        final newData = DataHarianModel.fromJson(i.data());
-        _list.add(newData);
+
+      for (var i in musim.docs) {
+        final result = await FirebaseFirestore.instance
+            .collection('data_harian')
+            // .orderBy('tanggal', descending: false)
+            .where('musimId', isEqualTo: i.id)
+            .get();
+        List<DataHarianModel> emptyList = [];
+        for (var e in result.docs) {
+          final newData = DataHarianModel.fromJson(e.data());
+          emptyList.add(newData);
+        }
+        musimList.add(MusimModel.fromJson(i.data(), i.id, emptyList));
       }
       notifyListeners();
     } catch (error) {
@@ -26,9 +41,15 @@ class DailyController extends ChangeNotifier {
     }
   }
 
-  Future<DataHarianModel?> checkDate(DateTime date) async {
-    for (var i in _list) {
-      if (DateTime(i.tanggal.year, i.tanggal.month, i.tanggal.day) ==
+  int indexActive() {
+    int result = musimList.indexWhere((element) => element.status == true);
+    return result;
+  }
+
+  Future<DataHarianModel?> checkDate(DateTime date, int index) async {
+    for (var i in musimList[index].list) {
+      final data = DateFormat('dd-MM-yyyy').parse(i.tanggal);
+      if (DateTime(data.year, data.month, data.day) ==
           DateTime(date.year, date.month, date.day)) {
         return i;
       }
@@ -36,40 +57,47 @@ class DailyController extends ChangeNotifier {
     return null;
   }
 
+  bool anyActive() {
+    for (var i in musimList) {
+      if (i.status == true) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> addData(
-      DateTime tanggal,
+      DateTime date,
       int umur,
-      int datang,
-      int pakai,
-      int std,
-      int stok,
+      double pakan,
+      int hargaPakan,
       int kematian,
-      int panen,
+      int keluar,
+      int hargaObat,
       String obat,
-      String farmId) async {
+      String musimId,
+      int index) async {
     try {
       FirebaseFirestore.instance.collection('data_harian').add({
-        'tanggal': DateFormat('dd-MM-yyyy').format(tanggal),
+        'tanggal': AppFormat.intDateFromDateTime(date),
         'umur': umur,
-        'datang': datang,
-        'pakai': pakai,
-        'std': std,
-        'stok': stok,
+        'pakan': pakan,
+        'harga_pakan': hargaPakan,
         'kematian': kematian,
-        'panen': panen,
-        'farmId': farmId,
+        'keluar': keluar,
         'obat': obat,
+        'harga_obat': hargaObat,
+        'musimId': musimId,
       });
-      _list.add(DataHarianModel(
-          tanggal: tanggal,
+      _musimList[index].list.add(DataHarianModel(
           umur: umur,
-          datang: datang,
-          pakai: pakai,
-          std: std,
-          stok: stok,
+          pakan: pakan,
+          hargaPakan: hargaPakan,
           kematian: kematian,
-          panen: panen,
-          obat: obat));
+          keluar: keluar,
+          obat: obat,
+          hargaObat: hargaObat,
+          tanggal: AppFormat.intDateFromDateTime(date)));
       notifyListeners();
     } catch (error) {
       if (error is FirebaseException) {
@@ -77,6 +105,41 @@ class DailyController extends ChangeNotifier {
       } else {
         print(error);
       }
+    }
+  }
+
+  Future<void> addMusim(
+      String tipe, int jumlah, int harga, String peternakanId) async {
+    try {
+      final result = await FirebaseFirestore.instance.collection('musim').add({
+        'peternakanId': peternakanId,
+        'tipe': tipe,
+        'jumlah': jumlah,
+        'harga': harga,
+        'status': true,
+        'mulai': AppFormat.intDateFromDateTime(
+          DateTime.now(),
+        ),
+      });
+
+      _musimList.add(
+        MusimModel(
+          musimId: result.id,
+          peternakanId: peternakanId,
+          harga: harga,
+          jumlah: jumlah,
+          tipe: tipe,
+          status: true,
+          list: [],
+          mulai: AppFormat.intDateFromDateTime(
+            DateTime.now(),
+          ),
+        ),
+      );
+
+      notifyListeners();
+    } catch (error) {
+      print(error);
     }
   }
 }

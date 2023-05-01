@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -23,10 +24,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   late String number;
   late String address;
   late String email;
-  late String farmName;
   late String since;
   late String imageUrl;
-  // XFile? newPhoto;
+  late Future future;
   File? photo;
   bool isEditable = false;
   final formKey = GlobalKey<FormState>();
@@ -34,19 +34,21 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   @override
   void initState() {
     final userController = Provider.of<UserController>(context, listen: false);
+    future = userController.getFarmName();
+    name = userController.user.nama;
+    role = userController.user.role;
+    number = userController.user.noTelepon;
+    address = userController.user.alamat;
+    email = userController.user.email;
+    since = userController.user.tanggalPendaftaran;
+    imageUrl = userController.user.downloadUrl;
+
     super.initState();
-    name = userController.name;
-    role = userController.role;
-    number = userController.number;
-    address = userController.address;
-    email = userController.email;
-    farmName = userController.farmName;
-    since = userController.since;
-    imageUrl = userController.imageUrl;
   }
 
   @override
   Widget build(BuildContext context) {
+    final userController = Provider.of<UserController>(context);
     void trySave() async {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -60,16 +62,14 @@ class _ProfileDetailsState extends State<ProfileDetails> {
           imageUrl = url;
         }
 
-        final userController =
-            Provider.of<UserController>(context, listen: false);
         final trimmedname = name.trim();
         final trimmedaddress = address.trim();
         final trimmedimageUrl = imageUrl.trim();
         final trimmednumber = number.trim();
-        if (trimmedname != userController.name ||
-            trimmedaddress != userController.address ||
-            trimmednumber != userController.number ||
-            trimmedimageUrl != userController.imageUrl) {
+        if (trimmedname != userController.user.nama ||
+            trimmedaddress != userController.user.alamat ||
+            trimmednumber != userController.user.noTelepon ||
+            trimmedimageUrl != userController.user.downloadUrl) {
           Provider.of<UserController>(context, listen: false).updateData(
             trimmedname,
             trimmednumber,
@@ -151,7 +151,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                                 ? FileImage(photo!)
                                                 : NetworkImage(imageUrl)
                                                     as ImageProvider,
-                                            fit: BoxFit.fill,
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                         height: 100,
@@ -265,7 +265,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             enabled: isEditable,
                             initialValue: number,
                             validator: (value) {
-                              if (value!.isNotEmpty &&
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (value.isNotEmpty &&
                                   int.tryParse(value) == null) {
                                 return "Tolong isi dengan angka";
                               }
@@ -328,18 +330,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                               ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Text('Peternakan'),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          TextFormField(
-                            initialValue: farmName,
-                            enabled: false,
-                            key: ValueKey('farmName'),
-                          ),
                           SizedBox(
                             height: 60,
                           ),
@@ -354,6 +344,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                     ? AppColor.tertiary
                                     : Colors.grey,
                                 child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
                                   child: Text(
                                     'SIMPAN',
                                     style: TextStyle(
@@ -363,8 +355,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                             ? AppColor.secondary
                                             : Colors.black),
                                   ),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 10),
                                 ),
                               ).animate(target: isEditable ? 0 : 1).shake(),
                             ),

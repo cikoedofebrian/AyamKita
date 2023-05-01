@@ -1,3 +1,5 @@
+import 'package:app/constant/appformat.dart';
+import 'package:app/constant/role.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,67 +8,104 @@ import 'package:flutter/material.dart';
 class UserController extends ChangeNotifier {
   UserModel? _user;
   UserModel get user => _user!;
-  // String _name = '';
-  // String _role = '';
-  // String _email = '';
-  // String _farmId = '';
-  // String _number = '';
-  // String _address = '';
-  // String _since = '';
-  // String _farmName = '';
-  // String _imageUrl = '';
-
-  // String get name => _name;
-  // String get role => _role;
-  // String get email => _email;
-  // String get farmId => _farmId;
-  // String get number => _number;
-  // String get address => _address;
-  // String get since => _since;
-  // String get farmName => _farmName;
-  // String get imageUrl => _imageUrl;
 
   Future<void> fetchData() async {
     try {
       if (FirebaseAuth.instance.currentUser != null) {
-        // final result = await FirebaseFirestore.instance
-        //     .collection('account')
-        //     .doc(FirebaseAuth.instance.currentUser!.uid)
-        //     .get();
-
         final result = await FirebaseFirestore.instance
             .collection('akun')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get();
 
         _user = UserModel.fromJson(result.data()!);
-        // print(user);
-
-        // final parsedData = result.data().toString();
-        // _name = result['name'];
-        // _role = result['role'];
-        // _email = result['email'];
-
-        // final farmData = await FirebaseFirestore.instance
-        //     .collection('farms')
-        //     .where('workerId',
-        //         isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        //     .limit(1)
-        //     .get();
-
-        // _farmId = farmData.docs[0].reference.id;
-        // _farmName = farmData.docs[0]['name'];
-        // _number =
-        //     parsedData.contains('number') ? result['number'].toString() : '';
-        // _address = parsedData.contains('address') ? result['address'] : '';
-        // _since = parsedData.contains('since') ? result['since'] : '';
-        // _imageUrl = parsedData.contains('imageUrl') ? result['imageUrl'] : '';
-        // _number = result['number'] ?? '';
-        // _address = result['address'] ?? '';
-        // _since = result['since'] ?? '';
       }
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future<String> getFarmName() async {
+    final result = await FirebaseFirestore.instance
+        .collection('peternakan')
+        .doc(user.peternakanId)
+        .get();
+    return result.data()!['nama'];
+  }
+
+  void register(
+    String email,
+    String nama,
+    String password,
+    String role,
+    String? peternakanId,
+    String? doktorDetailsId,
+    String tanggalLahir,
+    String alamat,
+  ) async {
+    try {
+      final onAuth = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      if (role == UserRole.pemilik || role == UserRole.pengelola) {
+        FirebaseFirestore.instance
+            .collection('akun')
+            .doc(onAuth.user!.uid)
+            .set({
+          'email': email,
+          'nama': nama,
+          'role': role,
+          'peternakanId': peternakanId,
+          'alamat': alamat,
+          'tanggal_lahir': tanggalLahir,
+          'tanggal_pendaftaran': AppFormat.intDateFromDateTime(DateTime.now())
+        });
+      } else {
+        print("ya gatau kok tanya saya");
+      }
+    } on FirebaseAuthException catch (error) {
+      print(error);
+      rethrow;
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<bool> checkPeternakanId(String id) async {
+    final checkEmail =
+        await FirebaseFirestore.instance.collection('peternakan').doc(id).get();
+    if (checkEmail.data() != null) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<List<UserModel>> getUserData(String role) async {
+    final data = await FirebaseFirestore.instance
+        .collection('akun')
+        .where('role', isEqualTo: UserRole.pemilik)
+        .limit(1)
+        .get();
+    return [UserModel.fromJson(data.docs[0].data())];
+  }
+
+  Future<String> addNewFarm(String nama, String alamat, int luas,
+      String semenjak, String pagi, String sore) async {
+    try {
+      final onFirestore =
+          await FirebaseFirestore.instance.collection('peternakan').add({
+        'nama': nama,
+        'luas': luas,
+        'alamat': alamat,
+        'semenjak': semenjak,
+      });
+      await FirebaseFirestore.instance.collection('skema_jadwal').add({
+        'peternakanId': onFirestore.id,
+        'pagi': pagi,
+        'sore': sore,
+        'tanggal_dibuat': AppFormat.intDateFromDateTime(DateTime.now())
+      });
+      return onFirestore.id;
+    } on FirebaseException catch (_) {
+      rethrow;
     }
   }
 
@@ -85,7 +124,7 @@ class UserController extends ChangeNotifier {
           'nama': nama,
           'alamat': alamat,
           'downloadUrl': downloadUrl,
-          'number': int.parse(number)
+          'noTelepon': int.parse(number)
         },
       );
       user.nama = nama;
@@ -93,6 +132,7 @@ class UserController extends ChangeNotifier {
       user.alamat = alamat;
       user.downloadUrl = downloadUrl;
       notifyListeners();
+      print("this is here");
     } catch (error) {
       print(error);
     }

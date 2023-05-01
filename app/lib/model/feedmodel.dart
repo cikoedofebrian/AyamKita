@@ -1,25 +1,31 @@
 class FeedModel {
-  final String id;
-  final String date;
-  final List<dynamic> isfeeded;
-  final Map<String, dynamic> time;
-  final int weight;
+  final String dataPakanId;
+  final String peternakanId;
+  final String tanggal;
+  bool pagi;
+  bool sore;
+  final String jamPagi;
+  final String jamSore;
 
   FeedModel({
-    required this.id,
-    required this.date,
-    required this.isfeeded,
-    required this.time,
-    required this.weight,
+    required this.dataPakanId,
+    required this.peternakanId,
+    required this.tanggal,
+    required this.pagi,
+    required this.sore,
+    required this.jamPagi,
+    required this.jamSore,
   });
 
   factory FeedModel.fromJson(
           Map<String, dynamic> json, Map<String, dynamic> exjson, id) =>
       FeedModel(
-        date: json['date'],
-        isfeeded: json['isfeeded'],
-        time: exjson['time'],
-        weight: exjson['weight'],
-        id: id,
+        tanggal: json['tanggal'],
+        pagi: json['pagi'],
+        sore: json['sore'],
+        jamSore: exjson['sore'],
+        jamPagi: exjson['pagi'],
+        peternakanId: json['peternakanId'],
+        dataPakanId: id,
       );
 }

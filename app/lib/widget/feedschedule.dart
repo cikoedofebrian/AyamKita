@@ -26,47 +26,47 @@ class FeedSchedule extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 20, right: 25, bottom: 20),
-              child: Text(AppFormat.fDate(feedController.list[0].date)),
+              child: Text(AppFormat.fDate(feedController.list[0].tanggal)),
             ),
             ...List.generate(
               2,
               (index) {
                 final firstData = feedController.list[0];
                 return Padding(
-                    padding:
-                        const EdgeInsets.only(left: 25, right: 25, bottom: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.watch_later_outlined,
-                              size: 30,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              index == 0
-                                  ? AppFormat.feedDate(
-                                      firstData.time['first'], index)
-                                  : AppFormat.feedDate(
-                                      firstData.time['second'], index),
-                              style: const TextStyle(fontSize: 16),
-                            )
-                          ],
-                        ),
-                        Icon(
-                          Icons.check_circle_rounded,
-                          size: 38,
-                          color: firstData.isfeeded[index] == true
-                              ? Colors.green
-                              : Colors.red,
-                        ),
-                      ],
-                    ));
+                  padding:
+                      const EdgeInsets.only(left: 25, right: 25, bottom: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.watch_later_outlined,
+                            size: 30,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            index == 0
+                                ? AppFormat.feedDate(firstData.jamPagi, index)
+                                : AppFormat.feedDate(firstData.jamSore, index),
+                            style: const TextStyle(fontSize: 16),
+                          )
+                        ],
+                      ),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: 38,
+                        color: index == 0 && firstData.pagi == true ||
+                                index == 1 && firstData.sore == true
+                            ? Colors.green
+                            : Colors.red,
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
             GestureDetector(
