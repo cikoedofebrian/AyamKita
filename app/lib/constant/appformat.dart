@@ -24,6 +24,10 @@ class AppFormat {
     return DateFormat('d MMMM yyyy', 'id_ID').format(dateTime);
   }
 
+  static DateTime stringtoDateTime(String dateTime) {
+    return DateFormat('dd-MM-yyyy').parse(dateTime);
+  }
+
   static String currency(int number) {
     return NumberFormat.currency(
       decimalDigits: 2,

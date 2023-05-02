@@ -9,6 +9,7 @@ import 'package:app/view/auth/addfarm.dart';
 import 'package:app/view/auth/login.dart';
 import 'package:app/view/auth/register.dart';
 import 'package:app/view/farm/add_musim.dart';
+import 'package:app/view/farm/change_skema.dart';
 import 'package:app/view/farm/farmdata.dart';
 import 'package:app/view/farm/pengelolalist.dart';
 import 'package:app/view/farm/add_data.dart';
@@ -82,6 +83,9 @@ class MyApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black, width: 1.5),
           ),
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 1.5),
+          ),
         ),
         textTheme: GoogleFonts.poppinsTextTheme(),
         primarySwatch: Colors.blue,
@@ -112,6 +116,7 @@ class MyApp extends StatelessWidget {
         '/profile-dummy': (context) => const ProfileDummy(),
         '/add-musim': (context) => const AddMusim(),
         '/season-list': (context) => const SeasonHistory(),
+        '/change-skema': (context) => const ChangeSkema(),
       },
     );
   }

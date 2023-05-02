@@ -105,6 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
               alamat,
             );
           }
+          Navigator.of(context).pop();
         }
       }
       //   FirebaseAuth.instance

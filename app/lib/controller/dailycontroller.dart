@@ -7,16 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DailyController extends ChangeNotifier {
-  final List<DataHarianModel> _list = [];
-
-  List<DataHarianModel> get list => _list;
-
   List<MusimModel> _musimList = [];
 
   List<MusimModel> get musimList => _musimList;
 
   Future<void> fetchData(String farmId) async {
     try {
+      _musimList = [];
       final musim = await FirebaseFirestore.instance
           .collection('musim')
           .where('peternakanId', isEqualTo: farmId)
@@ -35,6 +32,7 @@ class DailyController extends ChangeNotifier {
         }
         musimList.add(MusimModel.fromJson(i.data(), i.id, emptyList));
       }
+
       notifyListeners();
     } catch (error) {
       print(error);

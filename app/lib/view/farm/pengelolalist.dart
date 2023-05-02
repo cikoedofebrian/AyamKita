@@ -13,21 +13,6 @@ class PengelolaList extends StatelessWidget {
   Widget build(BuildContext context) {
     final peternakanController = Provider.of<PeternakanController>(context);
     return Scaffold(
-      floatingActionButton: Container(
-        padding: const EdgeInsets.all(12),
-        child: FloatingActionButton.extended(
-            label: const Text(
-              'Tambah',
-              style: TextStyle(
-                  color: AppColor.secondary, fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: AppColor.tertiary,
-            icon: const Icon(
-              Icons.add,
-              color: AppColor.secondary,
-            ),
-            onPressed: () => Navigator.of(context).pushNamed('/request')),
-      ),
       body: FutureBuilder(
           future: peternakanController.seePengelola(),
           builder: (context, snapshot) {

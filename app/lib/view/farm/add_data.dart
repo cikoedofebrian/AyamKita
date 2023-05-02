@@ -32,18 +32,21 @@ class _AddDataState extends State<AddData> {
   Widget build(BuildContext context) {
     final dailyController = Provider.of<DailyController>(context);
     final index = dailyController.indexActive();
-    final activePeriod = dailyController.musimList[index];
-    final parsedDate = DateFormat('dd-MM-yyyy').parse(activePeriod.mulai);
+    // final activePeriod = dailyController.musimList[index];
+
     // final startDate = dailyController.musimList[index].mulai;
 
     void save() async {
+      final parsedDate = DateFormat('dd-MM-yyyy')
+          .parse(dailyController.musimList[index].mulai);
+      Duration difference = initialDate.difference(parsedDate);
+      if (difference != const Duration(days: 1)) {
+        customDialog(
+            context, 'Gagal', 'Isilah data harian sebelumnya terlebih dahulu!');
+        return;
+      }
       try {
         if (formKey.currentState!.validate()) {
-          // final parsing =
-          //     DateFormat('dd-MM-yyyy').parse(activePeriod.list.last.tanggal);
-          // final theDayAfter =
-          //     DateTime(parsing.year, parsing.month, parsing.day + 2);
-          // if (theDayAfter.isAtSameMomentAs(DateTime(initialDate.year, int))) {}
           formKey.currentState!.save();
           await Provider.of<DailyController>(context, listen: false)
               .addData(
@@ -165,7 +168,8 @@ class _AddDataState extends State<AddData> {
                 ),
               );
             }
-
+            final parsedDate = DateFormat('dd-MM-yyyy')
+                .parse(dailyController.musimList[index].mulai);
             return Scaffold(
               body: SingleChildScrollView(
                 child: Padding(
@@ -221,12 +225,17 @@ class _AddDataState extends State<AddData> {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
-                            if (!editable)
+                            if (!editable &&
+                                Provider.of<UserController>(context,
+                                            listen: false)
+                                        .user
+                                        .role ==
+                                    UserRole.pengelola)
                               Container(
-                                padding: EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     colors: [
@@ -244,29 +253,29 @@ class _AddDataState extends State<AddData> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: const [
-                                          Text(
-                                            'DATA SUDAH ADA',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          FittedBox(
-                                            child: Text(
+                                    Expanded(
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: const [
+                                            Text(
+                                              'DATA SUDAH ADA',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
                                               'Anda tidak bisa merubah data yang sudah ada',
                                               style: TextStyle(
                                                 color: Colors.white,
                                               ),
                                             ),
-                                          ),
-                                        ]),
+                                          ]),
+                                    ),
                                   ],
                                 ),
                               ),

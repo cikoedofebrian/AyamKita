@@ -92,7 +92,7 @@ class Profile extends StatelessWidget {
                 arguments:
                     userData.user.role == UserRole.pemilik ? true : false),
             child: SizedBox(
-              height: 90,
+              height: 95,
               child: Stack(children: [
                 Positioned(
                   bottom: 0,
@@ -103,7 +103,7 @@ class Profile extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     decoration: BoxDecoration(
                       image: const DecorationImage(
-                          image: AssetImage("assets/images/request_bg.png"),
+                          image: AssetImage("assets/images/farm_bg.png"),
                           fit: BoxFit.cover),
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -111,7 +111,7 @@ class Profile extends StatelessWidget {
                     child: const Text(
                       'Profil Peternakan',
                       style: TextStyle(
-                          color: AppColor.secondary,
+                          color: AppColor.tertiary,
                           fontWeight: FontWeight.bold,
                           fontSize: 24),
                     ),
@@ -121,8 +121,8 @@ class Profile extends StatelessWidget {
                   top: 0,
                   right: 18,
                   child: Image.asset(
-                    "assets/images/req.png",
-                    scale: 6,
+                    "assets/images/barn.jpg",
+                    scale: 4.8,
                   ),
                 ),
               ]),
@@ -161,11 +161,11 @@ class Profile extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 0,
+                  top: 5,
                   right: 18,
                   child: Image.asset(
                     "assets/images/req.png",
-                    scale: 6,
+                    scale: 7,
                   ),
                 ),
               ]),

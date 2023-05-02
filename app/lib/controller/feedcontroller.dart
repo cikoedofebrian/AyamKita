@@ -16,11 +16,12 @@ class FeedController extends ChangeNotifier {
     try {
       // print('feed started');
       _list = [];
+
       final date = DateFormat('dd-MM-yyyy').format(DateTime.now());
       final chickens = await FirebaseFirestore.instance
           .collection('data_pakan')
-          .where('peternakanId', isEqualTo: peternakanId)
           .where('tanggal', isEqualTo: date)
+          .where('peternakanId', isEqualTo: peternakanId)
           .get();
       // print(chickens.docs[0].data());
       if (chickens.docs.isEmpty) {
@@ -40,8 +41,6 @@ class FeedController extends ChangeNotifier {
       final rawData = await FirebaseFirestore.instance
           .collection('data_pakan')
           .where('peternakanId', isEqualTo: peternakanId)
-          .orderBy('tanggal', descending: false)
-          .limit(7)
           .get();
 
       var schemaId = '';
@@ -55,10 +54,9 @@ class FeedController extends ChangeNotifier {
               .get();
           schemaData = data.data()!;
         }
-
         _list.add(FeedModel.fromJson(i.data(), schemaData, i.id));
-        // print('feed ended');
       }
+      _list.sort((a, b) => b.tanggal.compareTo(a.tanggal));
     } catch (error) {
       print(error);
     }

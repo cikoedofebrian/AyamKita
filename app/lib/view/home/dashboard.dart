@@ -11,8 +11,6 @@ class DashBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userController = Provider.of<UserController>(context);
-    // print(userController.user);
-    // final feedController = Provider.of<FeedController>(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
@@ -101,7 +99,6 @@ class DashBoard extends StatelessWidget {
               height: 10,
             ),
             const FeedSchedule(),
-
             const SizedBox(
               height: 25,
             ),

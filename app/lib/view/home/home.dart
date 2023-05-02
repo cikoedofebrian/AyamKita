@@ -58,18 +58,17 @@ class _HomeState extends State<Home> {
     });
   }
 
+  bool isLoading = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-          future: future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: LoadingAnimationWidget.inkDrop(
-                    color: Colors.orange, size: 60),
-              );
-            }
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done ||
+              isLoading == false) {
+            isLoading = false;
             return SingleChildScrollView(
               child: SizedBox(
                 height: MediaQuery.of(context).size.height,
@@ -81,6 +80,7 @@ class _HomeState extends State<Home> {
                       left: 0,
                       right: 0,
                       child: CustomNavbar(
+                        index: _selectedPage,
                         changePage: changePage,
                       ),
                     ),
@@ -88,7 +88,13 @@ class _HomeState extends State<Home> {
                 ),
               ),
             );
-          }),
+          }
+          return Center(
+            child:
+                LoadingAnimationWidget.inkDrop(color: Colors.orange, size: 60),
+          );
+        },
+      ),
     );
   }
 }

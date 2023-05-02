@@ -1,6 +1,8 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
+import 'package:app/constant/role.dart';
 import 'package:app/controller/feedcontroller.dart';
+import 'package:app/controller/usercontroller.dart';
 import 'package:app/helper/customexception.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,8 @@ class FeedSchedule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userController =
+        Provider.of<UserController>(context, listen: false).user;
     final feedController = Provider.of<FeedController>(context);
     return Material(
       borderRadius: BorderRadius.circular(20),
@@ -26,7 +30,8 @@ class FeedSchedule extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 20, right: 25, bottom: 20),
-              child: Text(AppFormat.fDate(feedController.list[0].tanggal)),
+              child: Text(
+                  AppFormat.dateFromDateTime(feedController.list[0].tanggal)),
             ),
             ...List.generate(
               2,
@@ -70,36 +75,39 @@ class FeedSchedule extends StatelessWidget {
               },
             ),
             GestureDetector(
-              onTap: () {
-                try {
-                  feedController.fillAbsence();
-                  customDialog(context, "Berhasil!",
-                      "Presensi pakan telah berhasil ditambahkan!");
-                } catch (error) {
-                  if (error is CustomException) {
-                    NDialog(
-                      dialogStyle: DialogStyle(titleDivider: true),
-                      title: const Text(
-                        "Error!",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      content: Container(
-                          padding: const EdgeInsets.all(12),
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          child: Text(error.message)),
-                      actions: [
-                        TextButton(
-                            child: const Text(
-                              "Tutup",
+              onTap: userController.role == UserRole.pengelola
+                  ? () {
+                      try {
+                        feedController.fillAbsence();
+                        customDialog(context, "Berhasil!",
+                            "Presensi pakan telah berhasil ditambahkan!");
+                      } catch (error) {
+                        if (error is CustomException) {
+                          NDialog(
+                            dialogStyle: DialogStyle(titleDivider: true),
+                            title: const Text(
+                              "Error!",
                               style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
                             ),
-                            onPressed: () => Navigator.pop(context)),
-                      ],
-                    ).show(context);
-                  }
-                }
-              },
+                            content: Container(
+                                padding: const EdgeInsets.all(12),
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: Text(error.message)),
+                            actions: [
+                              TextButton(
+                                  child: const Text(
+                                    "Tutup",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: () => Navigator.pop(context)),
+                            ],
+                          ).show(context);
+                        }
+                      }
+                    }
+                  : () => Navigator.of(context).pushNamed('/change-skema'),
               child: Container(
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -115,9 +123,11 @@ class FeedSchedule extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: const Text(
-                  "Isi Jadwal Pakan",
-                  style: TextStyle(
+                child: Text(
+                  userController.role == UserRole.pengelola
+                      ? "Isi Jadwal Pakan"
+                      : "Ubah Jadwal Pakan",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

@@ -1,7 +1,9 @@
+import 'package:app/constant/appformat.dart';
+
 class FeedModel {
   final String dataPakanId;
   final String peternakanId;
-  final String tanggal;
+  final DateTime tanggal;
   bool pagi;
   bool sore;
   final String jamPagi;
@@ -20,7 +22,7 @@ class FeedModel {
   factory FeedModel.fromJson(
           Map<String, dynamic> json, Map<String, dynamic> exjson, id) =>
       FeedModel(
-        tanggal: json['tanggal'],
+        tanggal: AppFormat.stringtoDateTime(json['tanggal']),
         pagi: json['pagi'],
         sore: json['sore'],
         jamSore: exjson['sore'],
