@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -51,39 +52,63 @@ class _ProfileDetailsState extends State<ProfileDetails> {
     final userController = Provider.of<UserController>(context);
     void trySave() async {
       if (formKey.currentState!.validate()) {
-        formKey.currentState!.save();
-        if (photo != null) {
-          final upload = await FirebaseStorage.instance
-              .ref('/profile-images/${FirebaseAuth.instance.currentUser!.uid}')
-              .putFile(
-                File(photo!.path),
-              );
-          final url = await upload.ref.getDownloadURL();
-          imageUrl = url;
-        }
+        bool isConfirm = false;
+        await NDialog(
+          title: const Text(
+            'Konfirmasi',
+            textAlign: TextAlign.center,
+          ),
+          content: const Text("Apakah yakin ingin menyimpan data?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                isConfirm = true;
+                Navigator.of(context).pop();
+              },
+              child: const Text('Iya'),
+            )
+          ],
+        ).show(context);
+        if (isConfirm) {
+          formKey.currentState!.save();
+          if (photo != null) {
+            final upload = await FirebaseStorage.instance
+                .ref(
+                    '/profile-images/${FirebaseAuth.instance.currentUser!.uid}')
+                .putFile(
+                  File(photo!.path),
+                );
+            final url = await upload.ref.getDownloadURL();
+            imageUrl = url;
+          }
 
-        final trimmedname = name.trim();
-        final trimmedaddress = address.trim();
-        final trimmedimageUrl = imageUrl.trim();
-        final trimmednumber = number.trim();
-        if (trimmedname != userController.user.nama ||
-            trimmedaddress != userController.user.alamat ||
-            trimmednumber != userController.user.noTelepon ||
-            trimmedimageUrl != userController.user.downloadUrl) {
-          Provider.of<UserController>(context, listen: false).updateData(
-            trimmedname,
-            trimmednumber,
-            trimmedaddress,
-            trimmedimageUrl,
-          );
-          customDialog(
-              context, "Berhasil!", "Perubahan data berhasil dilakukan");
-          setState(() {
-            isEditable = !isEditable;
-          });
-        } else {
-          customDialog(
-              context, "Tidak berhasil", "Tidak ada data yang dirubah");
+          final trimmedname = name.trim();
+          final trimmedaddress = address.trim();
+          final trimmedimageUrl = imageUrl.trim();
+          final trimmednumber = number.trim();
+          if (trimmedname != userController.user.nama ||
+              trimmedaddress != userController.user.alamat ||
+              trimmednumber != userController.user.noTelepon ||
+              trimmedimageUrl != userController.user.downloadUrl) {
+            Provider.of<UserController>(context, listen: false).updateData(
+              trimmedname,
+              trimmednumber,
+              trimmedaddress,
+              trimmedimageUrl,
+            );
+            customDialog(
+                context, "Berhasil!", "Perubahan data berhasil dilakukan");
+            setState(() {
+              isEditable = !isEditable;
+            });
+          } else {
+            customDialog(
+                context, "Tidak berhasil", "Tidak ada data yang dirubah");
+          }
         }
       }
     }

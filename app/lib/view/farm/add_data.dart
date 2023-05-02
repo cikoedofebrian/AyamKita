@@ -32,15 +32,11 @@ class _AddDataState extends State<AddData> {
   Widget build(BuildContext context) {
     final dailyController = Provider.of<DailyController>(context);
     final index = dailyController.indexActive();
-    // final activePeriod = dailyController.musimList[index];
-
-    // final startDate = dailyController.musimList[index].mulai;
-
     void save() async {
       final parsedDate = DateFormat('dd-MM-yyyy')
-          .parse(dailyController.musimList[index].mulai);
+          .parse(dailyController.musimList[index].list.last.tanggal);
       Duration difference = initialDate.difference(parsedDate);
-      if (difference != const Duration(days: 1)) {
+      if (difference > const Duration(days: 1)) {
         customDialog(
             context, 'Gagal', 'Isilah data harian sebelumnya terlebih dahulu!');
         return;
@@ -48,21 +44,43 @@ class _AddDataState extends State<AddData> {
       try {
         if (formKey.currentState!.validate()) {
           formKey.currentState!.save();
-          await Provider.of<DailyController>(context, listen: false)
-              .addData(
-                  initialDate,
-                  int.parse(umur),
-                  double.parse(pakan),
-                  int.parse(hargaPakan),
-                  int.parse(kematian),
-                  int.parse(keluar),
-                  int.parse(hargaObat),
-                  obat,
-                  dailyController.musimList[index].musimId,
-                  index)
-              .then((value) {
-            customDialog(context, 'Berhasil!', 'Data berhasil ditambahkan!');
-          });
+          var isConfirmed = false;
+          await NDialog(
+            title: const Text('Konfirmasi'),
+            content: const Text(
+                'Yakin ingin menyimpan data? Data yang sudah disimpan tidak dapat dirubah'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Tidak'),
+              ),
+              TextButton(
+                  onPressed: () {
+                    isConfirmed = true;
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Iya'))
+            ],
+          ).show(context);
+          if (isConfirmed) {
+            await Provider.of<DailyController>(context, listen: false)
+                .addData(
+                    initialDate,
+                    int.parse(umur),
+                    double.parse(pakan),
+                    int.parse(hargaPakan),
+                    int.parse(kematian),
+                    int.parse(keluar),
+                    int.parse(hargaObat),
+                    obat,
+                    dailyController.musimList[index].musimId,
+                    index)
+                .then((value) {
+              customDialog(context, 'Berhasil!', 'Data berhasil ditambahkan!');
+            });
+          }
         } else {
           NDialog(
             content: const Padding(

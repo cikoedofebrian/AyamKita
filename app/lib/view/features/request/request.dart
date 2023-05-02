@@ -9,6 +9,7 @@ import 'package:app/widget/requestpainter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
 
 class Request extends StatefulWidget {
@@ -28,17 +29,40 @@ class _RequestState extends State<Request> {
 
   @override
   Widget build(BuildContext context) {
-    void trySave() {
+    void trySave() async {
       if (formKey.currentState!.validate()) {
-        final userController =
-            Provider.of<UserController>(context, listen: false).user;
-        formKey.currentState!.save();
-        Provider.of<ConsultationRequestController>(context, listen: false)
-            .addData(judul, deskripsi, userController.peternakanId,
-                FirebaseAuth.instance.currentUser!.uid, photo);
-        customDialog(context, 'Ajuan berhasil!',
-                'Usulan konsultasi telah berhasil dibuat')
-            .then((value) => Navigator.pop(context));
+        bool isConfirm = false;
+        await NDialog(
+          title: const Text(
+            'Konfirmasi',
+            textAlign: TextAlign.center,
+          ),
+          content: const Text("Yakin ingin menyimpan data?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                isConfirm = true;
+                Navigator.of(context).pop();
+              },
+              child: const Text('Iya'),
+            )
+          ],
+        ).show(context);
+        if (isConfirm) {
+          final userController =
+              Provider.of<UserController>(context, listen: false).user;
+          formKey.currentState!.save();
+          Provider.of<ConsultationRequestController>(context, listen: false)
+              .addData(judul, deskripsi, userController.peternakanId,
+                  FirebaseAuth.instance.currentUser!.uid, photo);
+          customDialog(context, 'Ajuan berhasil!',
+                  'Usulan konsultasi telah berhasil dibuat')
+              .then((value) => Navigator.pop(context));
+        }
       } else {
         customDialog(
             context, 'Ajuan gagal!', 'Tolong isi semua data yang diperlukan');

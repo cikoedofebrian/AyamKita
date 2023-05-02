@@ -28,8 +28,12 @@ class DailyController extends ChangeNotifier {
         List<DataHarianModel> emptyList = [];
         for (var e in result.docs) {
           final newData = DataHarianModel.fromJson(e.data());
+
           emptyList.add(newData);
         }
+        emptyList.sort((a, b) => DateFormat('dd-MM-yyyy')
+            .parse(a.tanggal)
+            .compareTo(DateFormat('dd-MM-yyyy').parse(b.tanggal)));
         musimList.add(MusimModel.fromJson(i.data(), i.id, emptyList));
       }
 

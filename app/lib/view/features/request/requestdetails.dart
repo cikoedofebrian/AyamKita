@@ -12,6 +12,7 @@ import 'package:app/widget/requestpainter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
 
 class RequestDetails extends StatefulWidget {
@@ -26,12 +27,34 @@ class _RequestDetailsState extends State<RequestDetails> {
   Widget build(BuildContext context) {
     final data =
         ModalRoute.of(context)!.settings.arguments as ConsultationRequestModel;
-    void tryDelete() {
-      Provider.of<ConsultationRequestController>(context, listen: false)
-          .deleteData(data.usulanKonsultasiId);
-
-      customDialog(context, 'Berhasil', 'Data berhasil dihapus')
-          .then((value) => Navigator.pop(context));
+    void tryDelete() async {
+      bool isConfirm = false;
+      await NDialog(
+        title: const Text(
+          'Konfirmasi',
+          textAlign: TextAlign.center,
+        ),
+        content: const Text("Yakin ingin menghapus?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              isConfirm = true;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Iya'),
+          )
+        ],
+      ).show(context);
+      if (isConfirm) {
+        Provider.of<ConsultationRequestController>(context, listen: false)
+            .deleteData(data.usulanKonsultasiId);
+        customDialog(context, 'Berhasil', 'Data berhasil dihapus')
+            .then((value) => Navigator.pop(context));
+      }
     }
 
     final userController = Provider.of<UserController>(context, listen: false);
