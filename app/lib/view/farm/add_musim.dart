@@ -24,7 +24,7 @@ class _AddMusimState extends State<AddMusim> {
     if (harga <= 0 || jumlah <= 0 || tipe.isEmpty) {
       customDialog(context, 'Gagal', 'Data tidak boleh kosong!');
     } else {
-      final result = await Provider.of<DailyController>(context, listen: false)
+      await Provider.of<DailyController>(context, listen: false)
           .addMusim(
               tipe,
               jumlah,
@@ -32,28 +32,12 @@ class _AddMusimState extends State<AddMusim> {
               Provider.of<UserController>(context, listen: false)
                   .user
                   .peternakanId)
-          .then((value) =>
-              customDialog(context, 'Berhasil', 'Musim berhasil dibuat!')
-                  .then((value) => Navigator.of(context).pop()));
+          .then(
+            (value) =>
+                customDialog(context, 'Berhasil', 'Musim berhasil dibuat!')
+                    .then((value) => Navigator.of(context).pop()),
+          );
     }
-    // if (nama.isEmpty || alamat.isEmpty || luas.isEmpty) {
-    //   customDialog(context, 'Gagal', 'Data tidak boleh ada yang kosong!');
-    //   return;
-    // } else {
-    //   try {
-    //     await Provider.of<UserController>(context, listen: false)
-    //         .addNewFarm(
-    //             nama,
-    //             alamat,
-    //             int.parse(luas),
-    //             AppFormat.intDateFromDateTime(currentDate),
-    //             "${hour1.hour.toString().padLeft(2, '0')}:${hour1.minute.toString().padLeft(2, '0')}",
-    //             "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}")
-    //         .then((value) => Navigator.pop(context, value));
-    //   } on FirebaseException catch (error) {
-    //     customDialog(context, 'Gagal', error.message!);
-    //   }
-    // }
   }
 
   @override

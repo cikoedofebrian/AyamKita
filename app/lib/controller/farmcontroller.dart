@@ -43,6 +43,26 @@ class PeternakanController extends ChangeNotifier {
         .limit(1)
         .get();
 
-    return UserModel.fromJson(data.docs[0].data());
+    return UserModel.fromJson(
+      data.docs[0].data(),
+    );
+  }
+
+  Future<void> updateData(
+      String nama, String alamat, int luas, String downloadUrl) async {
+    FirebaseFirestore.instance
+        .collection('peternakan')
+        .doc(farmData!.peternakanId)
+        .update({
+      'nama': nama,
+      'alamat': alamat,
+      'luas': luas,
+      'downloadUrl': downloadUrl
+    });
+    farmData!.nama = nama;
+    farmData!.alamat = alamat;
+    farmData!.downloadUrl = downloadUrl;
+    farmData!.luas = luas;
+    notifyListeners();
   }
 }

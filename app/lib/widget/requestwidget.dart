@@ -2,6 +2,7 @@ import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/model/consultationrequestmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class RequestWidget extends StatelessWidget {
@@ -36,7 +37,25 @@ class RequestWidget extends StatelessWidget {
                 ),
                 Text(
                   data.judul,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Material(
+                  color: data.getColor(),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Text(
+                      data.status.capitalize(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 )
               ],
             ),
@@ -48,28 +67,26 @@ class RequestWidget extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return SizedBox(
-                    child: LoadingAnimationWidget.fallingDot(
+                    child: LoadingAnimationWidget.threeRotatingDots(
                         color: AppColor.tertiary, size: 30),
-                  );
-                }
-                if (snapshot.data!.downloadUrl.isEmpty) {
-                  return const CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage("assets/images/profile.png"),
                   );
                 }
                 return Column(
                   children: [
                     CircleAvatar(
-                      radius: 24,
-                      backgroundImage: NetworkImage(snapshot.data!.downloadUrl),
+                      radius: 30,
+                      backgroundImage: snapshot.data!.downloadUrl.isEmpty
+                          ? const AssetImage("assets/images/profile.png")
+                          : NetworkImage(snapshot.data!.downloadUrl)
+                              as ImageProvider,
                     ),
                     const SizedBox(
                       height: 10,
                     ),
+                    // Text('sss'),
                     Text(
                       snapshot.data!.nama.split(' ')[0],
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     )
                   ],
                 );

@@ -76,9 +76,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   'Isi data peternakan baru untuk melanjutkan proses pendaftaran')
               .then(
             (value) => Navigator.of(context).pushNamed('/add-farm').then(
-              (value) {
+              (value) async {
                 if (value != null) {
-                  userController.register(
+                  await userController.register(
                       email,
                       name,
                       password,
@@ -87,6 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       null,
                       AppFormat.intDateFromDateTime(currentDate),
                       alamat);
+                  Navigator.pop(context);
                 }
               },
             ),

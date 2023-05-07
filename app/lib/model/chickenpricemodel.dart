@@ -1,6 +1,8 @@
+import 'package:app/constant/appformat.dart';
+
 class ChickenPriceModel {
   final int price;
-  final String date;
+  final DateTime date;
 
   ChickenPriceModel({
     required this.price,
@@ -9,7 +11,7 @@ class ChickenPriceModel {
 
   factory ChickenPriceModel.fromJson(Map<String, dynamic> json) =>
       ChickenPriceModel(
-        date: json['date'],
+        date: AppFormat.stringtoDateTime(json['date']),
         price: json['price'],
       );
 }

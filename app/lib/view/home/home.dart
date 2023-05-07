@@ -27,7 +27,12 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> getUserData() async {
+    // isLoading = true;
     final userController = Provider.of<UserController>(context, listen: false);
+    if (userController.isLoading == false) {
+      userController.setLoading(true);
+    }
+
     await userController.fetchData().then(
           (value) => future = Future.wait(
             [
@@ -40,7 +45,7 @@ class _HomeState extends State<Home> {
               Provider.of<ChickenPriceController>(context, listen: false)
                   .fetchData(),
             ],
-          ),
+          ).then((value) => userController.setLoading(false)),
         );
   }
 
@@ -58,43 +63,43 @@ class _HomeState extends State<Home> {
     });
   }
 
-  bool isLoading = true;
-
   @override
   Widget build(BuildContext context) {
+    final userController = Provider.of<UserController>(context);
     return Scaffold(
-      body: FutureBuilder(
-        future: future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done ||
-              isLoading == false) {
-            isLoading = false;
-            return SingleChildScrollView(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Stack(
-                  children: [
-                    _page[_selectedPage],
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: CustomNavbar(
-                        index: _selectedPage,
-                        changePage: changePage,
-                      ),
+      body: userController.isLoading == true
+          ? Center(
+              child: LoadingAnimationWidget.inkDrop(
+                  color: Colors.orange, size: 60),
+            )
+          : SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: Stack(
+                children: [
+                  RefreshIndicator(
+                      onRefresh: () => getUserData(),
+                      child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: _page[_selectedPage])),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: CustomNavbar(
+                      index: _selectedPage,
+                      changePage: changePage,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          }
-          return Center(
-            child:
-                LoadingAnimationWidget.inkDrop(color: Colors.orange, size: 60),
-          );
-        },
-      ),
+            ),
     );
   }
 }
+
+
+// RefreshIndicator(
+//               onRefresh: () => getUserData(),
+//               child: SingleChildScrollView(
+//                 physics: const AlwaysScrollableScrollPhysics(),
+//                 child:

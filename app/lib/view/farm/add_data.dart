@@ -148,8 +148,9 @@ class _AddDataState extends State<AddData> {
               }
             }
             if (index == -1) {
-              return Scaffold(
-                body: Center(
+              return SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -188,28 +189,76 @@ class _AddDataState extends State<AddData> {
             }
             final parsedDate = DateFormat('dd-MM-yyyy')
                 .parse(dailyController.musimList[index].mulai);
-            return Scaffold(
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 60, horizontal: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+            return SingleChildScrollView(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 60, horizontal: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 20),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  AppColor.blue,
+                                  AppColor.tertiary,
+                                ],
+                              ),
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 8,
+                                    spreadRadius: 2)
+                              ],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Periode',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+                                      .format(initialDate),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          if (!editable &&
+                              Provider.of<UserController>(context,
+                                          listen: false)
+                                      .user
+                                      .role ==
+                                  UserRole.pengelola)
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 20),
-                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
-                                    AppColor.blue,
-                                    AppColor.tertiary,
+                                    AppColor.secondary,
+                                    Colors.red,
                                   ],
                                 ),
                                 boxShadow: const [
@@ -220,309 +269,258 @@ class _AddDataState extends State<AddData> {
                                 ],
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
                                 children: [
-                                  const Text(
-                                    'Periode',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
-                                        .format(initialDate),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24,
-                                      color: Colors.white,
-                                    ),
+                                  Expanded(
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: const [
+                                          Text(
+                                            'DATA SUDAH ADA',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            'Anda tidak bisa merubah data yang sudah ada',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ]),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            if (!editable &&
-                                Provider.of<UserController>(context,
-                                            listen: false)
-                                        .user
-                                        .role ==
-                                    UserRole.pengelola)
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text('Tanggal'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                DateFormat('dd-MM-yyyy').format(initialDate),
+                                style: const TextStyle(fontSize: 18),
+                              ),
                               Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      AppColor.secondary,
-                                      Colors.red,
-                                    ],
-                                  ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 8,
-                                        spreadRadius: 2)
-                                  ],
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: const [
-                                            Text(
-                                              'DATA SUDAH ADA',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            ),
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            Text(
-                                              'Anda tidak bisa merubah data yang sudah ada',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ]),
-                                    ),
-                                  ],
+                                padding: const EdgeInsets.only(left: 20),
+                                height: 40,
+                                child: InkWell(
+                                  child: Image.asset('assets/images/daily.png'),
+                                  onTap: () {
+                                    showDatePicker(
+                                      context: context,
+                                      initialDate: initialDate,
+                                      firstDate: parsedDate,
+                                      lastDate: DateTime(
+                                          parsedDate.year,
+                                          parsedDate.month,
+                                          parsedDate.day + 40),
+                                    ).then((value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          initialDate = value;
+                                        });
+                                      }
+                                    });
+                                  },
                                 ),
                               ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            const Text('Tanggal'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  DateFormat('dd-MM-yyyy').format(initialDate),
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  height: 40,
-                                  child: InkWell(
-                                    child:
-                                        Image.asset('assets/images/daily.png'),
-                                    onTap: () {
-                                      showDatePicker(
-                                        context: context,
-                                        initialDate: initialDate,
-                                        firstDate: parsedDate,
-                                        lastDate: DateTime(
-                                            parsedDate.year,
-                                            parsedDate.month,
-                                            parsedDate.day + 40),
-                                      ).then((value) {
-                                        if (value != null) {
-                                          setState(() {
-                                            initialDate = value;
-                                          });
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Umur Ayam'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              key: UniqueKey(),
-                              initialValue: umur,
-                              enabled: editable,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Wajib diisi";
-                                } else if (int.tryParse(value) == null) {
-                                  return "Isi dengan angka";
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) => umur = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Kematian (Ekor)'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              initialValue: kematian,
-                              key: UniqueKey(),
-                              enabled: editable,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Wajib diisi";
-                                } else if (int.tryParse(value) == null) {
-                                  return "Isi dengan angka";
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) => kematian = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Keluar'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              key: UniqueKey(),
-                              initialValue: keluar,
-                              enabled: editable,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Wajib diisi";
-                                } else if (int.tryParse(value) == null) {
-                                  return "Isi dengan angka";
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) => keluar = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Obat'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              key: UniqueKey(),
-                              initialValue: obat,
-                              enabled: editable,
-                              onSaved: (newValue) => obat = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Pakan (kg)'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              key: UniqueKey(),
-                              initialValue: pakan,
-                              enabled: editable,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Wajib diisi";
-                                } else if (double.tryParse(value) == null) {
-                                  return "Isi dengan angka";
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) => pakan = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Harga Pakan'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              key: UniqueKey(),
-                              initialValue: hargaPakan,
-                              enabled: editable,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Wajib diisi";
-                                } else if (int.tryParse(value) == null) {
-                                  return "Isi dengan angka";
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) => hargaPakan = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text('Harga Obat'),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            TextFormField(
-                              key: UniqueKey(),
-                              initialValue: hargaObat,
-                              enabled: editable,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Wajib diisi";
-                                } else if (int.tryParse(value) == null) {
-                                  return "Isi dengan angka";
-                                }
-                                return null;
-                              },
-                              onSaved: (newValue) => hargaObat = newValue!,
-                              keyboardType: TextInputType.number,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Umur Ayam'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            key: UniqueKey(),
+                            initialValue: umur,
+                            enabled: editable,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (int.tryParse(value) == null) {
+                                return "Isi dengan angka";
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) => umur = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Kematian (Ekor)'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            initialValue: kematian,
+                            key: UniqueKey(),
+                            enabled: editable,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (int.tryParse(value) == null) {
+                                return "Isi dengan angka";
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) => kematian = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Keluar'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            key: UniqueKey(),
+                            initialValue: keluar,
+                            enabled: editable,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (int.tryParse(value) == null) {
+                                return "Isi dengan angka";
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) => keluar = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Obat'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            key: UniqueKey(),
+                            initialValue: obat,
+                            enabled: editable,
+                            onSaved: (newValue) => obat = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Pakan (kg)'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            key: UniqueKey(),
+                            initialValue: pakan,
+                            enabled: editable,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (double.tryParse(value) == null) {
+                                return "Isi dengan angka";
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) => pakan = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Harga Pakan'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            key: UniqueKey(),
+                            initialValue: hargaPakan,
+                            enabled: editable,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (int.tryParse(value) == null) {
+                                return "Isi dengan angka";
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) => hargaPakan = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text('Harga Obat'),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          TextFormField(
+                            key: UniqueKey(),
+                            initialValue: hargaObat,
+                            enabled: editable,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Wajib diisi";
+                              } else if (int.tryParse(value) == null) {
+                                return "Isi dengan angka";
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) => hargaObat = newValue!,
+                            keyboardType: TextInputType.number,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      if (Provider.of<UserController>(context, listen: false)
-                              .user
-                              .role ==
-                          UserRole.pengelola)
-                        InkWell(
-                          onTap: () => editable ? save() : null,
-                          child: Material(
-                            borderRadius: BorderRadius.circular(20),
-                            color: editable ? AppColor.tertiary : Colors.grey,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 25),
-                              child: Text(
-                                'SIMPAN',
-                                style: TextStyle(
-                                  color: editable
-                                      ? AppColor.secondary
-                                      : Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (Provider.of<UserController>(context, listen: false)
+                            .user
+                            .role ==
+                        UserRole.pengelola)
+                      InkWell(
+                        onTap: () => editable ? save() : null,
+                        child: Material(
+                          borderRadius: BorderRadius.circular(20),
+                          color: editable ? AppColor.tertiary : Colors.grey,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 25),
+                            child: Text(
+                              'SIMPAN',
+                              style: TextStyle(
+                                color: editable
+                                    ? AppColor.secondary
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
                               ),
                             ),
                           ),
                         ),
-                      const SizedBox(
-                        height: 70,
                       ),
-                    ],
-                  ),
+                    const SizedBox(
+                      height: 70,
+                    ),
+                  ],
                 ),
               ),
             );

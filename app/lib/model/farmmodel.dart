@@ -1,10 +1,10 @@
 class PeternakanModel {
   final String peternakanId;
-  final String nama;
+  String nama;
   final String semenjak;
-  final int luas;
-  final String alamat;
-  final String downloadUrl;
+  int luas;
+  String alamat;
+  String downloadUrl;
 
   PeternakanModel({
     required this.peternakanId,

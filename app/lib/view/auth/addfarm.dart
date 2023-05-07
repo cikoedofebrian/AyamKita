@@ -33,7 +33,7 @@ class _AddFarmState extends State<AddFarm> {
       return;
     } else {
       try {
-        await Provider.of<UserController>(context, listen: false)
+        final upload = await Provider.of<UserController>(context, listen: false)
             .addNewFarm(
                 nama,
                 alamat,

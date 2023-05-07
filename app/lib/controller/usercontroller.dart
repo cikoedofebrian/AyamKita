@@ -9,6 +9,13 @@ class UserController extends ChangeNotifier {
   UserModel? _user;
   UserModel get user => _user!;
 
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+  void setLoading(bool newLoading) {
+    _isLoading = newLoading;
+    notifyListeners();
+  }
+
   Future<void> fetchData() async {
     try {
       if (FirebaseAuth.instance.currentUser != null) {
@@ -32,7 +39,7 @@ class UserController extends ChangeNotifier {
     return result.data()!['nama'];
   }
 
-  void register(
+  Future<void> register(
     String email,
     String nama,
     String password,

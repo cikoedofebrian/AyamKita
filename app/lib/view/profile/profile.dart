@@ -12,7 +12,9 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     final userData = Provider.of<UserController>(context);
     final isPemilik = userData.user.role == UserRole.pemilik;
-    return Padding(
+
+    return Container(
+      height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,9 +261,6 @@ class Profile extends StatelessWidget {
                 ),
               ),
             ]),
-          ),
-          const SizedBox(
-            height: 6,
           ),
         ],
       ),

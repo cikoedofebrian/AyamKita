@@ -1,5 +1,8 @@
+import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/requeststatus.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class ConsultationRequestModel {
   String peternakanId;
@@ -40,5 +43,18 @@ class ConsultationRequestModel {
         .doc(pengelolaId)
         .get();
     return UserModel.fromJson(result.data()!);
+  }
+
+  Color getColor() {
+    switch (status) {
+      case RequestStatus.disetujui:
+        return Colors.green;
+      case RequestStatus.ditolak:
+        return Colors.red;
+      case RequestStatus.selesai:
+        return AppColor.blue;
+      default:
+        return Colors.yellow;
+    }
   }
 }

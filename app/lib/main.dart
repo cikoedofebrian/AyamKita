@@ -15,6 +15,7 @@ import 'package:app/view/farm/pengelolalist.dart';
 import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/farm/datahistory.dart';
 import 'package:app/view/farm/seasonhistory.dart';
+import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
 import 'package:app/view/features/request/requestdetails.dart';
 import 'package:app/view/features/request/requestlist.dart';
@@ -117,6 +118,7 @@ class MyApp extends StatelessWidget {
         '/add-musim': (context) => const AddMusim(),
         '/season-list': (context) => const SeasonHistory(),
         '/change-skema': (context) => const ChangeSkema(),
+        '/price-list': (context) => const PriceList()
       },
     );
   }

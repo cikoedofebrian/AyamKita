@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/requeststatus.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/consultationrequest.dart';
 import 'package:app/controller/usercontroller.dart';
@@ -7,10 +7,9 @@ import 'package:app/model/consultationrequestmodel.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/image_shower.dart';
-import 'package:app/widget/imagepicker.dart';
 import 'package:app/widget/requestpainter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:intl/intl.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +26,8 @@ class _RequestDetailsState extends State<RequestDetails> {
   Widget build(BuildContext context) {
     final data =
         ModalRoute.of(context)!.settings.arguments as ConsultationRequestModel;
+    final userController =
+        Provider.of<UserController>(context, listen: false).user;
     void tryDelete() async {
       bool isConfirm = false;
       await NDialog(
@@ -49,6 +50,7 @@ class _RequestDetailsState extends State<RequestDetails> {
           )
         ],
       ).show(context);
+
       if (isConfirm) {
         Provider.of<ConsultationRequestController>(context, listen: false)
             .deleteData(data.usulanKonsultasiId);
@@ -56,8 +58,6 @@ class _RequestDetailsState extends State<RequestDetails> {
             .then((value) => Navigator.pop(context));
       }
     }
-
-    final userController = Provider.of<UserController>(context, listen: false);
 
     return Theme(
       data: ThemeData(
@@ -77,124 +77,170 @@ class _RequestDetailsState extends State<RequestDetails> {
       ),
       child: Scaffold(
         body: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 160,
-                  child: Stack(
-                    children: [
-                      CustomPaint(
-                        size: Size(
-                          MediaQuery.of(context).size.width,
-                          140,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 160,
+                child: Stack(
+                  children: [
+                    CustomPaint(
+                      size: Size(
+                        MediaQuery.of(context).size.width,
+                        140,
+                      ),
+                      painter: RequestPainter(),
+                    ),
+                    const CustomBackButton(
+                      color: AppColor.quaternary,
+                    ),
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 14),
+                        child: Text(
+                          'Usulan Konsultasi',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
                         ),
-                        painter: RequestPainter(),
                       ),
-                      const CustomBackButton(
-                        color: AppColor.quaternary,
-                      ),
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 14),
-                          child: Text(
-                            'Usulan Konsultasi',
-                            style: TextStyle(
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              data.getColor(),
+                              AppColor.secondary,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Status :',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              data.status.capitalize(),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Tanggal'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        enabled: false,
-                        initialValue:
-                            DateFormat('dd-MM-yyyy').format(DateTime.now()),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      const Text('Masalah'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        initialValue: data.judul,
-                        enabled: false,
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      const Text('Penjelasan'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        initialValue: data.deskripsi,
-                        enabled: false,
-                        maxLines: 10,
-                        decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.all(20)),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      const Text('Tambahkan Gambar'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          if (data.downloadUrl.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ImageShower(downloadUrl: data.downloadUrl),
+                                fontSize: 22,
                               ),
-                            );
-                          }
-                        },
-                        child: Container(
-                          height: 80,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            color: AppColor.formcolor,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                                width: 1.5, color: AppColor.formborder),
-                            image: DecorationImage(
-                              image: data.downloadUrl.isNotEmpty
-                                  ? NetworkImage(data.downloadUrl)
-                                  : const AssetImage(
-                                          'assets/images/no-photo-available.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text('Tanggal'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      enabled: false,
+                      initialValue:
+                          DateFormat('dd-MM-yyyy').format(DateTime.now()),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const Text('Masalah'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      initialValue: data.judul,
+                      enabled: false,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const Text('Penjelasan'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      initialValue: data.deskripsi,
+                      enabled: false,
+                      maxLines: 10,
+                      decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(20)),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const Text('Tambahkan Gambar'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        if (data.downloadUrl.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ImageShower(downloadUrl: data.downloadUrl),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: AppColor.formcolor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              width: 1.5, color: AppColor.formborder),
+                          image: DecorationImage(
+                            image: data.downloadUrl.isNotEmpty
+                                ? NetworkImage(data.downloadUrl)
+                                : const AssetImage(
+                                        'assets/images/no-photo-available.png')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (userController.role == UserRole.pengelola &&
+                              data.status == RequestStatus.menunggu)
                             InkWell(
                               onTap: () => tryDelete(),
                               child: Material(
@@ -213,37 +259,125 @@ class _RequestDetailsState extends State<RequestDetails> {
                                 ),
                               ),
                             ),
-                            if (Provider.of<UserController>(context,
-                                        listen: false)
-                                    .user
-                                    .role ==
-                                UserRole.pemilik)
-                              InkWell(
-                                onTap: () => tryDelete(),
-                                child: Material(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: AppColor.tertiary,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 10),
-                                    child: Text(
-                                      'SETUJUI',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColor.secondary),
+                          if (Provider.of<UserController>(context,
+                                          listen: false)
+                                      .user
+                                      .role ==
+                                  UserRole.pemilik &&
+                              data.status == RequestStatus.menunggu)
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  InkWell(
+                                    onTap: () async {
+                                      bool isConfirm = false;
+                                      await NDialog(
+                                        title: const Text('Konfirmasi'),
+                                        content:
+                                            Text('Yakin ingin menyetujui?'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('Tidak')),
+                                          TextButton(
+                                              onPressed: () {
+                                                isConfirm = true;
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Iya'))
+                                        ],
+                                      ).show(context);
+                                      if (isConfirm) {
+                                        Provider.of<ConsultationRequestController>(
+                                                context,
+                                                listen: false)
+                                            .changeStatus(RequestStatus.ditolak,
+                                                data.usulanKonsultasiId);
+                                        setState(() {
+                                          data.status = RequestStatus.disetujui;
+                                        });
+                                      }
+                                    },
+                                    child: Material(
+                                      borderRadius: BorderRadius.circular(16),
+                                      color: Colors.red,
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 10),
+                                        child: Text(
+                                          'HAPUS',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColor.tertiary),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  InkWell(
+                                    onTap: () async {
+                                      bool isConfirm = false;
+                                      await NDialog(
+                                        title: const Text('Konfirmasi'),
+                                        content: Text('Yakin ingin menolak?'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text('Tidak')),
+                                          TextButton(
+                                              onPressed: () {
+                                                isConfirm = true;
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Iya'))
+                                        ],
+                                      ).show(context);
+                                      if (isConfirm) {
+                                        Provider.of<ConsultationRequestController>(
+                                                context,
+                                                listen: false)
+                                            .changeStatus(
+                                          RequestStatus.disetujui,
+                                          data.usulanKonsultasiId,
+                                        );
+                                        setState(() {
+                                          data.status = RequestStatus.ditolak;
+                                        });
+                                      }
+                                    },
+                                    child: Material(
+                                      borderRadius: BorderRadius.circular(16),
+                                      color: AppColor.tertiary,
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 10),
+                                        child: Text(
+                                          'SETUJUI',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColor.secondary),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -27,6 +27,7 @@ class FeedController extends ChangeNotifier {
       if (chickens.docs.isEmpty) {
         final latestSchema = await FirebaseFirestore.instance
             .collection('skema_jadwal')
+            .where('peternakanId', isEqualTo: peternakanId)
             .orderBy('tanggal_dibuat', descending: true)
             .limit(1)
             .get();

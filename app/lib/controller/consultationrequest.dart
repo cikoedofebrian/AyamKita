@@ -10,6 +10,9 @@ class ConsultationRequestController extends ChangeNotifier {
   List<ConsultationRequestModel> _list = [];
   List<ConsultationRequestModel> get list => _list;
 
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
   Future<void> fetchData(String peternakanId) async {
     _list = [];
     final result = await FirebaseFirestore.instance
@@ -20,6 +23,8 @@ class ConsultationRequestController extends ChangeNotifier {
       final mappedData = ConsultationRequestModel.fromJson(i.data(), i.id);
       _list.add(mappedData);
     }
+    _isLoading = false;
+    notifyListeners();
   }
 
   void addData(String judul, String deskripsi, String peternakanId,
@@ -37,7 +42,7 @@ class ConsultationRequestController extends ChangeNotifier {
       'peternakanId': peternakanId,
       'judul': judul,
       'deskripsi': deskripsi,
-      'status': 'sent',
+      'status': 'menunggu',
       'pengelolaId': pengelolaId,
       'downloadUrl': downloadUrl,
       'tanggal': date
@@ -57,5 +62,20 @@ class ConsultationRequestController extends ChangeNotifier {
     _list.removeWhere((element) => element.usulanKonsultasiId == id);
     FirebaseFirestore.instance.collection('usulan_konsultasi').doc(id).delete();
     notifyListeners();
+  }
+
+  void changeStatus(String newStatus, String id) async {
+    try {
+      final selectedIndex =
+          list.indexWhere((element) => element.usulanKonsultasiId == id);
+      _list[selectedIndex].status = newStatus;
+      await FirebaseFirestore.instance
+          .collection('usulan_konsultasi')
+          .doc(id)
+          .update({'status': newStatus});
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
   }
 }

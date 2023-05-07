@@ -5,7 +5,6 @@ import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/imagepicker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -20,6 +19,9 @@ class FarmData extends StatefulWidget {
 }
 
 class _FarmDataState extends State<FarmData> {
+  String nama = '';
+  int luas = 0;
+  String alamat = '';
   late Future future;
   File? photo;
   bool isEditable = false;
@@ -27,10 +29,10 @@ class _FarmDataState extends State<FarmData> {
 
   @override
   void initState() {
-    future = Provider.of<PeternakanController>(context, listen: false)
-        .fetchFarmData(Provider.of<UserController>(context, listen: false)
-            .user
-            .peternakanId);
+    final peternakanController =
+        Provider.of<PeternakanController>(context, listen: false);
+    future = peternakanController.fetchFarmData(
+        Provider.of<UserController>(context, listen: false).user.peternakanId);
     super.initState();
   }
 
@@ -40,6 +42,39 @@ class _FarmDataState extends State<FarmData> {
     final userController = Provider.of<UserController>(context, listen: false);
     final peternakanController =
         Provider.of<PeternakanController>(context, listen: false);
+    void trySave() async {
+      if (formKey.currentState!.validate()) {
+        formKey.currentState!.save();
+        if (nama == peternakanController.farmData!.nama &&
+            peternakanController.farmData!.alamat == alamat &&
+            peternakanController.farmData!.luas == luas &&
+            photo == null) {
+          customDialog(context, 'Gagal!', 'Tidak ada data yang dirubah!');
+        } else {
+          String photoUrl = '';
+          if (photo != null) {
+            final upload = await FirebaseStorage.instance
+                .ref(
+                    'peternakan_photo/${peternakanController.farmData!.peternakanId}}')
+                .putFile(photo!);
+            photoUrl = await upload.ref.getDownloadURL();
+          }
+          peternakanController.updateData(nama, alamat, luas, photoUrl);
+          customDialog(context, 'Berhasil', 'Perubahan data berhasil!');
+        }
+      } else {
+        customDialog(context, 'Gagal!', 'Data tidak valid!');
+      }
+    }
+
+    void imagePicker() async {
+      File? selectedPhoto = await showImagePicker(context);
+      if (selectedPhoto != null) {
+        setState(() {
+          photo = selectedPhoto;
+        });
+      }
+    }
 
     return Theme(
       data: ThemeData(
@@ -79,13 +114,14 @@ class _FarmDataState extends State<FarmData> {
                           child: Stack(
                             children: [
                               SizedBox(
-                                  height: 190,
-                                  width: double.infinity,
-                                  child: Image.asset(
-                                    'assets/images/profile_bg.png',
-                                    fit: BoxFit.cover,
-                                    alignment: Alignment.bottomCenter,
-                                  )),
+                                height: 190,
+                                width: double.infinity,
+                                child: Image.asset(
+                                  'assets/images/profile_bg.png',
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.bottomCenter,
+                                ),
+                              ),
                               Container(
                                 width: double.infinity,
                                 height: 220,
@@ -213,8 +249,14 @@ class _FarmDataState extends State<FarmData> {
                                   height: 5,
                                 ),
                                 TextFormField(
+                                  onSaved: (newValue) => nama = newValue!,
                                   initialValue:
                                       peternakanController.farmData!.nama,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Tidak boleh kosong";
+                                    }
+                                  },
                                   enabled: isEditable,
                                   // onSaved: (newValue) => name = newValue!,
                                   key: const ValueKey('name'),
@@ -227,7 +269,18 @@ class _FarmDataState extends State<FarmData> {
                                   height: 5,
                                 ),
                                 TextFormField(
+                                  onSaved: (newValue) =>
+                                      luas = int.parse(newValue!),
                                   enabled: isEditable,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Wajib diisi";
+                                    } else if (value.isNotEmpty &&
+                                        int.tryParse(value) == null) {
+                                      return "Tolong isi dengan angka";
+                                    }
+                                    return null;
+                                  },
                                   initialValue: peternakanController
                                       .farmData!.luas
                                       .toString(),
@@ -244,15 +297,7 @@ class _FarmDataState extends State<FarmData> {
                                   enabled: false,
                                   initialValue:
                                       peternakanController.farmData!.semenjak,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Wajib diisi";
-                                    } else if (value.isNotEmpty &&
-                                        int.tryParse(value) == null) {
-                                      return "Tolong isi dengan angka";
-                                    }
-                                    return null;
-                                  },
+
                                   // onSaved: (newValue) => number = newValue!,
                                   key: const ValueKey('number'),
                                 ),
@@ -264,7 +309,12 @@ class _FarmDataState extends State<FarmData> {
                                   height: 5,
                                 ),
                                 TextFormField(
-                                  // onSaved: (newValue) => address = newValue!,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Wajib diisi";
+                                    }
+                                  },
+                                  onSaved: (newValue) => alamat = newValue!,
                                   initialValue:
                                       peternakanController.farmData!.alamat,
                                   enabled: isEditable,
@@ -324,28 +374,34 @@ class _FarmDataState extends State<FarmData> {
                                         ),
                                       ),
                                       if (isPemilik)
-                                        Material(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          color: isEditable
-                                              ? AppColor.tertiary
-                                              : Colors.grey,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20, vertical: 10),
-                                            child: Text(
-                                              'SIMPAN',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: isEditable
-                                                      ? AppColor.secondary
-                                                      : Colors.black),
+                                        InkWell(
+                                          onTap: trySave,
+                                          child: Material(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            color: isEditable
+                                                ? AppColor.tertiary
+                                                : Colors.grey,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 10),
+                                              child: Text(
+                                                'SIMPAN',
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isEditable
+                                                        ? AppColor.secondary
+                                                        : Colors.black),
+                                              ),
                                             ),
-                                          ),
-                                        )
-                                            .animate(target: isEditable ? 0 : 1)
-                                            .shake(),
+                                          )
+                                              .animate(
+                                                  target: isEditable ? 0 : 1)
+                                              .shake(),
+                                        ),
                                     ],
                                   ),
                                 ),
