@@ -1,6 +1,7 @@
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/model/usermodel.dart';
+import 'package:app/model/workinghours.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,22 @@ import 'package:flutter/material.dart';
 class UserController extends ChangeNotifier {
   UserModel? _user;
   UserModel get user => _user!;
+  String _deskripsi = '';
+  String get deskripsi => _deskripsi;
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
   void setLoading(bool newLoading) {
     _isLoading = newLoading;
     notifyListeners();
+  }
+
+  Future<void> fetchDokterDetails() async {
+    final result = await FirebaseFirestore.instance
+        .collection('dokter-details')
+        .doc(user.dokterDetailsId)
+        .get();
+    _deskripsi = result.data()!['deskripsi'];
   }
 
   Future<void> fetchData() async {
@@ -39,7 +50,7 @@ class UserController extends ChangeNotifier {
     return result.data()!['nama'];
   }
 
-  Future<void> register(
+  Future<String?> register(
     String email,
     String nama,
     String password,
@@ -52,22 +63,21 @@ class UserController extends ChangeNotifier {
     try {
       final onAuth = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      if (role == UserRole.pemilik || role == UserRole.pengelola) {
-        FirebaseFirestore.instance
-            .collection('akun')
-            .doc(onAuth.user!.uid)
-            .set({
-          'email': email,
-          'nama': nama,
-          'role': role,
-          'peternakanId': peternakanId,
-          'alamat': alamat,
-          'tanggal_lahir': tanggalLahir,
-          'tanggal_pendaftaran': AppFormat.intDateFromDateTime(DateTime.now())
-        });
-      } else {
-        print("ya gatau kok tanya saya");
-      }
+
+      await FirebaseFirestore.instance
+          .collection('akun')
+          .doc(onAuth.user!.uid)
+          .set({
+        'email': email,
+        'nama': nama,
+        'role': role,
+        'peternakanId': peternakanId,
+        'dokterDetailsId': doktorDetailsId,
+        'alamat': alamat,
+        'tanggal_lahir': tanggalLahir,
+        'tanggal_pendaftaran': AppFormat.intDateFromDateTime(DateTime.now())
+      });
+      return onAuth.user!.uid;
     } on FirebaseAuthException catch (error) {
       print(error);
       rethrow;
@@ -83,6 +93,29 @@ class UserController extends ChangeNotifier {
       return true;
     }
     return false;
+  }
+
+  Future<String> addDokterData(String deksripsi) async {
+    final result =
+        await FirebaseFirestore.instance.collection('dokter-details').add({
+      'deskripsi': deksripsi,
+    });
+    return result.id;
+  }
+
+  Future<void> addJamKerja(String userId, List<WorkingHours> list) async {
+    try {
+      for (var element in list) {
+        await FirebaseFirestore.instance.collection('jam-kerja').add({
+          'dokterId': userId,
+          'hari': element.day,
+          'mulai': AppFormat.dayTimeToString(element.mulai),
+          'berakhir': AppFormat.dayTimeToString(element.berakhir)
+        });
+      }
+    } catch (error) {
+      print(error);
+    }
   }
 
   Future<List<UserModel>> getUserData(String role) async {

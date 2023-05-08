@@ -5,6 +5,7 @@ import 'package:app/controller/farmcontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
+import 'package:app/view/auth/adddokter.dart';
 import 'package:app/view/auth/addfarm.dart';
 import 'package:app/view/auth/login.dart';
 import 'package:app/view/auth/register.dart';
@@ -58,6 +59,9 @@ void main() async {
           ChangeNotifierProvider(
             create: (context) => PeternakanController(),
           ),
+          ChangeNotifierProvider(
+            create: (context) => ConsultationRequestController(),
+          )
         ],
         child: const MyApp(),
       ),
@@ -103,6 +107,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/login': (context) => const LoginPage(),
+        '/home': (context) => const Home(),
+        '/add-dokter': (context) => const AddDokter(),
         '/register': (context) => const RegisterPage(),
         '/weather-hours': (context) => const WeatherHours(),
         '/add-data': (context) => const AddData(),

@@ -31,17 +31,41 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     dateController.text = AppFormat.dateFromDateTime(currentDate);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final userController = Provider.of<UserController>(context, listen: false);
     void visible() {
       setState(() {
         isVisible = !isVisible;
       });
+    }
+
+    Future<String> onCompleteRegistration(String id, String role) async {
+      String dokterDetailsId = '';
+      String peternakanId = '';
+
+      if (role == UserRole.pemilik || role == UserRole.pengelola) {
+        peternakanId = id;
+      } else {
+        dokterDetailsId = id;
+      }
+
+      final result = await userController.register(
+        email,
+        name,
+        password,
+        roleValue,
+        peternakanId,
+        dokterDetailsId,
+        AppFormat.intDateFromDateTime(currentDate),
+        alamat,
+      );
+      print("$result from registerpage");
+      return result!;
     }
 
     void trySignUp(BuildContext context) async {
@@ -54,59 +78,28 @@ class _RegisterPageState extends State<RegisterPage> {
         customDialog(
             context, 'Gagal', 'Password tidak boleh kurang dari 8 karakter!');
       } else {
-        // final isEmailNotExist =
-        //     await Provider.of<UserController>(context, listen: false)
-        //         .checkEmail(email);
-        // if (!isEmailNotExist) {
-        //   customDialog(context, 'Gagal', 'Email sudah terdaftar!');
-        //   return;
-        // }
-        // print(email);
-        final userController =
-            Provider.of<UserController>(context, listen: false);
         final checkEmail =
             await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
         if (checkEmail.isNotEmpty) {
           customDialog(context, 'Gagal', 'Email sudah terdaftar!');
           return;
         }
-
         if (roleValue == UserRole.pemilik) {
           customDialog(context, 'Informasi Tambahan',
                   'Isi data peternakan baru untuk melanjutkan proses pendaftaran')
               .then(
-            (value) => Navigator.of(context).pushNamed('/add-farm').then(
-              (value) async {
-                if (value != null) {
-                  await userController.register(
-                      email,
-                      name,
-                      password,
-                      roleValue,
-                      value as String,
-                      null,
-                      AppFormat.intDateFromDateTime(currentDate),
-                      alamat);
-                  Navigator.pop(context);
-                }
-              },
-            ),
+            (value) => Navigator.of(context)
+                .pushNamed('/add-farm', arguments: onCompleteRegistration),
           );
         } else if (roleValue == UserRole.pengelola) {
           final isExist = await userController.checkPeternakanId(peternakanId);
           if (isExist) {
-            userController.register(
-              email,
-              name,
-              password,
-              roleValue,
-              peternakanId,
-              null,
-              AppFormat.intDateFromDateTime(currentDate),
-              alamat,
-            );
+            onCompleteRegistration(peternakanId, UserRole.pengelola);
           }
           Navigator.of(context).pop();
+        } else if (roleValue == UserRole.dokter) {
+          Navigator.pushNamed(context, '/add-dokter',
+              arguments: onCompleteRegistration);
         }
       }
       //   FirebaseAuth.instance

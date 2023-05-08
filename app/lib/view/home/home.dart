@@ -1,12 +1,15 @@
+import 'package:app/constant/role.dart';
 import 'package:app/controller/chickenpricecontroller.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
+import 'package:app/controller/workinghourscontroller.dart';
 import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/home/dashboard.dart';
 import 'package:app/view/profile/profile.dart';
 import 'package:app/widget/customnavbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -32,20 +35,25 @@ class _HomeState extends State<Home> {
     if (userController.isLoading == false) {
       userController.setLoading(true);
     }
-
     await userController.fetchData().then(
-          (value) => future = Future.wait(
-            [
-              Provider.of<FeedController>(context, listen: false)
-                  .fetchData(userController.user.peternakanId),
-              Provider.of<DailyController>(context, listen: false)
-                  .fetchData(userController.user.peternakanId),
-              Provider.of<WeatherController>(context, listen: false)
-                  .fetchData(),
-              Provider.of<ChickenPriceController>(context, listen: false)
-                  .fetchData(),
-            ],
-          ).then((value) => userController.setLoading(false)),
+          (value) => userController.user.role == UserRole.dokter
+              ? future = Future.wait([
+                  userController.fetchDokterDetails(),
+                  Provider.of<WorkingHoursControllers>(context, listen: false)
+                      .fetchData(FirebaseAuth.instance.currentUser!.uid)
+                ]).then((value) => userController.setLoading(false))
+              : future = Future.wait(
+                  [
+                    Provider.of<FeedController>(context, listen: false)
+                        .fetchData(userController.user.peternakanId),
+                    Provider.of<DailyController>(context, listen: false)
+                        .fetchData(userController.user.peternakanId),
+                    Provider.of<WeatherController>(context, listen: false)
+                        .fetchData(),
+                    Provider.of<ChickenPriceController>(context, listen: false)
+                        .fetchData(),
+                  ],
+                ).then((value) => userController.setLoading(false)),
         );
   }
 
@@ -96,7 +104,6 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
 
 // RefreshIndicator(
 //               onRefresh: () => getUserData(),

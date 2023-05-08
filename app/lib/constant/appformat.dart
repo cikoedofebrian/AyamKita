@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
 class AppFormat {
   static String date(String stringDate) {
@@ -26,6 +27,10 @@ class AppFormat {
 
   static DateTime stringtoDateTime(String dateTime) {
     return DateFormat('dd-MM-yyyy').parse(dateTime);
+  }
+
+  static String dayTimeToString(TimeOfDay time) {
+    return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
   }
 
   static String currency(int number) {

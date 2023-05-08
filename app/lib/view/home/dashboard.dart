@@ -2,6 +2,7 @@ import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/feedschedule.dart';
+import 'package:app/widget/incomingconsultation.dart';
 import 'package:app/widget/todaysrice.dart';
 import 'package:app/widget/weatherhome.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class DashBoard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (userController.user.role == "Dokter")
+          if (userController.user.role == UserRole.pemilik)
             Row(
               children: [
                 Expanded(
@@ -91,21 +92,29 @@ class DashBoard extends StatelessWidget {
           ),
           if (userController.user.role == UserRole.pengelola)
             const WeatherHome(),
-          if (userController.user.role == UserRole.pemilik) TodayExpenses(),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text(
-            'Jadwal Pakan',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const FeedSchedule(),
-          const SizedBox(
-            height: 25,
-          ),
+          if (userController.user.role == UserRole.pemilik)
+            const TodayExpenses(),
+          if (userController.user.role != UserRole.dokter)
+            Column(
+              children: const [
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Jadwal Pakan',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                FeedSchedule(),
+                SizedBox(
+                  height: 25,
+                ),
+              ],
+            ),
+          if (userController.user.role == UserRole.dokter)
+            const IncomingSchedule()
         ],
       ),
     );

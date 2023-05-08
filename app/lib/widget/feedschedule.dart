@@ -31,7 +31,8 @@ class FeedSchedule extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20, right: 25, bottom: 20),
               child: Text(
-                  AppFormat.dateFromDateTime(feedController.list[0].tanggal)),
+                AppFormat.dateFromDateTime(feedController.list[0].tanggal),
+              ),
             ),
             ...List.generate(
               2,

@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 class PeternakanController extends ChangeNotifier {
   PeternakanModel? farmData;
 
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
   Future<void> fetchFarmData(String peternakanId) async {
     try {
       final data = await FirebaseFirestore.instance
@@ -17,6 +20,8 @@ class PeternakanController extends ChangeNotifier {
       if (data.data() != null) {
         farmData = PeternakanModel.fromJson(data.data()!, peternakanId);
       }
+      _isLoading = false;
+      notifyListeners();
     } catch (error) {
       print(error);
     }

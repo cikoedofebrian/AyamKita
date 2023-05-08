@@ -7,6 +7,7 @@ import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/imagepicker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -22,26 +23,18 @@ class _FarmDataState extends State<FarmData> {
   String nama = '';
   int luas = 0;
   String alamat = '';
-  late Future future;
   File? photo;
   bool isEditable = false;
   final formKey = GlobalKey<FormState>();
 
   @override
-  void initState() {
-    final peternakanController =
-        Provider.of<PeternakanController>(context, listen: false);
-    future = peternakanController.fetchFarmData(
-        Provider.of<UserController>(context, listen: false).user.peternakanId);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isPemilik = ModalRoute.of(context)!.settings.arguments as bool;
     final userController = Provider.of<UserController>(context, listen: false);
-    final peternakanController =
-        Provider.of<PeternakanController>(context, listen: false);
+    final peternakanController = Provider.of<PeternakanController>(context);
+    if (peternakanController.isLoading == true) {
+      peternakanController.fetchFarmData(userController.user.peternakanId);
+    }
     void trySave() async {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -67,15 +60,6 @@ class _FarmDataState extends State<FarmData> {
       }
     }
 
-    void imagePicker() async {
-      File? selectedPhoto = await showImagePicker(context);
-      if (selectedPhoto != null) {
-        setState(() {
-          photo = selectedPhoto;
-        });
-      }
-    }
-
     return Theme(
       data: ThemeData(
         inputDecorationTheme: const InputDecorationTheme(
@@ -93,329 +77,357 @@ class _FarmDataState extends State<FarmData> {
             fillColor: AppColor.formcolor),
       ),
       child: Scaffold(
-        body: FutureBuilder(
-            future: future,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+          body: peternakanController.isLoading == true
+              ? Center(
                   child: LoadingAnimationWidget.inkDrop(
-                      color: Colors.orange, size: 60),
-                );
-              }
-              return SingleChildScrollView(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 240,
-                          child: Stack(
-                            children: [
-                              SizedBox(
-                                height: 190,
-                                width: double.infinity,
-                                child: Image.asset(
-                                  'assets/images/profile_bg.png',
-                                  fit: BoxFit.cover,
-                                  alignment: Alignment.bottomCenter,
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: 220,
-                                alignment: Alignment.bottomCenter,
-                                child: Stack(
-                                  children: [
-                                    SizedBox(
-                                      width: 100,
-                                      height: 100,
-                                      child: peternakanController.farmData!
-                                                  .downloadUrl.isEmpty &&
-                                              photo == null
-                                          ? Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                image: const DecorationImage(
-                                                    image: AssetImage(
-                                                        "assets/images/no-photo-available.png"),
-                                                    fit: BoxFit.cover),
-                                              ),
-                                              // child: Image.asset(
-                                              //     "assets/images/no-photo-available.png"),
-                                            )
-                                          : Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                image: DecorationImage(
-                                                  image: photo != null
-                                                      ? FileImage(photo!)
-                                                      : NetworkImage(
-                                                              peternakanController
-                                                                  .farmData!
-                                                                  .downloadUrl)
-                                                          as ImageProvider,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                              height: 100,
-                                              width: 100,
-                                            ),
-                                    ),
-                                    if (isEditable)
-                                      Positioned(
-                                        bottom: 0,
-                                        right: 0,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            File? result =
-                                                await showImagePicker(context);
-                                            if (result != null) {
-                                              setState(() {
-                                                photo = result;
-                                              });
-                                            }
-                                          },
-                                          child: const CircleAvatar(
-                                            radius: 16,
-                                            backgroundColor: AppColor.tertiary,
-                                            child: Icon(
-                                              Icons.camera,
-                                              color: AppColor.secondary,
-                                              size: 20,
-                                            ),
-                                          )
-                                              .animate(
-                                                  target: isEditable ? 1 : 1)
-                                              .shake(),
-                                        ),
-                                      )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: 95,
-                                alignment: Alignment.bottomCenter,
-                                child: const Text(
-                                  'PROFILE',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24),
-                                ),
-                              ),
-                              const CustomBackButton(
-                                  color: AppColor.quaternary),
-                              if (isPemilik)
-                                Positioned(
-                                  right: 30,
-                                  top: 50,
-                                  child: CircleAvatar(
-                                    backgroundColor: isEditable
-                                        ? AppColor.tertiary
-                                        : Colors.transparent,
-                                    radius: 28,
-                                    child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          isEditable = !isEditable;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.edit,
-                                        size: 30,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                      .animate(target: isEditable ? 0 : 0)
-                                      .fadeOut(),
-                                ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 40),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    color: AppColor.secondary,
+                    size: 60,
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 240,
+                            child: Stack(
                               children: [
-                                const Text('Nama'),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  onSaved: (newValue) => nama = newValue!,
-                                  initialValue:
-                                      peternakanController.farmData!.nama,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Tidak boleh kosong";
-                                    }
-                                  },
-                                  enabled: isEditable,
-                                  // onSaved: (newValue) => name = newValue!,
-                                  key: const ValueKey('name'),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text('Luas ( m2 )'),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  onSaved: (newValue) =>
-                                      luas = int.parse(newValue!),
-                                  enabled: isEditable,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Wajib diisi";
-                                    } else if (value.isNotEmpty &&
-                                        int.tryParse(value) == null) {
-                                      return "Tolong isi dengan angka";
-                                    }
-                                    return null;
-                                  },
-                                  initialValue: peternakanController
-                                      .farmData!.luas
-                                      .toString(),
-                                  key: const ValueKey('email'),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text('Beroperasi Semenjak'),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  enabled: false,
-                                  initialValue:
-                                      peternakanController.farmData!.semenjak,
-
-                                  // onSaved: (newValue) => number = newValue!,
-                                  key: const ValueKey('number'),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text('Alamat'),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Wajib diisi";
-                                    }
-                                  },
-                                  onSaved: (newValue) => alamat = newValue!,
-                                  initialValue:
-                                      peternakanController.farmData!.alamat,
-                                  enabled: isEditable,
-                                  key: const ValueKey('address'),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text('ID Peternakan'),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                TextFormField(
-                                  enabled: false,
-                                  initialValue: peternakanController
-                                      .farmData!.peternakanId,
-                                  key: const ValueKey('semenjak'),
-                                ),
-                                const SizedBox(
-                                  height: 60,
-                                ),
                                 SizedBox(
+                                  height: 190,
                                   width: double.infinity,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                  child: Image.asset(
+                                    'assets/images/profile_bg.png',
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.bottomCenter,
+                                  ),
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  height: 220,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Stack(
                                     children: [
-                                      InkWell(
-                                        onTap: () async {
-                                          if (isPemilik) {
-                                            Navigator.of(context)
-                                                .pushNamed('/pengelola-list');
-                                          } else {
-                                            Navigator.pushNamed(
-                                                context, '/profile-dummy',
-                                                arguments: peternakanController
-                                                    .seePemilik());
-                                          }
+                                      SizedBox(
+                                        width: 100,
+                                        height: 100,
+                                        child: peternakanController.farmData!
+                                                    .downloadUrl.isEmpty &&
+                                                photo == null
+                                            ? Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  image: const DecorationImage(
+                                                      image: AssetImage(
+                                                          "assets/images/no-photo-available.png"),
+                                                      fit: BoxFit.cover),
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  image: DecorationImage(
+                                                    image: photo != null
+                                                        ? FileImage(photo!)
+                                                        : NetworkImage(
+                                                                peternakanController
+                                                                    .farmData!
+                                                                    .downloadUrl)
+                                                            as ImageProvider,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                                height: 100,
+                                                width: 100,
+                                              ),
+                                      ),
+                                      if (isEditable)
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          child: InkWell(
+                                            onTap: () async {
+                                              File? result =
+                                                  await showImagePicker(
+                                                      context);
+                                              if (result != null) {
+                                                setState(() {
+                                                  photo = result;
+                                                });
+                                              }
+                                            },
+                                            child: const CircleAvatar(
+                                              radius: 16,
+                                              backgroundColor:
+                                                  AppColor.tertiary,
+                                              child: Icon(
+                                                Icons.camera,
+                                                color: AppColor.secondary,
+                                                size: 20,
+                                              ),
+                                            )
+                                                .animate(
+                                                    target: isEditable ? 1 : 1)
+                                                .shake(),
+                                          ),
+                                        )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  height: 95,
+                                  alignment: Alignment.bottomCenter,
+                                  child: const Text(
+                                    'PROFILE',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 24),
+                                  ),
+                                ),
+                                const CustomBackButton(
+                                    color: AppColor.quaternary),
+                                if (isPemilik)
+                                  Positioned(
+                                    right: 30,
+                                    top: 50,
+                                    child: CircleAvatar(
+                                      backgroundColor: isEditable
+                                          ? AppColor.tertiary
+                                          : Colors.transparent,
+                                      radius: 28,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isEditable = !isEditable;
+                                          });
                                         },
-                                        child: Material(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          color: AppColor.secondary,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20, vertical: 10),
-                                            child: Text(
-                                              isPemilik
-                                                  ? 'LIHAT PENGELOLA'
-                                                  : 'LIHAT PEMILIK',
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColor.tertiary),
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          size: 30,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                        .animate(target: isEditable ? 0 : 0)
+                                        .fadeOut(),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Nama'),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  TextFormField(
+                                    onSaved: (newValue) => nama = newValue!,
+                                    initialValue:
+                                        peternakanController.farmData!.nama,
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "Tidak boleh kosong";
+                                      }
+                                    },
+                                    enabled: isEditable,
+                                    key: const ValueKey('name'),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text('Luas ( m2 )'),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  TextFormField(
+                                    onSaved: (newValue) =>
+                                        luas = int.parse(newValue!),
+                                    enabled: isEditable,
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "Wajib diisi";
+                                      } else if (value.isNotEmpty &&
+                                          int.tryParse(value) == null) {
+                                        return "Tolong isi dengan angka";
+                                      }
+                                      return null;
+                                    },
+                                    initialValue: peternakanController
+                                        .farmData!.luas
+                                        .toString(),
+                                    key: const ValueKey('email'),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text('Beroperasi Semenjak'),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  TextFormField(
+                                    enabled: false,
+                                    initialValue:
+                                        peternakanController.farmData!.semenjak,
+
+                                    // onSaved: (newValue) => number = newValue!,
+                                    key: const ValueKey('number'),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text('Alamat'),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "Wajib diisi";
+                                      }
+                                    },
+                                    onSaved: (newValue) => alamat = newValue!,
+                                    initialValue:
+                                        peternakanController.farmData!.alamat,
+                                    enabled: isEditable,
+                                    key: const ValueKey('address'),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text('ID Peternakan'),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextFormField(
+                                          enabled: false,
+                                          initialValue: peternakanController
+                                              .farmData!.peternakanId,
+                                          key: const ValueKey('semenjak'),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          Clipboard.setData(
+                                            ClipboardData(
+                                              text: peternakanController
+                                                  .farmData!.peternakanId,
                                             ),
+                                          );
+                                          customDialog(context, 'Berhasil!',
+                                              'ID Peternakan berhasil di salin!');
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, right: 10),
+                                          child: const Icon(
+                                            Icons.copy,
+                                            color: AppColor.formborder,
                                           ),
                                         ),
-                                      ),
-                                      if (isPemilik)
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 60,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
                                         InkWell(
-                                          onTap: trySave,
+                                          onTap: () async {
+                                            if (isPemilik) {
+                                              Navigator.of(context)
+                                                  .pushNamed('/pengelola-list');
+                                            } else {
+                                              Navigator.pushNamed(
+                                                  context, '/profile-dummy',
+                                                  arguments:
+                                                      peternakanController
+                                                          .seePemilik());
+                                            }
+                                          },
                                           child: Material(
                                             borderRadius:
                                                 BorderRadius.circular(16),
-                                            color: isEditable
-                                                ? AppColor.tertiary
-                                                : Colors.grey,
+                                            color: AppColor.secondary,
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 20,
                                                       vertical: 10),
                                               child: Text(
-                                                'SIMPAN',
-                                                style: TextStyle(
+                                                isPemilik
+                                                    ? 'LIHAT PENGELOLA'
+                                                    : 'LIHAT PEMILIK',
+                                                style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
-                                                    color: isEditable
-                                                        ? AppColor.secondary
-                                                        : Colors.black),
+                                                    color: AppColor.tertiary),
                                               ),
                                             ),
-                                          )
-                                              .animate(
-                                                  target: isEditable ? 0 : 1)
-                                              .shake(),
+                                          ),
                                         ),
-                                    ],
+                                        if (isPemilik)
+                                          InkWell(
+                                            onTap: trySave,
+                                            child: Material(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              color: isEditable
+                                                  ? AppColor.tertiary
+                                                  : Colors.grey,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 10),
+                                                child: Text(
+                                                  'SIMPAN',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: isEditable
+                                                          ? AppColor.secondary
+                                                          : Colors.black),
+                                                ),
+                                              ),
+                                            )
+                                                .animate(
+                                                    target: isEditable ? 0 : 1)
+                                                .shake(),
+                                          ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
-      ),
+                )),
     );
   }
 }

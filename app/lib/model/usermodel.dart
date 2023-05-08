@@ -7,6 +7,7 @@ class UserModel {
   String alamat;
   String tanggalPendaftaran;
   String downloadUrl;
+  String dokterDetailsId;
 
   UserModel({
     required this.nama,
@@ -14,6 +15,7 @@ class UserModel {
     required this.alamat,
     required this.email,
     required this.peternakanId,
+    required this.dokterDetailsId,
     required this.downloadUrl,
     required this.tanggalPendaftaran,
     required this.noTelepon,
@@ -29,5 +31,8 @@ class UserModel {
             json.containsKey('noTelepon') ? json['noTelepon'].toString() : '',
         peternakanId: json['peternakanId'],
         tanggalPendaftaran: json['tanggal_pendaftaran'],
+        dokterDetailsId: json.containsKey(json['dokterDetailsId'])
+            ? json['dokterDetailsId']
+            : '',
       );
 }

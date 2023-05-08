@@ -1,5 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
+import 'package:app/constant/role.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
@@ -26,28 +27,6 @@ class _AddFarmState extends State<AddFarm> {
   TimeOfDay hour1 = TimeOfDay.now();
   TimeOfDay hour2 = TimeOfDay.now();
 
-  void trySignUp() async {
-    formKey.currentState!.save();
-    if (nama.isEmpty || alamat.isEmpty || luas.isEmpty) {
-      customDialog(context, 'Gagal', 'Data tidak boleh ada yang kosong!');
-      return;
-    } else {
-      try {
-        final upload = await Provider.of<UserController>(context, listen: false)
-            .addNewFarm(
-                nama,
-                alamat,
-                int.parse(luas),
-                AppFormat.intDateFromDateTime(currentDate),
-                "${hour1.hour.toString().padLeft(2, '0')}:${hour1.minute.toString().padLeft(2, '0')}",
-                "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}")
-            .then((value) => Navigator.pop(context, value));
-      } on FirebaseException catch (error) {
-        customDialog(context, 'Gagal', error.message!);
-      }
-    }
-  }
-
   @override
   void initState() {
     dateController.text = AppFormat.dateFromDateTime(currentDate);
@@ -60,6 +39,35 @@ class _AddFarmState extends State<AddFarm> {
 
   @override
   Widget build(BuildContext context) {
+    final Function(String, String) completeRegistration =
+        ModalRoute.of(context)!.settings.arguments as Function(String, String);
+
+    void trySignUp() async {
+      formKey.currentState!.save();
+      if (nama.isEmpty || alamat.isEmpty || luas.isEmpty) {
+        customDialog(context, 'Gagal', 'Data tidak boleh ada yang kosong!');
+        return;
+      } else {
+        try {
+          final upload = await Provider.of<UserController>(context,
+                  listen: false)
+              .addNewFarm(
+                  nama,
+                  alamat,
+                  int.parse(luas),
+                  AppFormat.intDateFromDateTime(currentDate),
+                  "${hour1.hour.toString().padLeft(2, '0')}:${hour1.minute.toString().padLeft(2, '0')}",
+                  "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}")
+              .then((value) => completeRegistration(value, UserRole.pemilik));
+
+          customDialog(context, 'Berhasil', 'Akun berhasil dibuat!').then(
+              (value) => Navigator.pushReplacementNamed(context, '/home'));
+        } on FirebaseException catch (error) {
+          customDialog(context, 'Gagal', error.message!);
+        }
+      }
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
