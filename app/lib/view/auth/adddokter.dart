@@ -19,6 +19,7 @@ class AddDokter extends StatefulWidget {
 class _AddDokterState extends State<AddDokter> {
   final formKey = GlobalKey<FormState>();
   String deskripsi = '';
+  String price = '';
   final hour1Controller = TextEditingController();
   final hour2Controller = TextEditingController();
   TimeOfDay hour1 = TimeOfDay.now();
@@ -40,6 +41,7 @@ class _AddDokterState extends State<AddDokter> {
     setState(() {
       hoursList.add(
         WorkingHours(
+          jamKerjaId: null,
           dokterId: null,
           mulai: hour1,
           berakhir: end,
@@ -99,15 +101,21 @@ class _AddDokterState extends State<AddDokter> {
     void trySignUp() async {
       formKey.currentState!.save();
       {
-        if (deskripsi.isEmpty || hoursList.isEmpty) {
-          customDialog(context, 'Gagal', 'Data tidak boleh kosong!');
+        if (deskripsi.isEmpty || hoursList.isEmpty || price.isEmpty) {
+          customDialog(
+            context,
+            'Gagal',
+            'Data tidak boleh kosong!',
+          );
           return;
         } else if (deskripsi.length < 50) {
           customDialog(context, 'Gagal', 'Deskripsi minimal 50 karakter!');
           return;
+        } else if (int.tryParse(price) == null) {
+          customDialog(context, 'Gagal', 'Berikan harga yang valid!');
         }
         final result = await Provider.of<UserController>(context, listen: false)
-            .addDokterData(deskripsi);
+            .addDokterData(deskripsi, int.parse(price));
         final complete = await completeRegistration(result, UserRole.dokter)
             .then((value) => Provider.of<UserController>(context, listen: false)
                 .addJamKerja(value, hoursList)
@@ -194,6 +202,43 @@ class _AddDokterState extends State<AddDokter> {
                                   ),
                                 ),
                               ],
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    height: 70,
+                                  ),
+                                  Positioned(
+                                    width: 260,
+                                    top: 10,
+                                    child: TextFormField(
+                                      onSaved: (newValue) => price = newValue!,
+                                      decoration: const InputDecoration(
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 15)),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    left: 20,
+                                    child: Container(
+                                      color: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7),
+                                      child: const Text(
+                                        'Harga Konsultasi',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const Text(
                               'Jam Kerja',

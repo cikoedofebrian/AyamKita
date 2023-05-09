@@ -1,10 +1,12 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
+import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/feedschedule.dart';
 import 'package:app/widget/incomingconsultation.dart';
 import 'package:app/widget/todaysrice.dart';
 import 'package:app/widget/weatherhome.dart';
+import 'package:app/widget/workinghours.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,38 +23,43 @@ class DashBoard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (userController.user.role == UserRole.pemilik)
-            Row(
-              children: [
-                Expanded(
-                  child: Material(
-                    elevation: 4,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColor.formborder),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          hintText: "Cari Dokter",
-                          hintStyle: TextStyle(color: AppColor.formborder),
-                          icon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
+            InkWell(
+              onTap: () => Navigator.of(context).pushNamed('/find-doctor'),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColor.formborder),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const TextField(
+                          enabled: false,
+                          decoration: InputDecoration(
+                            hintText: "Cari Dokter",
+                            hintStyle: TextStyle(color: AppColor.formborder),
+                            icon: Icon(Icons.search),
+                            border: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 30),
-                SizedBox(
-                  height: 40,
-                  child: Image.asset("assets/images/data.png"),
-                ),
-                const SizedBox(width: 10),
-              ],
+                  const SizedBox(width: 30),
+                  SizedBox(
+                    height: 40,
+                    child: Image.asset("assets/images/data.png"),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
             ),
           const SizedBox(
             height: 25,
@@ -114,7 +121,23 @@ class DashBoard extends StatelessWidget {
               ],
             ),
           if (userController.user.role == UserRole.dokter)
-            const IncomingSchedule()
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                IncomingSchedule(),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Jam Kerja',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                WorkingHoursWiget()
+              ],
+            )
         ],
       ),
     );

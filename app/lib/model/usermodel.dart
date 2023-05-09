@@ -31,8 +31,7 @@ class UserModel {
             json.containsKey('noTelepon') ? json['noTelepon'].toString() : '',
         peternakanId: json['peternakanId'],
         tanggalPendaftaran: json['tanggal_pendaftaran'],
-        dokterDetailsId: json.containsKey(json['dokterDetailsId'])
-            ? json['dokterDetailsId']
-            : '',
+        dokterDetailsId:
+            json.containsKey('dokterDetailsId') ? json['dokterDetailsId'] : '',
       );
 }

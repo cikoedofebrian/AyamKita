@@ -2,8 +2,8 @@ import 'package:app/constant/appcolor.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
-class PengelolaWidget extends StatelessWidget {
-  const PengelolaWidget({super.key, required this.data});
+class DokterListWidget extends StatelessWidget {
+  const DokterListWidget({super.key, required this.data});
   final UserModel data;
 
   @override

@@ -11,6 +11,8 @@ class UserController extends ChangeNotifier {
   UserModel get user => _user!;
   String _deskripsi = '';
   String get deskripsi => _deskripsi;
+  int _harga = 0;
+  int get harga => _harga;
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
@@ -20,11 +22,18 @@ class UserController extends ChangeNotifier {
   }
 
   Future<void> fetchDokterDetails() async {
-    final result = await FirebaseFirestore.instance
-        .collection('dokter-details')
-        .doc(user.dokterDetailsId)
-        .get();
-    _deskripsi = result.data()!['deskripsi'];
+    try {
+      // print(user.dokterDetailsId);
+      // print(FirebaseAuth.instance.currentUser!.uid);
+      final result = await FirebaseFirestore.instance
+          .collection('dokter-details')
+          .doc(user.dokterDetailsId)
+          .get();
+      _deskripsi = result.data()!['deskripsi'];
+      _harga = result.data()!['harga'];
+    } catch (error) {
+      print(error);
+    }
   }
 
   Future<void> fetchData() async {
@@ -95,10 +104,11 @@ class UserController extends ChangeNotifier {
     return false;
   }
 
-  Future<String> addDokterData(String deksripsi) async {
+  Future<String> addDokterData(String deksripsi, int harga) async {
     final result =
         await FirebaseFirestore.instance.collection('dokter-details').add({
       'deskripsi': deksripsi,
+      'harga': harga,
     });
     return result.id;
   }

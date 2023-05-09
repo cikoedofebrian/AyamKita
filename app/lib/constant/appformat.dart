@@ -2,6 +2,36 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 class AppFormat {
+  static String getWeekName(int index) {
+    List<String> week = const [
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+      'Minggu'
+    ];
+    return week[index];
+  }
+
+  static int getCurrentDayIndex() {
+    DateTime now = DateTime.now();
+    int weekdayIndex = now.weekday;
+    int dayIndex = weekdayIndex - 1;
+    return dayIndex;
+  }
+
+  static bool isBetween(TimeOfDay startTime, TimeOfDay endTime) {
+    TimeOfDay currentTime = TimeOfDay.now();
+    DateTime startDate = DateTime(2023, 1, 1, startTime.hour, startTime.minute);
+    DateTime endDate = DateTime(2023, 1, 1, endTime.hour, endTime.minute);
+    DateTime currentTimeDate =
+        DateTime(2023, 1, 1, currentTime.hour, currentTime.minute);
+    return currentTimeDate.isAfter(startDate) &&
+        currentTimeDate.isBefore(endDate);
+  }
+
   static String date(String stringDate) {
     DateTime dateTime = DateTime.parse(stringDate);
     return DateFormat('d MMM yyyy', 'id_ID').format(dateTime);
@@ -56,5 +86,13 @@ class AppFormat {
     final formattedDeadline = DateFormat("HH:mm").format(deadline);
     final daytime = index == 0 ? "Pagi" : "Sore";
     return "$daytime, $formattedDate - $formattedDeadline";
+  }
+
+  static TimeOfDay timeOfDayParser(String timeString) {
+    List<String> parts = timeString.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+    TimeOfDay timeOfDay = TimeOfDay(hour: hour, minute: minute);
+    return timeOfDay;
   }
 }

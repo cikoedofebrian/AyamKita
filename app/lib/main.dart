@@ -3,8 +3,10 @@ import 'package:app/controller/consultationrequest.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/farmcontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
+import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
+import 'package:app/controller/workinghourscontroller.dart';
 import 'package:app/view/auth/adddokter.dart';
 import 'package:app/view/auth/addfarm.dart';
 import 'package:app/view/auth/login.dart';
@@ -16,11 +18,13 @@ import 'package:app/view/farm/pengelolalist.dart';
 import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/farm/datahistory.dart';
 import 'package:app/view/farm/seasonhistory.dart';
+import 'package:app/view/features/consultation/finddoc.dart';
 import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
 import 'package:app/view/features/request/requestdetails.dart';
 import 'package:app/view/features/request/requestlist.dart';
 import 'package:app/view/features/weather/weather_hours.dart';
+import 'package:app/view/features/workhours/change_workhours.dart';
 import 'package:app/view/home/home.dart';
 import 'package:app/view/profile/profile_details.dart';
 import 'package:app/view/profile/profiledummy.dart';
@@ -61,6 +65,12 @@ void main() async {
           ),
           ChangeNotifierProvider(
             create: (context) => ConsultationRequestController(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => WorkingHoursControllers(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => FindDoctorController(),
           )
         ],
         child: const MyApp(),
@@ -124,7 +134,9 @@ class MyApp extends StatelessWidget {
         '/add-musim': (context) => const AddMusim(),
         '/season-list': (context) => const SeasonHistory(),
         '/change-skema': (context) => const ChangeSkema(),
-        '/price-list': (context) => const PriceList()
+        '/price-list': (context) => const PriceList(),
+        '/change-work-hours': (context) => const ChangeWorkHours(),
+        '/find-doctor': (context) => const FindDoctor(),
       },
     );
   }

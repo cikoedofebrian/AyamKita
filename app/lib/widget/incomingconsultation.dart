@@ -53,7 +53,7 @@ class IncomingSchedule extends StatelessWidget {
                   color: Colors.white24,
                   borderRadius: BorderRadius.circular(12)),
               child: const Text(
-                'Ramalan 24 Jam',
+                'Lihat Semua Konsultasi',
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),

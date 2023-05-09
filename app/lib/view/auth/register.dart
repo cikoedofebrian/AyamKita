@@ -64,7 +64,6 @@ class _RegisterPageState extends State<RegisterPage> {
         AppFormat.intDateFromDateTime(currentDate),
         alamat,
       );
-      print("$result from registerpage");
       return result!;
     }
 

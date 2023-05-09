@@ -1,6 +1,9 @@
+import 'package:app/constant/role.dart';
+import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/navbarbgpainter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 
 class CustomNavbar extends StatefulWidget {
   const CustomNavbar({
@@ -50,18 +53,22 @@ class _CustomNavbarState extends State<CustomNavbar> {
                   ),
                 ),
               ).animate(target: widget.index == 0 ? 1 : 0).shake(),
-              SizedBox(
-                height: 50,
-                width: 22,
-                child: InkWell(
-                  onTap: () {
-                    widget.changePage(1);
-                  },
-                  child: Image.asset(widget.index == 1
-                      ? "assets/navbar_icon/data_enabled.png"
-                      : "assets/navbar_icon/data.png"),
-                ),
-              ).animate(target: widget.index == 1 ? 1 : 0).shake(),
+              if (Provider.of<UserController>(context, listen: false)
+                      .user
+                      .role !=
+                  UserRole.dokter)
+                SizedBox(
+                  height: 50,
+                  width: 22,
+                  child: InkWell(
+                    onTap: () {
+                      widget.changePage(1);
+                    },
+                    child: Image.asset(widget.index == 1
+                        ? "assets/navbar_icon/data_enabled.png"
+                        : "assets/navbar_icon/data.png"),
+                  ),
+                ).animate(target: widget.index == 1 ? 1 : 0).shake(),
               Container(
                 height: 50,
                 width: 22,
