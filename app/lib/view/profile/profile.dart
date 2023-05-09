@@ -134,8 +134,8 @@ class Profile extends StatelessWidget {
             height: 6,
           ),
           InkWell(
-            onTap: () => Navigator.pushNamed(context, '/request-list',
-                arguments: isPemilik ? false : true),
+            onTap: () =>
+                Navigator.pushNamed(context, '/request-list', arguments: false),
             child: SizedBox(
               height: 90,
               child: Stack(children: [

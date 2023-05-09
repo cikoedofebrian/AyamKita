@@ -1,17 +1,17 @@
 import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/appformat.dart';
+import 'package:app/model/finddoctormodel.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 class DokterListWidget extends StatelessWidget {
   const DokterListWidget({super.key, required this.data});
-  final UserModel data;
+  final FindDoctorModel data;
 
   @override
   Widget build(BuildContext context) {
-    Future<UserModel> userData() async {
-      return data;
-    }
-
+    final todayIndex = AppFormat.getCurrentDayIndex();
+    final isOpen = data.ifCurrentlyOpen(todayIndex);
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
@@ -21,23 +21,43 @@ class DokterListWidget extends StatelessWidget {
               fit: BoxFit.cover),
           borderRadius: BorderRadius.circular(10)),
       child: InkWell(
-        onTap: () => Navigator.of(context)
-            .pushNamed('/profile-dummy', arguments: userData()),
+        onTap: () =>
+            Navigator.of(context).pushNamed('/doctor-view', arguments: data),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              data.nama,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.nama,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Material(
+                  borderRadius: BorderRadius.circular(10),
+                  color: isOpen ? Colors.green : Colors.red,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    child: Text(
+                      isOpen ? 'Sedang Buka' : 'Tutup',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+              ],
             ),
             CircleAvatar(
               radius: 30,
               backgroundColor: AppColor.secondary,
-              backgroundImage: data.downloadUrl.isNotEmpty
-                  ? NetworkImage(data.downloadUrl)
+              backgroundImage: data.imageUrl.isNotEmpty
+                  ? NetworkImage(data.imageUrl)
                   : const AssetImage('assets/images/profile.png')
                       as ImageProvider,
             ),

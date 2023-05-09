@@ -13,17 +13,19 @@ class FindDoctorController extends ChangeNotifier {
 
   Future<void> refreshData() async {
     _isLoading = true;
+    _list = [];
     fetchData();
     notifyListeners();
   }
 
   Future<void> fetchData() async {
     try {
-      _list = [];
+      _list.clear();
       final allDokter = await FirebaseFirestore.instance
           .collection('akun')
           .where('role', isEqualTo: UserRole.dokter)
           .get();
+
       for (var i in allDokter.docs) {
         final details = await FirebaseFirestore.instance
             .collection('dokter-details')
@@ -42,6 +44,7 @@ class FindDoctorController extends ChangeNotifier {
         }
         _list.add(
             FindDoctorModel.fromJson(details.data()!, i.data(), i.id, dlist));
+        print(_list.length);
       }
 
       _isLoading = false;

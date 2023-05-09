@@ -1,6 +1,8 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
+import 'package:app/widget/customtop.dart';
+import 'package:app/widget/dokterList.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +23,6 @@ class _FindDoctorState extends State<FindDoctor> {
   @override
   Widget build(BuildContext context) {
     final findDoctorController = Provider.of<FindDoctorController>(context);
-    print(findDoctorController.isLoading);
     if (findDoctorController.isLoading == true) {
       findDoctorController.fetchData();
     }
@@ -29,32 +30,25 @@ class _FindDoctorState extends State<FindDoctor> {
     return Scaffold(
       body: Stack(
         children: [
-          RefreshIndicator(
-            onRefresh: () => findDoctorController.refreshData(),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: findDoctorController.isLoading
-                  ? Center(
-                      child: LoadingAnimationWidget.inkDrop(
-                          color: AppColor.secondary, size: 60),
-                    )
-                  : ListView.builder(
-                      itemBuilder: (context, index) => Container(
-                        child: Text(
-                            findDoctorController.list[index].harga.toString()),
-                      ),
-                      itemCount: findDoctorController.list.length,
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: findDoctorController.isLoading
+                ? Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                        color: AppColor.secondary, size: 60),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.only(
+                      top: 160,
+                      left: 40,
+                      right: 40,
                     ),
-            ),
+                    itemBuilder: (context, index) => DokterListWidget(
+                        data: findDoctorController.list[index]),
+                    itemCount: findDoctorController.list.length,
+                  ),
           ),
-          ElevatedButton(
-              onPressed: () {
-                print(findDoctorController.isLoading);
-              },
-              child: Text('sss')),
-          const CustomBackButton(
-            color: AppColor.secondary,
-          )
+          const CustomTop(title: 'Cari Dokter'),
         ],
       ),
     );

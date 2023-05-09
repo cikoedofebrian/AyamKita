@@ -1,4 +1,5 @@
 import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/role.dart';
 import 'package:app/controller/consultationrequest.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
@@ -19,7 +20,11 @@ class RequestList extends StatelessWidget {
     if (requestController.isLoading) {
       requestController.fetchData(peternakanId);
     }
-    final isPengelola = ModalRoute.of(context)!.settings.arguments as bool;
+
+    final isOnSelecting = ModalRoute.of(context)!.settings.arguments as bool;
+    final isPengelola =
+        Provider.of<UserController>(context, listen: false).user.role ==
+            UserRole.pemilik;
     return RefreshIndicator(
       onRefresh: () => requestController.fetchData(peternakanId),
       child: Scaffold(

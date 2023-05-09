@@ -18,6 +18,7 @@ import 'package:app/view/farm/pengelolalist.dart';
 import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/farm/datahistory.dart';
 import 'package:app/view/farm/seasonhistory.dart';
+import 'package:app/view/features/consultation/doctorview.dart';
 import 'package:app/view/features/consultation/finddoc.dart';
 import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
@@ -137,6 +138,7 @@ class MyApp extends StatelessWidget {
         '/price-list': (context) => const PriceList(),
         '/change-work-hours': (context) => const ChangeWorkHours(),
         '/find-doctor': (context) => const FindDoctor(),
+        '/doctor-view': (context) => const DoctorView(),
       },
     );
   }
