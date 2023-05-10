@@ -11,6 +11,12 @@ class FindDoctorController extends ChangeNotifier {
   List<FindDoctorModel> _list = [];
   List<FindDoctorModel> get list => _list;
 
+  FindDoctorModel? _selectedModel;
+  FindDoctorModel? get selectedModel => _selectedModel;
+  void setSelectedModel(FindDoctorModel model) {
+    _selectedModel = model;
+  }
+
   Future<void> refreshData() async {
     _isLoading = true;
     _list = [];

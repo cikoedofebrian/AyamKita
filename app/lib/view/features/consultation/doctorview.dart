@@ -2,10 +2,14 @@ import 'dart:ffi';
 
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
+import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/model/finddoctormodel.dart';
+import 'package:app/view/features/request/request.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customtop.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DoctorView extends StatelessWidget {
   const DoctorView({super.key});
@@ -155,8 +159,15 @@ class DoctorView extends StatelessWidget {
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: InkWell(
-                onTap: () => Navigator.pushNamed(context, '/request-list',
-                    arguments: true),
+                onTap: () {
+                  Provider.of<FindDoctorController>(context, listen: false)
+                      .setSelectedModel(data);
+                  Navigator.pushNamed(context, '/request-list', arguments: true)
+                      .then((value) =>
+                          Provider.of<ConsultationRequestController>(context,
+                                  listen: false)
+                              .selectRequest(""));
+                },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),

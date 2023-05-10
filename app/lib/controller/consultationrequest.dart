@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app/constant/appformat.dart';
+import 'package:app/constant/requeststatus.dart';
 import 'package:app/model/consultationrequestmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,9 +10,18 @@ import 'package:flutter/material.dart';
 class ConsultationRequestController extends ChangeNotifier {
   List<ConsultationRequestModel> _list = [];
   List<ConsultationRequestModel> get list => _list;
-
+  List<ConsultationRequestModel> get acceptedList => _list
+      .where((element) => element.status == RequestStatus.disetujui)
+      .toList();
   bool _isLoading = true;
   bool get isLoading => _isLoading;
+  String _isSelected = '';
+  String get isSelected => _isSelected;
+
+  void selectRequest(String requestId) {
+    _isSelected = requestId;
+    notifyListeners();
+  }
 
   Future<void> fetchData(String peternakanId) async {
     _list = [];

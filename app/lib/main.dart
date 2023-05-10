@@ -20,6 +20,7 @@ import 'package:app/view/farm/datahistory.dart';
 import 'package:app/view/farm/seasonhistory.dart';
 import 'package:app/view/features/consultation/doctorview.dart';
 import 'package:app/view/features/consultation/finddoc.dart';
+import 'package:app/view/features/consultation/selectpayment.dart';
 import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
 import 'package:app/view/features/request/requestdetails.dart';
@@ -139,6 +140,7 @@ class MyApp extends StatelessWidget {
         '/change-work-hours': (context) => const ChangeWorkHours(),
         '/find-doctor': (context) => const FindDoctor(),
         '/doctor-view': (context) => const DoctorView(),
+        '/select-payment': (context) => const SelectPayment(),
       },
     );
   }
