@@ -36,6 +36,12 @@ class UserController extends ChangeNotifier {
     }
   }
 
+  Future<UserModel> getUserFromId(String userId) async {
+    final result =
+        await FirebaseFirestore.instance.collection('akun').doc(userId).get();
+    return UserModel.fromJson(result.data()!);
+  }
+
   Future<void> fetchData() async {
     try {
       if (FirebaseAuth.instance.currentUser != null) {

@@ -1,5 +1,6 @@
 import 'package:app/constant/role.dart';
 import 'package:app/controller/chickenpricecontroller.dart';
+import 'package:app/controller/consultationcontroller.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
@@ -32,26 +33,27 @@ class _HomeState extends State<Home> {
   Future<void> getUserData() async {
     // isLoading = true;
     final userController = Provider.of<UserController>(context, listen: false);
-    if (userController.isLoading == false) {
-      userController.setLoading(true);
-    }
     await userController.fetchData().then(
           (value) => userController.user.role == UserRole.dokter
               ? future = Future.wait([
                   userController.fetchDokterDetails(),
+                  Provider.of<ConsultationController>(context, listen: false)
+                      .fetchDataForDokter(),
                   Provider.of<WorkingHoursControllers>(context, listen: false)
                       .fetchData(FirebaseAuth.instance.currentUser!.uid)
                 ]).then((value) => userController.setLoading(false))
               : future = Future.wait(
                   [
-                    Provider.of<FeedController>(context, listen: false)
-                        .fetchData(userController.user.peternakanId),
-                    Provider.of<DailyController>(context, listen: false)
-                        .fetchData(userController.user.peternakanId),
                     Provider.of<WeatherController>(context, listen: false)
                         .fetchData(),
                     Provider.of<ChickenPriceController>(context, listen: false)
                         .fetchData(),
+                    Provider.of<FeedController>(context, listen: false)
+                        .fetchData(userController.user.peternakanId),
+                    Provider.of<DailyController>(context, listen: false)
+                        .fetchData(userController.user.peternakanId),
+                    Provider.of<ConsultationController>(context, listen: false)
+                        .fetchDataForPemilik(userController.user.peternakanId),
                   ],
                 ).then((value) => userController.setLoading(false)),
         );
@@ -85,7 +87,10 @@ class _HomeState extends State<Home> {
               child: Stack(
                 children: [
                   RefreshIndicator(
-                      onRefresh: () => getUserData(),
+                      onRefresh: () {
+                        userController.setLoading(true);
+                        return getUserData();
+                      },
                       child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: _page[_selectedPage])),
@@ -104,9 +109,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-// RefreshIndicator(
-//               onRefresh: () => getUserData(),
-//               child: SingleChildScrollView(
-//                 physics: const AlwaysScrollableScrollPhysics(),
-//                 child:

@@ -1,4 +1,6 @@
+import 'package:app/controller/consultationcontroller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class IncomingSchedule extends StatelessWidget {
   const IncomingSchedule({super.key});
@@ -15,12 +17,13 @@ class IncomingSchedule extends StatelessWidget {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 25, right: 25, top: 20),
+            padding: const EdgeInsets.only(left: 25, right: 25, top: 20),
             child: Column(
               children: [
-                Text(
+                const Text(
                   'Usulan yang sedang berlangsung : ',
                   style: TextStyle(
                     color: Colors.white,
@@ -31,7 +34,10 @@ class IncomingSchedule extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    '69',
+                    Provider.of<ConsultationController>(context)
+                        .list
+                        .length
+                        .toString(),
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontSize: 32,
@@ -60,7 +66,6 @@ class IncomingSchedule extends StatelessWidget {
             ),
           ),
         ],
-        crossAxisAlignment: CrossAxisAlignment.start,
       ),
     );
   }

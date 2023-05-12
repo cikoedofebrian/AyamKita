@@ -1,4 +1,5 @@
 import 'package:app/controller/chickenpricecontroller.dart';
+import 'package:app/controller/consultationcontroller.dart';
 import 'package:app/controller/consultationrequest.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/farmcontroller.dart';
@@ -18,8 +19,12 @@ import 'package:app/view/farm/pengelolalist.dart';
 import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/farm/datahistory.dart';
 import 'package:app/view/farm/seasonhistory.dart';
+import 'package:app/view/features/chat/chatview.dart';
+import 'package:app/view/features/consultation/consultationlist.dart';
+import 'package:app/view/features/consultation/consultationview.dart';
 import 'package:app/view/features/consultation/doctorview.dart';
 import 'package:app/view/features/consultation/finddoc.dart';
+import 'package:app/view/features/consultation/paymentsuccess.dart';
 import 'package:app/view/features/consultation/selectpayment.dart';
 import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
@@ -73,7 +78,10 @@ void main() async {
           ),
           ChangeNotifierProvider(
             create: (context) => FindDoctorController(),
-          )
+          ),
+          ChangeNotifierProvider(
+            create: (context) => ConsultationController(),
+          ),
         ],
         child: const MyApp(),
       ),
@@ -141,6 +149,10 @@ class MyApp extends StatelessWidget {
         '/find-doctor': (context) => const FindDoctor(),
         '/doctor-view': (context) => const DoctorView(),
         '/select-payment': (context) => const SelectPayment(),
+        '/payment-success': (context) => const PaymentSuccess(),
+        '/consultation-list': (context) => const ConsultationList(),
+        '/consultation-view': (context) => const ConsultationView(),
+        '/chat-view': (context) => const ChatView(),
       },
     );
   }
