@@ -91,9 +91,10 @@ class Profile extends StatelessWidget {
               height: 6,
             ),
             InkWell(
-              onTap: () => Navigator.pushNamed(context, '/farm-data',
-                  arguments:
-                      userData.user.role == UserRole.pemilik ? true : false),
+              onTap: () => Navigator.pushNamed(
+                context,
+                '/farm-data',
+              ),
               child: SizedBox(
                 height: 95,
                 child: Stack(children: [

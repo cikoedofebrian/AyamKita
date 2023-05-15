@@ -1,5 +1,6 @@
 import 'package:app/constant/role.dart';
 import 'package:app/model/finddoctormodel.dart';
+import 'package:app/model/usermodel.dart';
 import 'package:app/model/workinghours.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -58,5 +59,31 @@ class FindDoctorController extends ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  Future<FindDoctorModel> getSpecificDokter(UserModel data) async {
+    final List<WorkingHours> emptylist = [];
+    final hours = await FirebaseFirestore.instance
+        .collection('jam-kerja')
+        .where('dokterId', isEqualTo: data.id)
+        .get();
+
+    for (var i in hours.docs) {
+      emptylist.add(WorkingHours.fromJson(i.data(), i.id));
+    }
+
+    final detail = await FirebaseFirestore.instance
+        .collection('dokter-details')
+        .doc(data.dokterDetailsId)
+        .get();
+
+    return FindDoctorModel(
+        nama: data.nama,
+        imageUrl: data.downloadUrl,
+        dokterId: data.id,
+        lokasi: data.alamat,
+        hoursList: emptylist,
+        deskripsi: detail['deskripsi'],
+        harga: detail['harga']);
   }
 }

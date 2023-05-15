@@ -16,7 +16,8 @@ class DoctorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = ModalRoute.of(context)!.settings.arguments as FindDoctorModel;
+    final rawData = ModalRoute.of(context)!.settings.arguments as List<dynamic>;
+    final data = rawData[0] as FindDoctorModel;
     final isActive = data.ifCurrentlyOpen(AppFormat.getCurrentDayIndex());
     return Scaffold(
       body: Stack(
@@ -154,40 +155,42 @@ class DoctorView extends StatelessWidget {
             ),
           ),
           const CustomTop(title: 'Profil Dokter'),
-          Positioned(
-            bottom: 0,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: InkWell(
-                onTap: () {
-                  Provider.of<FindDoctorController>(context, listen: false)
-                      .setSelectedModel(data);
-                  Navigator.pushNamed(context, '/request-list', arguments: true)
-                      .then((value) =>
-                          Provider.of<ConsultationRequestController>(context,
-                                  listen: false)
-                              .selectRequest(""));
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: isActive ? AppColor.tertiary : Colors.grey,
-                  ),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'KONSULTASI',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+          if (rawData[1] as bool)
+            Positioned(
+              bottom: 0,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: InkWell(
+                  onTap: () {
+                    Provider.of<FindDoctorController>(context, listen: false)
+                        .setSelectedModel(data);
+                    Navigator.pushNamed(context, '/request-list',
+                            arguments: true)
+                        .then((value) =>
+                            Provider.of<ConsultationRequestController>(context,
+                                    listen: false)
+                                .selectRequest(""));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: isActive ? AppColor.tertiary : Colors.grey,
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'KONSULTASI',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:app/constant/role.dart';
+import 'package:app/model/consultationrequestmodel.dart';
 import 'package:app/model/farmmodel.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -45,13 +46,13 @@ class ConsultationModel {
           .where('peternakanId', isEqualTo: peternakanId)
           .limit(0)
           .get();
-      return UserModel.fromJson(result.docs[0].data());
+      return UserModel.fromJson(result.docs[0].data(), result.docs[0].id);
     } else {
       final result = await FirebaseFirestore.instance
           .collection('akun')
           .doc(dokterId)
           .get();
-      return UserModel.fromJson(result.data()!);
+      return UserModel.fromJson(result.data()!, result.id);
     }
   }
 
@@ -61,5 +62,14 @@ class ConsultationModel {
         .doc(peternakanId)
         .get();
     return PeternakanModel.fromJson(result.data()!, result.id);
+  }
+
+  Future<ConsultationRequestModel> getConsultationRequest() async {
+    final result = await FirebaseFirestore.instance
+        .collection('usulan_konsultasi')
+        .doc(usulanKonsultasiId)
+        .get();
+
+    return ConsultationRequestModel.fromJson(result.data()!, result.id);
   }
 }

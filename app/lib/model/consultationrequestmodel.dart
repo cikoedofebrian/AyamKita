@@ -42,7 +42,7 @@ class ConsultationRequestModel {
         .collection('akun')
         .doc(pengelolaId)
         .get();
-    return UserModel.fromJson(result.data()!);
+    return UserModel.fromJson(result.data()!, result.id);
   }
 
   Color getColor() {

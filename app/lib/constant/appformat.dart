@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
@@ -94,5 +95,10 @@ class AppFormat {
     int minute = int.parse(parts[1]);
     TimeOfDay timeOfDay = TimeOfDay(hour: hour, minute: minute);
     return timeOfDay;
+  }
+
+  static String timeStampToString(Timestamp time) {
+    final String formattedTime = DateFormat('HH:mm').format(time.toDate());
+    return formattedTime;
   }
 }

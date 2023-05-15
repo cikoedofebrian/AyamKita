@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/role.dart';
 import 'package:app/controller/farmcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
+import 'package:app/model/farmmodel.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/imagepicker.dart';
@@ -29,10 +31,19 @@ class _FarmDataState extends State<FarmData> {
 
   @override
   Widget build(BuildContext context) {
-    final isPemilik = ModalRoute.of(context)!.settings.arguments as bool;
     final userController = Provider.of<UserController>(context, listen: false);
+    final isPemilik = userController.user.role == UserRole.pemilik;
     final peternakanController = Provider.of<PeternakanController>(context);
-    if (peternakanController.isLoading == true) {
+    late PeternakanModel peternakanData;
+    final PeternakanModel? data =
+        ModalRoute.of(context)!.settings.arguments as PeternakanModel?;
+    if (data != null) {
+      peternakanData = data;
+    } else {
+      peternakanData = peternakanController.farmData!;
+    }
+
+    if (peternakanController.isLoading == true && isPemilik) {
       peternakanController.fetchFarmData(userController.user.peternakanId);
     }
     void trySave() async {
@@ -77,7 +88,7 @@ class _FarmDataState extends State<FarmData> {
             fillColor: AppColor.formcolor),
       ),
       child: Scaffold(
-          body: peternakanController.isLoading == true
+          body: peternakanController.isLoading == true && isPemilik
               ? Center(
                   child: LoadingAnimationWidget.inkDrop(
                     color: AppColor.secondary,
@@ -113,7 +124,7 @@ class _FarmDataState extends State<FarmData> {
                                       SizedBox(
                                         width: 100,
                                         height: 100,
-                                        child: peternakanController.farmData!
+                                        child: peternakanData
                                                     .downloadUrl.isEmpty &&
                                                 photo == null
                                             ? Container(
@@ -136,8 +147,7 @@ class _FarmDataState extends State<FarmData> {
                                                     image: photo != null
                                                         ? FileImage(photo!)
                                                         : NetworkImage(
-                                                                peternakanController
-                                                                    .farmData!
+                                                                peternakanData
                                                                     .downloadUrl)
                                                             as ImageProvider,
                                                     fit: BoxFit.cover,
@@ -235,8 +245,7 @@ class _FarmDataState extends State<FarmData> {
                                   ),
                                   TextFormField(
                                     onSaved: (newValue) => nama = newValue!,
-                                    initialValue:
-                                        peternakanController.farmData!.nama,
+                                    initialValue: peternakanData.nama,
                                     validator: (value) {
                                       if (value!.isEmpty) {
                                         return "Tidak boleh kosong";
@@ -265,9 +274,8 @@ class _FarmDataState extends State<FarmData> {
                                       }
                                       return null;
                                     },
-                                    initialValue: peternakanController
-                                        .farmData!.luas
-                                        .toString(),
+                                    initialValue:
+                                        peternakanData.luas.toString(),
                                     key: const ValueKey('email'),
                                   ),
                                   const SizedBox(
@@ -279,8 +287,7 @@ class _FarmDataState extends State<FarmData> {
                                   ),
                                   TextFormField(
                                     enabled: false,
-                                    initialValue:
-                                        peternakanController.farmData!.semenjak,
+                                    initialValue: peternakanData.semenjak,
 
                                     // onSaved: (newValue) => number = newValue!,
                                     key: const ValueKey('number'),
@@ -299,8 +306,7 @@ class _FarmDataState extends State<FarmData> {
                                       }
                                     },
                                     onSaved: (newValue) => alamat = newValue!,
-                                    initialValue:
-                                        peternakanController.farmData!.alamat,
+                                    initialValue: peternakanData.alamat,
                                     enabled: isEditable,
                                     key: const ValueKey('address'),
                                   ),
@@ -316,8 +322,8 @@ class _FarmDataState extends State<FarmData> {
                                       Expanded(
                                         child: TextFormField(
                                           enabled: false,
-                                          initialValue: peternakanController
-                                              .farmData!.peternakanId,
+                                          initialValue:
+                                              peternakanData.peternakanId,
                                           key: const ValueKey('semenjak'),
                                         ),
                                       ),
@@ -325,8 +331,7 @@ class _FarmDataState extends State<FarmData> {
                                         onTap: () {
                                           Clipboard.setData(
                                             ClipboardData(
-                                              text: peternakanController
-                                                  .farmData!.peternakanId,
+                                              text: peternakanData.peternakanId,
                                             ),
                                           );
                                           customDialog(context, 'Berhasil!',
@@ -359,10 +364,12 @@ class _FarmDataState extends State<FarmData> {
                                                   .pushNamed('/pengelola-list');
                                             } else {
                                               Navigator.pushNamed(
-                                                  context, '/profile-dummy',
-                                                  arguments:
-                                                      peternakanController
-                                                          .seePemilik());
+                                                context,
+                                                '/profile-dummy',
+                                                arguments: peternakanController
+                                                    .seePemilik(peternakanData
+                                                        .peternakanId),
+                                              );
                                             }
                                           },
                                           child: Material(

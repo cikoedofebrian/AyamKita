@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/usercontroller.dart';
+import 'package:app/model/farmmodel.dart';
+import 'package:app/model/usermodel.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/imagepicker.dart';
@@ -28,7 +30,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   late String email;
   late String since;
   late String imageUrl;
-  late Future future;
   String deskripsi = '';
   int harga = 0;
   File? photo;
@@ -38,7 +39,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   @override
   void initState() {
     final userController = Provider.of<UserController>(context, listen: false);
-    future = userController.getFarmName();
     name = userController.user.nama;
     role = userController.user.role;
     number = userController.user.noTelepon;
@@ -53,6 +53,18 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   @override
   Widget build(BuildContext context) {
     final userController = Provider.of<UserController>(context);
+
+    final UserModel? isFromConsultation =
+        ModalRoute.of(context)!.settings.arguments as UserModel?;
+    if (isFromConsultation != null) {
+      name = isFromConsultation.nama;
+      role = isFromConsultation.role;
+      number = isFromConsultation.noTelepon;
+      address = isFromConsultation.alamat;
+      email = isFromConsultation.email;
+      since = isFromConsultation.tanggalPendaftaran;
+      imageUrl = isFromConsultation.downloadUrl;
+    }
     void trySave() async {
       if (formKey.currentState!.validate()) {
         //   bool isConfirm = false;
@@ -150,14 +162,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             fit: BoxFit.cover,
                             alignment: Alignment.bottomCenter,
                           )),
-                      // Positioned(
-                      //   top: 110,
-                      //   left: MediaQuery.of(context).size.width * 0.5 - 50,
-                      //   child: SizedBox(
-                      //     child: Image.asset("assets/images/profile.png"),
-                      //     width: 100,
-                      //   ),
-                      // ),
                       Container(
                         width: double.infinity,
                         height: 220,

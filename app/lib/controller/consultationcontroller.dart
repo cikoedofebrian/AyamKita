@@ -2,8 +2,10 @@ import 'package:app/constant/requeststatus.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:app/model/consultationmodel.dart';
 
 class ConsultationController extends ChangeNotifier {
@@ -85,9 +87,10 @@ class ConsultationController extends ChangeNotifier {
   }
 
   Future<void> sendNewChat(String text) async {
+    // final timestamp = FieldValue.serverTimestamp();
     await FirebaseFirestore.instance.collection('chat').add({
+      'timestamp': FieldValue.serverTimestamp(),
       'konsultasiId': currentSelectedChat,
-      'timestamp': Timestamp.now(),
       'sender': FirebaseAuth.instance.currentUser!.uid,
       'pesan': text,
     });

@@ -39,7 +39,7 @@ class UserController extends ChangeNotifier {
   Future<UserModel> getUserFromId(String userId) async {
     final result =
         await FirebaseFirestore.instance.collection('akun').doc(userId).get();
-    return UserModel.fromJson(result.data()!);
+    return UserModel.fromJson(result.data()!, result.id);
   }
 
   Future<void> fetchData() async {
@@ -50,7 +50,7 @@ class UserController extends ChangeNotifier {
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get();
 
-        _user = UserModel.fromJson(result.data()!);
+        _user = UserModel.fromJson(result.data()!, result.id);
       }
     } catch (error) {
       print(error);
@@ -140,7 +140,7 @@ class UserController extends ChangeNotifier {
         .where('role', isEqualTo: UserRole.pemilik)
         .limit(1)
         .get();
-    return [UserModel.fromJson(data.docs[0].data())];
+    return [UserModel.fromJson(data.docs[0].data(), data.docs[0].id)];
   }
 
   Future<String> addNewFarm(String nama, String alamat, int luas,

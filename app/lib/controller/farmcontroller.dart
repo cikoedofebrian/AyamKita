@@ -35,21 +35,22 @@ class PeternakanController extends ChangeNotifier {
         .where('role', isEqualTo: UserRole.pengelola)
         .get();
     for (var i in data.docs) {
-      list.add(UserModel.fromJson(i.data()));
+      list.add(UserModel.fromJson(i.data(), i.id));
     }
     return list;
   }
 
-  Future<UserModel> seePemilik() async {
+  Future<UserModel> seePemilik(String peternakanId) async {
     final data = await FirebaseFirestore.instance
         .collection('akun')
-        .where('peternakanId', isEqualTo: farmData!.peternakanId)
+        .where('peternakanId', isEqualTo: peternakanId)
         .where('role', isEqualTo: UserRole.pemilik)
         .limit(1)
         .get();
 
     return UserModel.fromJson(
       data.docs[0].data(),
+      data.docs[0].id,
     );
   }
 

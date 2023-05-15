@@ -21,8 +21,8 @@ class DokterListWidget extends StatelessWidget {
               fit: BoxFit.cover),
           borderRadius: BorderRadius.circular(10)),
       child: InkWell(
-        onTap: () =>
-            Navigator.of(context).pushNamed('/doctor-view', arguments: data),
+        onTap: () => Navigator.of(context)
+            .pushNamed('/doctor-view', arguments: [data, true]),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

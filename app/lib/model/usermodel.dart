@@ -1,4 +1,5 @@
 class UserModel {
+  String id;
   String nama;
   String role;
   String email;
@@ -10,6 +11,7 @@ class UserModel {
   String dokterDetailsId;
 
   UserModel({
+    required this.id,
     required this.nama,
     required this.role,
     required this.alamat,
@@ -21,7 +23,8 @@ class UserModel {
     required this.noTelepon,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json, id) => UserModel(
+        id: id,
         nama: json['nama'],
         role: json['role'],
         alamat: json.containsKey('alamat') ? json['alamat'] : '',

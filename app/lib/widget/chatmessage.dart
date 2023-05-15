@@ -10,12 +10,12 @@ class ChatMessage extends StatelessWidget {
       required this.sender,
       this.receiverUrl,
       required this.isOtherReply,
-      required this.timestamp});
+      this.timestamp});
   final String message;
   final bool sender;
   final String? receiverUrl;
   final bool isOtherReply;
-  final Timestamp timestamp;
+  final Timestamp? timestamp;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -33,7 +33,9 @@ class ChatMessage extends StatelessWidget {
                   child: isOtherReply
                       ? CircleAvatar(
                           backgroundImage: receiverUrl!.isNotEmpty
-                              ? NetworkImage(receiverUrl!)
+                              ? NetworkImage(
+                                  receiverUrl!,
+                                )
                               : const AssetImage("assets/images/profile.png")
                                   as ImageProvider)
                       : const CircleAvatar(
@@ -49,6 +51,14 @@ class ChatMessage extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        offset: Offset(2, 2.2),
+                        blurRadius: 2,
+                        spreadRadius: 2,
+                      )
+                    ],
                     color: sender
                         ? const Color.fromRGBO(255, 212, 176, 1)
                         : Colors.white,
