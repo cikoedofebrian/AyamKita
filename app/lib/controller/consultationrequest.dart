@@ -13,6 +13,17 @@ class ConsultationRequestController extends ChangeNotifier {
   List<ConsultationRequestModel> get acceptedList => _list
       .where((element) => element.status == RequestStatus.disetujui)
       .toList();
+
+  List<ConsultationRequestModel> get doneList => _list
+      .where((element) =>
+          element.status == RequestStatus.selesai ||
+          element.status == RequestStatus.ditolak)
+      .toList();
+  List<ConsultationRequestModel> get progressList => _list
+      .where((element) =>
+          element.status != RequestStatus.ditolak &&
+          element.status != RequestStatus.selesai)
+      .toList();
   bool _isLoading = true;
   bool get isLoading => _isLoading;
   String _isSelected = '';

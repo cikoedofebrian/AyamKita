@@ -1,15 +1,20 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
+import 'package:app/constant/requeststatus.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
+import 'package:app/model/consultationmodel.dart';
 import 'package:app/model/consultationrequestmodel.dart';
 import 'package:app/model/farmmodel.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:app/widget/consultationdata.dart';
+import 'package:app/widget/consultationstatus.dart';
 import 'package:app/widget/customtop.dart';
+import 'package:app/widget/image_shower.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:provider/provider.dart';
 
 class ConsultationView extends StatelessWidget {
@@ -23,22 +28,24 @@ class ConsultationView extends StatelessWidget {
     final isPemilik = userController.user.role == UserRole.pemilik;
     final dokterData = data[1] as UserModel;
     final consultationRequestData = data[2] as ConsultationRequestModel;
+    final consultationData = data[3] as ConsultationModel;
 
     return Theme(
       data: ThemeData(
         inputDecorationTheme: const InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            outlineBorder: BorderSide(color: Colors.grey),
-            disabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            filled: true,
-            fillColor: AppColor.formcolor),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+          outlineBorder: BorderSide(color: Colors.grey),
+          disabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+          filled: true,
+          fillColor: AppColor.formcolor,
+        ),
       ),
       child: Scaffold(
         floatingActionButton: FloatingActionButton.extended(
@@ -75,9 +82,17 @@ class ConsultationView extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
                     height: 160,
+                  ),
+                  ConsultationStatus(
+                    status: consultationData.status,
+                    hasilId: consultationData.hasilId,
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                   InkWell(
                     onTap: () async {
@@ -115,20 +130,64 @@ class ConsultationView extends StatelessWidget {
                       title: 'Deskripsi',
                       data: consultationRequestData.deskripsi,
                       moreThanOneLine: true),
-                  if (!isPemilik)
-                    Container(
-                      alignment: Alignment.center,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
+                  const Text(
+                    'Foto',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      if (consultationRequestData.downloadUrl.isNotEmpty) {
+                        Navigator.pushNamed(context, '/photo-view',
+                            arguments: consultationRequestData.downloadUrl);
+                      }
+                    },
+                    child: Container(
+                      height: 80,
+                      width: 80,
                       decoration: BoxDecoration(
-                          color: AppColor.tertiary,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Text(
-                        'BERIKAN HASIL KONSULTASI',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: consultationRequestData.downloadUrl.isEmpty
+                                  ? const AssetImage(
+                                      "assets/images/no-photo-available.png")
+                                  : NetworkImage(
+                                      consultationRequestData.downloadUrl,
+                                    ) as ImageProvider),
+                          color: AppColor.formcolor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              width: 1.5, color: AppColor.formborder)),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  if (!isPemilik &&
+                      consultationData.status == RequestStatus.berlangsung)
+                    InkWell(
+                      onTap: () => Navigator.pushNamed(
+                          context, '/create-result',
+                          arguments: consultationData),
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        decoration: BoxDecoration(
+                            color: AppColor.tertiary,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: const Text(
+                          'BERIKAN HASIL KONSULTASI',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
+                  const SizedBox(
+                    height: 80,
+                  ),
                 ],
               ),
             ),
@@ -156,7 +215,10 @@ class ConsultationData extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title),
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         Container(
           decoration: BoxDecoration(
             color: AppColor.secondary,
@@ -170,8 +232,7 @@ class ConsultationData extends StatelessWidget {
               ),
               Text(
                 nama,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(
                 width: 12,

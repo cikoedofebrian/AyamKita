@@ -9,11 +9,11 @@ class ConsultationModel {
   final String konsultasiId;
   final String peternakanId;
   final String usulanKonsultasiId;
-  final String status;
+  String status;
   final int harga;
   final String dokterId;
   final DateTime tanggal;
-  final String hasilId;
+  String hasilId;
 
   ConsultationModel({
     required this.dokterId,
@@ -30,9 +30,9 @@ class ConsultationModel {
     return ConsultationModel(
       dokterId: json['dokterId'],
       harga: json['harga'],
-      hasilId: json['hasilId'],
+      hasilId: json.containsKey('hasilId') ? json['hasilId'] : '',
       tanggal: DateFormat('dd-MM-yyyy').parse(json['date']),
-      konsultasiId: json['usulanKonsultasiId'],
+      konsultasiId: id,
       peternakanId: json['peternakanId'],
       status: json['status'],
       usulanKonsultasiId: json['usulanKonsultasiId'],
@@ -71,5 +71,13 @@ class ConsultationModel {
         .get();
 
     return ConsultationRequestModel.fromJson(result.data()!, result.id);
+  }
+
+  Future<Map<String, dynamic>> getHasil() async {
+    final result = await FirebaseFirestore.instance
+        .collection('hasil-konsultasi')
+        .doc(hasilId)
+        .get();
+    return result.data()!;
   }
 }

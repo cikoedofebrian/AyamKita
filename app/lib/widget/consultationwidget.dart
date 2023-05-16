@@ -7,7 +7,6 @@ import 'package:app/model/farmmodel.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ConsultationWidget extends StatelessWidget {
@@ -43,6 +42,7 @@ class ConsultationWidget extends StatelessWidget {
                 snapshot.data![0],
                 snapshot.data![1],
                 snapshot.data![2],
+                data,
               ]);
             },
             child: Container(

@@ -22,9 +22,11 @@ import 'package:app/view/farm/seasonhistory.dart';
 import 'package:app/view/features/chat/chatview.dart';
 import 'package:app/view/features/consultation/consultationlist.dart';
 import 'package:app/view/features/consultation/consultationview.dart';
+import 'package:app/view/features/consultation/createresult.dart';
 import 'package:app/view/features/consultation/doctorview.dart';
 import 'package:app/view/features/consultation/finddoc.dart';
 import 'package:app/view/features/consultation/paymentsuccess.dart';
+import 'package:app/view/features/consultation/resultview.dart';
 import 'package:app/view/features/consultation/selectpayment.dart';
 import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
@@ -35,6 +37,7 @@ import 'package:app/view/features/workhours/change_workhours.dart';
 import 'package:app/view/home/home.dart';
 import 'package:app/view/profile/profile_details.dart';
 import 'package:app/view/profile/profiledummy.dart';
+import 'package:app/widget/image_shower.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -153,6 +156,9 @@ class MyApp extends StatelessWidget {
         '/consultation-list': (context) => const ConsultationList(),
         '/consultation-view': (context) => const ConsultationView(),
         '/chat-view': (context) => const ChatView(),
+        '/photo-view': (context) => const ImageShower(),
+        '/create-result': (context) => const CreateResult(),
+        '/result-view': (context) => const ResultView(),
       },
     );
   }

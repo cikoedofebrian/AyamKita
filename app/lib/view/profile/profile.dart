@@ -90,136 +90,139 @@ class Profile extends StatelessWidget {
             const SizedBox(
               height: 6,
             ),
-            InkWell(
-              onTap: () => Navigator.pushNamed(
-                context,
-                '/farm-data',
-              ),
-              child: SizedBox(
-                height: 95,
-                child: Stack(children: [
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 20),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                            image: AssetImage("assets/images/farm_bg.png"),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      height: 80,
-                      child: const Text(
-                        'Profil Peternakan',
-                        style: TextStyle(
-                            color: AppColor.tertiary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24),
+            if (userData.user.role != UserRole.dokter)
+              InkWell(
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  '/farm-data',
+                ),
+                child: SizedBox(
+                  height: 95,
+                  child: Stack(children: [
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 20),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                              image: AssetImage("assets/images/farm_bg.png"),
+                              fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        height: 80,
+                        child: const Text(
+                          'Profil Peternakan',
+                          style: TextStyle(
+                              color: AppColor.tertiary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24),
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 18,
-                    child: Image.asset(
-                      "assets/images/barn.jpg",
-                      scale: 4.8,
+                    Positioned(
+                      top: 0,
+                      right: 18,
+                      child: Image.asset(
+                        "assets/images/barn.jpg",
+                        scale: 4.8,
+                      ),
                     ),
-                  ),
-                ]),
+                  ]),
+                ),
               ),
-            ),
+
             const SizedBox(
               height: 6,
             ),
-            InkWell(
-              onTap: () => Navigator.pushNamed(context, '/request-list',
-                  arguments: false),
-              child: SizedBox(
+            if (userData.user.role != UserRole.dokter)
+              InkWell(
+                onTap: () => Navigator.pushNamed(context, '/request-list',
+                    arguments: false),
+                child: SizedBox(
+                  height: 90,
+                  child: Stack(children: [
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 20),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                              image: AssetImage("assets/images/request_bg.png"),
+                              fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        height: 80,
+                        child: const Text(
+                          'Usul Konsultasi',
+                          style: TextStyle(
+                              color: AppColor.secondary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 5,
+                      right: 18,
+                      child: Image.asset(
+                        "assets/images/req.png",
+                        scale: 7,
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
+            const SizedBox(
+              height: 6,
+            ),
+            // Expanded(child: Container())
+            if (userData.user.role != UserRole.dokter)
+              SizedBox(
                 height: 90,
                 child: Stack(children: [
                   Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 20),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                            image: AssetImage("assets/images/request_bg.png"),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      height: 80,
-                      child: const Text(
-                        'Usul Konsultasi',
-                        style: TextStyle(
-                            color: AppColor.secondary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24),
+                    child: InkWell(
+                      onTap: () => Navigator.pushNamed(context, '/season-list'),
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 20),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                              image: AssetImage(
+                                  "assets/images/daily_background.png"),
+                              fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        height: 80,
+                        child: const Text(
+                          'Data Harian',
+                          style: TextStyle(
+                              color: Color.fromRGBO(255, 195, 85, 1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24),
+                        ),
                       ),
                     ),
                   ),
                   Positioned(
-                    top: 5,
-                    right: 18,
+                    top: 0,
+                    right: 25,
                     child: Image.asset(
-                      "assets/images/req.png",
-                      scale: 7,
+                      "assets/images/book.png",
+                      scale: 3.3,
                     ),
                   ),
                 ]),
               ),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            // Expanded(child: Container())
-            SizedBox(
-              height: 90,
-              child: Stack(children: [
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: InkWell(
-                    onTap: () => Navigator.pushNamed(context, '/season-list'),
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 20),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                            image: AssetImage(
-                                "assets/images/daily_background.png"),
-                            fit: BoxFit.cover),
-                        // color: const Color.fromRGBO(213, 13, 0, 1),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      height: 80,
-                      child: const Text(
-                        'Data Harian',
-                        style: TextStyle(
-                            color: Color.fromRGBO(255, 195, 85, 1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 25,
-                  child: Image.asset(
-                    "assets/images/book.png",
-                    scale: 3.3,
-                  ),
-                ),
-              ]),
-            ),
             const SizedBox(
               height: 6,
             ),

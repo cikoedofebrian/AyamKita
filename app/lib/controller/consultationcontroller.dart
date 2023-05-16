@@ -1,5 +1,7 @@
+import 'package:app/constant/appformat.dart';
 import 'package:app/constant/requeststatus.dart';
 import 'package:app/model/usermodel.dart';
+import 'package:app/view/features/consultation/createresult.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +13,12 @@ import 'package:app/model/consultationmodel.dart';
 class ConsultationController extends ChangeNotifier {
   List<ConsultationModel> _list = [];
   List<ConsultationModel> get list => _list;
+  List<ConsultationModel> get doneList => _list
+      .where((element) => element.status == RequestStatus.selesai)
+      .toList();
+  List<ConsultationModel> get activeList => _list
+      .where((element) => element.status == RequestStatus.berlangsung)
+      .toList();
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -86,8 +94,37 @@ class ConsultationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> createResult(
+      String diagnosa, String penjelasan, ConsultationModel data) async {
+    try {
+      final result =
+          await FirebaseFirestore.instance.collection('hasil_konsultasi').add({
+        'diagnosa': diagnosa,
+        'penjelasan': penjelasan,
+        'tanggal': AppFormat.intDateFromDateTime(DateTime.now())
+      });
+
+      await FirebaseFirestore.instance
+          .collection('usulan_konsultasi')
+          .doc(data.usulanKonsultasiId)
+          .update({'status': RequestStatus.selesai});
+      print(data.konsultasiId);
+      await FirebaseFirestore.instance
+          .collection('konsultasi')
+          .doc(data.konsultasiId)
+          .update({'status': RequestStatus.selesai, 'hasilId': result.id});
+
+      final index = _list
+          .indexWhere((element) => element.konsultasiId == data.konsultasiId);
+      _list[index].status = RequestStatus.selesai;
+      _list[index].hasilId = result.id;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
   Future<void> sendNewChat(String text) async {
-    // final timestamp = FieldValue.serverTimestamp();
     await FirebaseFirestore.instance.collection('chat').add({
       'timestamp': FieldValue.serverTimestamp(),
       'konsultasiId': currentSelectedChat,

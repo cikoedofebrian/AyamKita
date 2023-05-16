@@ -5,6 +5,7 @@ import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/requestwidget.dart';
+import 'package:app/widget/selectstatus.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,14 @@ class RequestList extends StatefulWidget {
 }
 
 class _RequestListState extends State<RequestList> {
+  bool isProgress = true;
+
+  void changeSelectedList(bool newStatus) {
+    setState(() {
+      isProgress = newStatus;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final requestController =
@@ -27,8 +36,11 @@ class _RequestListState extends State<RequestList> {
       requestController.fetchData(peternakanId);
     }
     final isOnSelecting = ModalRoute.of(context)!.settings.arguments as bool;
-    final list =
-        isOnSelecting ? requestController.acceptedList : requestController.list;
+    final list = isOnSelecting
+        ? requestController.acceptedList
+        : isProgress
+            ? requestController.progressList
+            : requestController.doneList;
     final isPengelola =
         Provider.of<UserController>(context, listen: false).user.role ==
             UserRole.pengelola;
@@ -91,6 +103,10 @@ class _RequestListState extends State<RequestList> {
                             ],
                           ),
                         ),
+                        if (!isOnSelecting)
+                          SelectStatus(
+                              done: isProgress,
+                              changeStatus: changeSelectedList),
                         Expanded(
                           child: list.isNotEmpty
                               ? ListView.builder(

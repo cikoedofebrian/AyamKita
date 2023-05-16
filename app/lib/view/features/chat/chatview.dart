@@ -83,37 +83,41 @@ class _ChatViewState extends State<ChatView> {
                         Column(
                           children: [
                             Expanded(
-                              child: ListView.builder(
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: const EdgeInsets.only(
-                                    top: 160,
-                                    left: 8,
-                                    right: 8,
-                                    bottom: 20,
-                                  ),
-                                  controller: scrollController,
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder: (context, index) {
-                                    bool isOtherReply = false;
-                                    if (snapshot.data!.docs[index]['sender']
-                                            as String !=
-                                        sender) {
-                                      sender =
-                                          snapshot.data!.docs[index]['sender'];
-                                      isOtherReply = true;
-                                    }
-                                    return ChatMessage(
-                                      sender: snapshot.data!.docs[index]
-                                                  ['sender'] ==
-                                              userId
-                                          ? true
-                                          : false,
-                                      message: snapshot.data!.docs[index]
-                                          ['pesan'],
-                                      receiverUrl: receiver.downloadUrl,
-                                      isOtherReply: isOtherReply,
-                                    );
-                                  }),
+                              child: Container(
+                                alignment: Alignment.bottomCenter,
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const BouncingScrollPhysics(),
+                                    padding: const EdgeInsets.only(
+                                      top: 160,
+                                      left: 8,
+                                      right: 8,
+                                      bottom: 20,
+                                    ),
+                                    controller: scrollController,
+                                    itemCount: snapshot.data!.docs.length,
+                                    itemBuilder: (context, index) {
+                                      bool isOtherReply = false;
+                                      if (snapshot.data!.docs[index]['sender']
+                                              as String !=
+                                          sender) {
+                                        sender = snapshot.data!.docs[index]
+                                            ['sender'];
+                                        isOtherReply = true;
+                                      }
+                                      return ChatMessage(
+                                        sender: snapshot.data!.docs[index]
+                                                    ['sender'] ==
+                                                userId
+                                            ? true
+                                            : false,
+                                        message: snapshot.data!.docs[index]
+                                            ['pesan'],
+                                        receiverUrl: receiver.downloadUrl,
+                                        isOtherReply: isOtherReply,
+                                      );
+                                    }),
+                              ),
                             ),
                             const SizedBox(
                               height: 60,
