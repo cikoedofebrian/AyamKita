@@ -9,6 +9,7 @@ class DataHarianModel {
   final int keluar;
   final String obat;
   final int hargaObat;
+  final int harga;
 
   DataHarianModel({
     required this.tanggal,
@@ -19,17 +20,20 @@ class DataHarianModel {
     required this.obat,
     required this.pakan,
     required this.kematian,
+    required this.harga,
   });
 
   factory DataHarianModel.fromJson(Map<String, dynamic> json) {
     return DataHarianModel(
-        tanggal: json['tanggal'],
-        kematian: json['kematian'],
-        umur: json['umur'],
-        pakan: json['pakan'],
-        keluar: json['keluar'],
-        obat: json['obat'] ?? '',
-        hargaObat: json['harga_obat'],
-        hargaPakan: json['harga_pakan']);
+      tanggal: json['tanggal'],
+      kematian: json['kematian'],
+      umur: json['umur'],
+      pakan: json['pakan'],
+      keluar: json['keluar'],
+      obat: json['obat'] ?? '',
+      hargaObat: json['harga_obat'],
+      hargaPakan: json['harga_pakan'],
+      harga: json['harga'],
+    );
   }
 }

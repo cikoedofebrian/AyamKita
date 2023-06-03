@@ -1,6 +1,7 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
+import 'package:app/controller/chickenpricecontroller.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/customdialog.dart';
@@ -33,14 +34,29 @@ class _AddDataState extends State<AddData> {
     final dailyController = Provider.of<DailyController>(context);
     final index = dailyController.indexActive();
     void save() async {
-      final parsedDate = DateFormat('dd-MM-yyyy')
-          .parse(dailyController.musimList[index].list.last.tanggal);
-      Duration difference = initialDate.difference(parsedDate);
-      if (difference > const Duration(days: 1)) {
-        customDialog(
-            context, 'Gagal', 'Isilah data harian sebelumnya terlebih dahulu!');
+      if (dailyController.musimList[index].list.isNotEmpty) {
+        final parsedDate = DateFormat('dd-MM-yyyy')
+            .parse(dailyController.musimList[index].list.last.tanggal);
+        Duration difference = initialDate.difference(parsedDate);
+        if (difference > const Duration(days: 1)) {
+          customDialog(context, 'Gagal',
+              'Isilah data harian sebelumnya terlebih dahulu!');
+          return;
+        }
+      } else {
+        if (AppFormat.intDateFromDateTime(initialDate) !=
+            dailyController.musimList[index].mulai) {
+          customDialog(context, 'Gagal',
+              'Isilah data harian sebelumnya terlebih dahulu!');
+          return;
+        }
+      }
+
+      if (initialDate.isAfter(DateTime.now())) {
+        customDialog(context, 'Gagal', 'Tidak boleh mengisi di masa depan');
         return;
       }
+
       try {
         if (formKey.currentState!.validate()) {
           formKey.currentState!.save();
@@ -65,18 +81,43 @@ class _AddDataState extends State<AddData> {
             ],
           ).show(context);
           if (isConfirmed) {
-            await Provider.of<DailyController>(context, listen: false)
+            final int stockdifference = dailyController
+                    .musimList[index].jumlah -
+                dailyController
+                    .getTotalStock(dailyController.musimList[index].musimId);
+
+            final total =
+                stockdifference - (int.parse(keluar) + int.parse(kematian));
+            if (total < 0) {
+              customDialog(
+                  context, 'Gagal', 'Stok hanya tersisa $stockdifference');
+              return;
+            }
+            final ChickenPriceController chickenPriceController =
+                Provider.of<ChickenPriceController>(context, listen: false);
+            final price = chickenPriceController.list.firstWhere(
+              (element) =>
+                  element.date ==
+                  DateTime(
+                    initialDate.year,
+                    initialDate.month,
+                    initialDate.day,
+                  ),
+            );
+            await dailyController
                 .addData(
-                    initialDate,
-                    int.parse(umur),
-                    double.parse(pakan),
-                    int.parse(hargaPakan),
-                    int.parse(kematian),
-                    int.parse(keluar),
-                    int.parse(hargaObat),
-                    obat,
-                    dailyController.musimList[index].musimId,
-                    index)
+              initialDate,
+              int.parse(umur),
+              double.parse(pakan),
+              int.parse(hargaPakan),
+              int.parse(kematian),
+              int.parse(keluar),
+              int.parse(hargaObat),
+              obat,
+              index,
+              price.price,
+              total == 0,
+            )
                 .then((value) {
               customDialog(context, 'Berhasil!', 'Data berhasil ditambahkan!');
             });
@@ -269,13 +310,13 @@ class _AddDataState extends State<AddData> {
                                 ],
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Expanded(
                                     child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: const [
+                                        children: [
                                           Text(
                                             'DATA SUDAH ADA',
                                             style: TextStyle(

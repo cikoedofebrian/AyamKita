@@ -5,6 +5,7 @@ import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/requestpainter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class PriceList extends StatelessWidget {
   const PriceList({super.key});
@@ -21,34 +22,42 @@ class PriceList extends StatelessWidget {
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height,
-            child: ListView.builder(
-              padding: const EdgeInsets.only(
-                  top: 160, left: 40, right: 40, bottom: 20),
-              itemCount: priceController.length,
-              itemBuilder: (context, index) => Column(
-                children: [
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        AppFormat.dateFromDateTime(priceController[index].date),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Expanded(
-                        child: Text(
-                          AppFormat.currency(priceController[index].price),
-                          style: const TextStyle(fontSize: 16),
-                          textAlign: TextAlign.end,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(
+                        top: 160, left: 40, right: 40, bottom: 20),
+                    itemCount: priceController.length,
+                    itemBuilder: (context, index) => Column(
+                      children: [
+                        const SizedBox(
+                          height: 5,
                         ),
-                      ),
-                    ],
+                        Row(
+                          children: [
+                            Text(
+                              AppFormat.dateFromDateTime(
+                                  priceController[index].date),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Expanded(
+                              child: Text(
+                                AppFormat.currency(
+                                    priceController[index].price),
+                                style: const TextStyle(fontSize: 16),
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(),
+                      ],
+                    ),
                   ),
-                  const Divider(),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           SizedBox(

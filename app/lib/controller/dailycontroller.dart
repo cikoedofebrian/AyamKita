@@ -11,6 +11,56 @@ class DailyController extends ChangeNotifier {
 
   List<MusimModel> get musimList => _musimList;
 
+  int getTotalProfit(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    int totalProfit = 0;
+    for (var i in selectedMusim.list) {
+      totalProfit += i.harga;
+    }
+    return totalProfit;
+  }
+
+  int getTotalStock(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    int totalProfit = 0;
+    for (var i in selectedMusim.list) {
+      totalProfit += i.harga;
+    }
+    return totalProfit;
+  }
+
+  int getTotalObat(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    int hargaObat = 0;
+    for (var i in selectedMusim.list) {
+      hargaObat += i.hargaObat;
+    }
+    return hargaObat;
+  }
+
+  int getTotalPakan(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    int hargaPakan = 0;
+    for (var i in selectedMusim.list) {
+      hargaPakan += i.hargaPakan;
+    }
+    return hargaPakan;
+  }
+
+  int getTotalDead(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    int totalDead = 0;
+    for (var i in selectedMusim.list) {
+      totalDead += i.kematian;
+    }
+    return totalDead;
+  }
+
   Future<void> fetchData(String farmId) async {
     try {
       _musimList = [];
@@ -69,18 +119,20 @@ class DailyController extends ChangeNotifier {
   }
 
   Future<void> addData(
-      DateTime date,
-      int umur,
-      double pakan,
-      int hargaPakan,
-      int kematian,
-      int keluar,
-      int hargaObat,
-      String obat,
-      String musimId,
-      int index) async {
+    DateTime date,
+    int umur,
+    double pakan,
+    int hargaPakan,
+    int kematian,
+    int keluar,
+    int hargaObat,
+    String obat,
+    int index,
+    int harga,
+    bool isDone,
+  ) async {
     try {
-      FirebaseFirestore.instance.collection('data_harian').add({
+      await FirebaseFirestore.instance.collection('data_harian').add({
         'tanggal': AppFormat.intDateFromDateTime(date),
         'umur': umur,
         'pakan': pakan,
@@ -89,8 +141,20 @@ class DailyController extends ChangeNotifier {
         'keluar': keluar,
         'obat': obat,
         'harga_obat': hargaObat,
-        'musimId': musimId,
+        'musimId': _musimList[index].musimId,
+        'harga': harga,
       });
+      if (isDone) {
+        _musimList[index].status = false;
+
+        await FirebaseFirestore.instance
+            .collection('musim')
+            .doc(_musimList[index].musimId)
+            .update({
+          'status': false,
+        });
+      }
+
       _musimList[index].list.add(DataHarianModel(
           umur: umur,
           pakan: pakan,
@@ -99,6 +163,7 @@ class DailyController extends ChangeNotifier {
           keluar: keluar,
           obat: obat,
           hargaObat: hargaObat,
+          harga: harga,
           tanggal: AppFormat.intDateFromDateTime(date)));
       notifyListeners();
     } catch (error) {

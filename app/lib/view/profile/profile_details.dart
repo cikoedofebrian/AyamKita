@@ -300,8 +300,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           if (value!.isEmpty) {
                             return "Wajib diisi";
                           } else if (value.isNotEmpty &&
-                              int.tryParse(value) == null) {
-                            return "Tolong isi dengan angka";
+                              int.tryParse(value) != null &&
+                              value.length < 8) {
+                            return "Tolong isi dengan no telepon yang valid";
                           }
                           return null;
                         },

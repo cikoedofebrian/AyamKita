@@ -7,6 +7,7 @@ import 'package:app/controller/usercontroller.dart';
 import 'package:app/controller/weathercontroller.dart';
 import 'package:app/controller/workinghourscontroller.dart';
 import 'package:app/view/farm/add_data.dart';
+import 'package:app/view/features/profits/view_profit.dart';
 import 'package:app/view/home/dashboard.dart';
 import 'package:app/view/profile/profile.dart';
 import 'package:app/widget/customnavbar.dart';
@@ -59,12 +60,11 @@ class _HomeState extends State<Home> {
         );
   }
 
-  final List<Widget> _page = const [
-    DashBoard(),
-    AddData(),
-    Profile(),
+  List<Widget> _page = [
+    const DashBoard(),
+    const AddData(),
+    const Profile(),
   ];
-
   int _selectedPage = 0;
 
   void changePage(int index) {
@@ -76,6 +76,15 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final userController = Provider.of<UserController>(context);
+
+    // if (userController.isLoading != false &&
+    //     userController.user.role == UserRole.pemilik) {
+    //   _page = [
+    //     const DashBoard(),
+    //     const ViewProfit(),
+    //     const Profile(),
+    //   ];
+    // }
     return Scaffold(
       body: userController.isLoading == true
           ? Center(
@@ -87,13 +96,15 @@ class _HomeState extends State<Home> {
               child: Stack(
                 children: [
                   RefreshIndicator(
-                      onRefresh: () {
-                        userController.setLoading(true);
-                        return getUserData();
-                      },
-                      child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: _page[_selectedPage])),
+                    onRefresh: () {
+                      userController.setLoading(true);
+                      return getUserData();
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: _page[_selectedPage],
+                    ),
+                  ),
                   Positioned(
                     bottom: 0,
                     left: 0,

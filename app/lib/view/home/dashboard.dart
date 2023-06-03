@@ -1,6 +1,5 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/feedschedule.dart';
 import 'package:app/widget/incomingconsultation.dart';

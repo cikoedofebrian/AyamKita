@@ -1,12 +1,7 @@
-import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/controller/chickenpricecontroller.dart';
-import 'package:app/controller/feedcontroller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
-
 import 'package:provider/provider.dart';
 
 class TodayExpenses extends StatelessWidget {
@@ -16,6 +11,22 @@ class TodayExpenses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return ElevatedButton(
+    //   onPressed: () async {
+    //     final firebase = FirebaseFirestore.instance.collection('chicken_price');
+    //     int first_num = 1;
+    //     for (var i = 0; i < 5; i += 1) {
+    //       final String date = '$first_num-06-2023';
+    //       first_num = first_num + 1;
+    //       int price = 24150;
+    //       await firebase.add({
+    //         'date': date,
+    //         'price': price,
+    //       });
+    //     }
+    //   },
+    //   child: Text('ambatuk'),
+    // );
     final priceController =
         Provider.of<ChickenPriceController>(context, listen: false);
     return Container(
@@ -64,12 +75,9 @@ class TodayExpenses extends StatelessWidget {
                 ),
                 color: Colors.white,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: const [
-                  Text('Lihat Histori'),
-                  Icon(Icons.navigate_next)
-                ],
+                children: [Text('Lihat Histori'), Icon(Icons.navigate_next)],
               ),
             ),
           ),
