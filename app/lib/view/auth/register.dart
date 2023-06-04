@@ -4,7 +4,6 @@ import 'package:app/constant/role.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
           final isExist = await userController.checkPeternakanId(peternakanId);
           if (isExist) {
             onCompleteRegistration(peternakanId, UserRole.pengelola);
+            Navigator.pushReplacementNamed(context, '/home');
           }
           Navigator.of(context).pop();
         } else if (roleValue == UserRole.dokter) {

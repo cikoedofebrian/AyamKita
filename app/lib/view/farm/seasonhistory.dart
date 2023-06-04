@@ -1,9 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/dailycontroller.dart';
-import 'package:app/controller/farmcontroller.dart';
-import 'package:app/model/dataharianmodel.dart';
 import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/datalist.dart';
 import 'package:app/widget/sessionwidget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,14 +13,6 @@ class SeasonHistory extends StatefulWidget {
 }
 
 class _SeasonHistoryState extends State<SeasonHistory> {
-  // bool isSpecific = false;
-  // late List<DataHarianModel> list;
-  // @override
-  // void initState() {
-  //   list = Provider.of<DailyController>(context, listen: false).list;
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     final seasonList =
@@ -34,9 +23,9 @@ class _SeasonHistoryState extends State<SeasonHistory> {
           SizedBox(
             width: MediaQuery.of(context).size.width,
             child: seasonList.isEmpty
-                ? Column(
+                ? const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'Belum ada data harian.',
                         style: TextStyle(
@@ -63,7 +52,9 @@ class _SeasonHistoryState extends State<SeasonHistory> {
                     ),
                   ),
           ),
-          const CustomBackButton(color: AppColor.secondary),
+          const CustomBackButton(
+            color: AppColor.secondary,
+          ),
         ],
       ),
     );

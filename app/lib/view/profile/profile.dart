@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/usercontroller.dart';
@@ -107,18 +109,26 @@ class Profile extends StatelessWidget {
                         padding: const EdgeInsets.only(left: 20),
                         alignment: Alignment.centerLeft,
                         decoration: BoxDecoration(
-                          image: const DecorationImage(
-                              image: AssetImage("assets/images/farm_bg.png"),
-                              fit: BoxFit.cover),
+                          gradient: const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.white,
+                                Color.fromRGBO(234, 92, 43, 0.1),
+                              ]),
+                          // image: const DecorationImage(
+                          //     image: AssetImage("assets/images/farm_bg.png"),
+                          //     fit: BoxFit.cover),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         height: 80,
-                        child: const Text(
+                        child: Text(
                           'Profil Peternakan',
                           style: TextStyle(
-                              color: AppColor.tertiary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24),
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -127,7 +137,7 @@ class Profile extends StatelessWidget {
                       right: 18,
                       child: Image.asset(
                         "assets/images/barn.jpg",
-                        scale: 4.8,
+                        scale: 6,
                       ),
                     ),
                   ]),
@@ -226,48 +236,49 @@ class Profile extends StatelessWidget {
             const SizedBox(
               height: 6,
             ),
-            SizedBox(
-              height: 90,
-              child: Stack(children: [
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: InkWell(
-                    onTap: () =>
-                        Navigator.pushNamed(context, '/consultation-list'),
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 20),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                            image: AssetImage(
-                                "assets/images/daily_background.png"),
-                            fit: BoxFit.cover),
-                        // color: const Color.fromRGBO(213, 13, 0, 1),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      height: 80,
-                      child: const Text(
-                        'Konsultasi',
-                        style: TextStyle(
-                            color: Color.fromRGBO(255, 195, 85, 1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24),
+            if (userData.user.role != UserRole.pengelola)
+              SizedBox(
+                height: 90,
+                child: Stack(children: [
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: InkWell(
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/consultation-list'),
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 20),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                              image: AssetImage(
+                                  "assets/images/daily_background.png"),
+                              fit: BoxFit.cover),
+                          // color: const Color.fromRGBO(213, 13, 0, 1),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        height: 80,
+                        child: const Text(
+                          'Konsultasi',
+                          style: TextStyle(
+                              color: Color.fromRGBO(255, 195, 85, 1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 25,
-                  child: Image.asset(
-                    "assets/images/book.png",
-                    scale: 3.3,
+                  Positioned(
+                    top: 0,
+                    right: 25,
+                    child: Image.asset(
+                      "assets/images/book.png",
+                      scale: 3.3,
+                    ),
                   ),
-                ),
-              ]),
-            ),
+                ]),
+              ),
             const SizedBox(
               height: 6,
             ),
@@ -279,7 +290,11 @@ class Profile extends StatelessWidget {
                   left: 0,
                   right: 0,
                   child: InkWell(
-                    onTap: () => FirebaseAuth.instance.signOut(),
+                    onTap: () {
+                      userData.setLoading(true);
+                      Navigator.pushNamed(context, '/login');
+                      FirebaseAuth.instance.signOut();
+                    },
                     child: Container(
                       padding: const EdgeInsets.only(left: 20),
                       alignment: Alignment.centerLeft,

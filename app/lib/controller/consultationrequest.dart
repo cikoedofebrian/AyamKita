@@ -48,8 +48,14 @@ class ConsultationRequestController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addData(String judul, String deskripsi, String peternakanId,
-      String pengelolaId, File? photo) async {
+  void addData(
+    String judul,
+    String deskripsi,
+    String peternakanId,
+    String pengelolaId,
+    File? photo,
+    String musimId,
+  ) async {
     String downloadUrl = '';
     if (photo != null) {
       final result = await FirebaseStorage.instance
@@ -66,16 +72,21 @@ class ConsultationRequestController extends ChangeNotifier {
       'status': 'menunggu',
       'pengelolaId': pengelolaId,
       'downloadUrl': downloadUrl,
-      'tanggal': date
-    }).then((value) => _list.add(ConsultationRequestModel(
-        usulanKonsultasiId: value.id,
-        peternakanId: peternakanId,
-        pengelolaId: pengelolaId,
-        deskripsi: deskripsi,
-        judul: judul,
-        downloadUrl: downloadUrl,
-        status: 'menunggu',
-        tanggal: date)));
+      'tanggal': date,
+      'musimId': musimId,
+    }).then((value) => _list.add(
+          ConsultationRequestModel(
+            usulanKonsultasiId: value.id,
+            peternakanId: peternakanId,
+            pengelolaId: pengelolaId,
+            deskripsi: deskripsi,
+            judul: judul,
+            downloadUrl: downloadUrl,
+            status: 'menunggu',
+            tanggal: date,
+            musimId: musimId,
+          ),
+        ));
     notifyListeners();
   }
 

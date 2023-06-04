@@ -5,7 +5,6 @@ import 'package:app/controller/usercontroller.dart';
 import 'package:app/model/workinghours.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -116,13 +115,12 @@ class _AddDokterState extends State<AddDokter> {
         }
         final result = await Provider.of<UserController>(context, listen: false)
             .addDokterData(deskripsi, int.parse(price));
-        final complete = await completeRegistration(result, UserRole.dokter)
-            .then((value) => Provider.of<UserController>(context, listen: false)
-                .addJamKerja(value, hoursList)
-                .then((value) => customDialog(
-                        context, 'Berhasil', 'Pendaftaran Akun Berhasil!')
-                    .then((value) =>
-                        Navigator.pushReplacementNamed(context, '/home'))));
+        await completeRegistration(result, UserRole.dokter).then((value) =>
+            Provider.of<UserController>(context, listen: false)
+                .addJamKerja(value, hoursList));
+
+        await customDialog(context, 'Berhasil', 'Pendaftaran Akun Berhasil!')
+            .then((value) => Navigator.pushReplacementNamed(context, '/home'));
       }
     }
 

@@ -203,26 +203,31 @@ class _AddDataState extends State<AddData> {
                       const SizedBox(
                         height: 20,
                       ),
-                      InkWell(
-                        onTap: () => Navigator.pushNamed(context, '/add-musim'),
-                        child: SizedBox(
-                          child: Material(
-                            borderRadius: BorderRadius.circular(12),
-                            color: AppColor.secondary,
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 25),
-                              child: Text(
-                                'Tambah Musim',
-                                style: TextStyle(
-                                    color: AppColor.tertiary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                      if (Provider.of<UserController>(context, listen: false)
+                              .user
+                              .role ==
+                          UserRole.pemilik)
+                        InkWell(
+                          onTap: () =>
+                              Navigator.pushNamed(context, '/add-musim'),
+                          child: SizedBox(
+                            child: Material(
+                              borderRadius: BorderRadius.circular(12),
+                              color: AppColor.secondary,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 25),
+                                child: Text(
+                                  'Tambah Musim',
+                                  style: TextStyle(
+                                      color: AppColor.tertiary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

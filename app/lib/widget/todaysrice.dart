@@ -1,6 +1,5 @@
 import 'package:app/constant/appformat.dart';
 import 'package:app/controller/chickenpricecontroller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,32 +10,17 @@ class TodayExpenses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return ElevatedButton(
-    //   onPressed: () async {
-    //     final firebase = FirebaseFirestore.instance.collection('chicken_price');
-    //     int first_num = 1;
-    //     for (var i = 0; i < 5; i += 1) {
-    //       final String date = '$first_num-06-2023';
-    //       first_num = first_num + 1;
-    //       int price = 24150;
-    //       await firebase.add({
-    //         'date': date,
-    //         'price': price,
-    //       });
-    //     }
-    //   },
-    //   child: Text('ambatuk'),
-    // );
     final priceController =
         Provider.of<ChickenPriceController>(context, listen: false);
     return Container(
       decoration: BoxDecoration(
         boxShadow: const [
           BoxShadow(
-              blurRadius: 3,
-              spreadRadius: 2,
-              color: Colors.black38,
-              offset: Offset(2, 2))
+            blurRadius: 3,
+            spreadRadius: 2,
+            color: Colors.black38,
+            offset: Offset(2, 2),
+          )
         ],
         borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(
@@ -61,7 +45,7 @@ class TodayExpenses extends StatelessWidget {
           ),
           Text(
             priceController.getText(),
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 20),
           InkWell(

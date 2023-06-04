@@ -1,5 +1,4 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/widget/datalistdetails.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -31,6 +30,7 @@ class _SessionWidgetState extends State<SessionWidget> {
           arguments: widget.index),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: const LinearGradient(

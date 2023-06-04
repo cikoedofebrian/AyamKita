@@ -13,6 +13,7 @@ class ConsultationRequestModel {
   String downloadUrl;
   String pengelolaId;
   String usulanKonsultasiId;
+  String musimId;
 
   ConsultationRequestModel({
     required this.usulanKonsultasiId,
@@ -23,18 +24,21 @@ class ConsultationRequestModel {
     required this.downloadUrl,
     required this.status,
     required this.tanggal,
+    required this.musimId,
   });
 
   factory ConsultationRequestModel.fromJson(Map<String, dynamic> json, id) {
     return ConsultationRequestModel(
-        usulanKonsultasiId: id,
-        pengelolaId: json['pengelolaId'],
-        deskripsi: json['deskripsi'],
-        status: json['status'],
-        judul: json['judul'],
-        downloadUrl: json['downloadUrl'],
-        peternakanId: json['peternakanId'],
-        tanggal: json['tanggal']);
+      usulanKonsultasiId: id,
+      pengelolaId: json['pengelolaId'],
+      deskripsi: json['deskripsi'],
+      status: json['status'],
+      judul: json['judul'],
+      downloadUrl: json['downloadUrl'],
+      peternakanId: json['peternakanId'],
+      tanggal: json['tanggal'],
+      musimId: json['musimId'],
+    );
   }
 
   Future<UserModel> imageUrl() async {

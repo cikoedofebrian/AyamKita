@@ -28,6 +28,7 @@ import 'package:app/view/features/consultation/finddoc.dart';
 import 'package:app/view/features/consultation/paymentsuccess.dart';
 import 'package:app/view/features/consultation/resultview.dart';
 import 'package:app/view/features/consultation/selectpayment.dart';
+import 'package:app/view/features/consultation/view_farm_data.dart';
 import 'package:app/view/features/price/price_list.dart';
 import 'package:app/view/features/request/request.dart';
 import 'package:app/view/features/request/requestdetails.dart';
@@ -159,6 +160,7 @@ class MyApp extends StatelessWidget {
         '/photo-view': (context) => const ImageShower(),
         '/create-result': (context) => const CreateResult(),
         '/result-view': (context) => const ResultView(),
+        '/view-farm-data': (context) => const ViewFarmData(),
       },
     );
   }

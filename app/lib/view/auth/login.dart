@@ -41,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailCon.text, password: passwordCon.text);
+      Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (error) {
       if (error.code == 'wrong-password' || error.code == 'user-not-found') {
         customDialog(context, 'Gagal', 'Email/Password salah!');
@@ -73,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                   //     },
                   //     child: Text('tries')),
                   Image.asset("assets/images/login_image.png", width: 120),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Container(
                     width: size.width,
                     decoration: BoxDecoration(

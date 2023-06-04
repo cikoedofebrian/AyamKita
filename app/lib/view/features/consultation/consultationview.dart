@@ -1,5 +1,4 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
 import 'package:app/constant/requeststatus.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/findoctorcontroller.dart';
@@ -11,10 +10,8 @@ import 'package:app/model/usermodel.dart';
 import 'package:app/widget/consultationdata.dart';
 import 'package:app/widget/consultationstatus.dart';
 import 'package:app/widget/customtop.dart';
-import 'package:app/widget/image_shower.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:provider/provider.dart';
 
 class ConsultationView extends StatelessWidget {
@@ -115,6 +112,32 @@ class ConsultationView extends StatelessWidget {
                         nama: isPemilik ? dokterData.nama : peternakanData.nama,
                         title: isPemilik ? "Dokter" : "Konsultan"),
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (userController.user.role == UserRole.dokter)
+                    InkWell(
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/view-farm-data',
+                        arguments: consultationRequestData.musimId,
+                      ),
+                      child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.green,
+                          ),
+                          child: const Text(
+                            'Lihat Data Harian Peternakan',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                    ),
                   const SizedBox(
                     height: 20,
                   ),

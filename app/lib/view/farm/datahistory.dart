@@ -21,34 +21,15 @@ class _DataHistoryState extends State<DataHistory> {
         .musimList[index]
         .list;
 
-    void chooseSpecific(DateTime dateTime) {
-      var list = Provider.of<DailyController>(context, listen: false)
-          .musimList[index]
-          .list;
-      for (var i in list) {
-        if (DateFormat("dd-MM-yyyy").parse(i.tanggal) == dateTime) {
-          setState(() {
-            realList = [i];
-          });
-          return;
-        }
-      }
-      setState(() {
-        realList = [];
-      });
-
-      print(realList.length);
-    }
-
     return Scaffold(
       body: Stack(
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
             child: realList.isEmpty
-                ? Column(
+                ? const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'Belum ada data harian.',
                         style: TextStyle(
@@ -63,7 +44,6 @@ class _DataHistoryState extends State<DataHistory> {
                       ),
                     ],
                   )
-                // : null
                 : ListView.builder(
                     padding: const EdgeInsets.only(
                         top: 120, left: 40, right: 40, bottom: 20),
@@ -82,44 +62,6 @@ class _DataHistoryState extends State<DataHistory> {
                   ),
           ),
           const CustomBackButton(color: AppColor.secondary),
-          // Positioned(
-          //   top: 0,
-          //   right: 0,
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          //     child: Material(
-          //       elevation: 4,
-          //       borderRadius: BorderRadius.circular(100),
-          //       child: CircleAvatar(
-          //         backgroundColor: AppColor.secondary,
-          //         radius: 27,
-          //         child: CircleAvatar(
-          //           backgroundColor: AppColor.tertiary,
-          //           radius: 25,
-          //           child: IconButton(
-          //             iconSize: 30,
-          //             icon: const Icon(
-          //               Icons.calendar_month_rounded,
-          //               color: AppColor.secondary,
-          //             ),
-          //             onPressed: () {
-          //               showDatePicker(
-          //                 context: context,
-          //                 initialDate: DateTime.now(),
-          //                 firstDate: DateTime(DateTime.now().year - 1),
-          //                 lastDate: DateTime(DateTime.now().year + 1),
-          //               ).then((value) {
-          //                 if (value != null) {
-          //                   chooseSpecific(value);
-          //                 }
-          //               });
-          //             },
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

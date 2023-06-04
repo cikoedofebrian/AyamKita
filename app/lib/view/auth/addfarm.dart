@@ -39,8 +39,9 @@ class _AddFarmState extends State<AddFarm> {
 
   @override
   Widget build(BuildContext context) {
-    final Function(String, String) completeRegistration =
-        ModalRoute.of(context)!.settings.arguments as Function(String, String);
+    final Future<void> Function(String, String) completeRegistration =
+        ModalRoute.of(context)!.settings.arguments as Future<void> Function(
+            String, String);
 
     void trySignUp() async {
       formKey.currentState!.save();
@@ -57,11 +58,10 @@ class _AddFarmState extends State<AddFarm> {
                   int.parse(luas),
                   AppFormat.intDateFromDateTime(currentDate),
                   "${hour1.hour.toString().padLeft(2, '0')}:${hour1.minute.toString().padLeft(2, '0')}",
-                  "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}")
-              .then((value) => completeRegistration(value, UserRole.pemilik));
-
-          customDialog(context, 'Berhasil', 'Akun berhasil dibuat!').then(
-              (value) => Navigator.pushReplacementNamed(context, '/home'));
+                  "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}");
+          await completeRegistration(upload, UserRole.pemilik).then((value) =>
+              customDialog(context, 'Berhasil', 'Akun berhasil dibuat!').then(
+                  (value) => Navigator.pushReplacementNamed(context, '/home')));
         } on FirebaseException catch (error) {
           customDialog(context, 'Gagal', error.message!);
         }

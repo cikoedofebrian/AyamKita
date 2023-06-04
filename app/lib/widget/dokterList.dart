@@ -1,7 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/model/finddoctormodel.dart';
-import 'package:app/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 class DokterListWidget extends StatelessWidget {

@@ -11,24 +11,24 @@ class DailyController extends ChangeNotifier {
 
   List<MusimModel> get musimList => _musimList;
 
-  int getTotalProfit(String musimId) {
+  int getTotalSellings(String musimId) {
     final selectedMusim =
         _musimList.firstWhere((element) => element.musimId == musimId);
     int totalProfit = 0;
     for (var i in selectedMusim.list) {
-      totalProfit += i.harga;
+      totalProfit += i.harga * i.keluar;
     }
-    return totalProfit;
+    return totalProfit - (selectedMusim.jumlah * selectedMusim.harga);
   }
 
   int getTotalStock(String musimId) {
     final selectedMusim =
         _musimList.firstWhere((element) => element.musimId == musimId);
-    int totalProfit = 0;
+    int totalStock = 0;
     for (var i in selectedMusim.list) {
-      totalProfit += i.harga;
+      totalStock += (i.keluar + i.kematian);
     }
-    return totalProfit;
+    return selectedMusim.jumlah - totalStock;
   }
 
   int getTotalObat(String musimId) {
@@ -41,14 +41,33 @@ class DailyController extends ChangeNotifier {
     return hargaObat;
   }
 
-  int getTotalPakan(String musimId) {
+  String getPeriod(String musimId) {
     final selectedMusim =
         _musimList.firstWhere((element) => element.musimId == musimId);
-    int hargaPakan = 0;
+    if (selectedMusim.status == false) {
+      return "${AppFormat.fDate(selectedMusim.mulai)} - ${AppFormat.fDate(selectedMusim.list.last.tanggal)}";
+    }
+    return "${AppFormat.fDate(selectedMusim.mulai)} - Sekarang";
+  }
+
+  double getTotalPakan(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    double hargaPakan = 0;
     for (var i in selectedMusim.list) {
-      hargaPakan += i.hargaPakan;
+      hargaPakan += i.hargaPakan * i.pakan;
     }
     return hargaPakan;
+  }
+
+  int getTotalSell(String musimId) {
+    final selectedMusim =
+        _musimList.firstWhere((element) => element.musimId == musimId);
+    int terjual = 0;
+    for (var i in selectedMusim.list) {
+      terjual += i.keluar;
+    }
+    return terjual;
   }
 
   int getTotalDead(String musimId) {

@@ -1,6 +1,4 @@
-import 'package:app/constant/appcolor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class SelectStatus extends StatelessWidget {
   const SelectStatus(

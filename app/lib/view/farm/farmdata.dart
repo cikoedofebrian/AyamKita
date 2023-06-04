@@ -88,7 +88,7 @@ class _FarmDataState extends State<FarmData> {
             fillColor: AppColor.formcolor),
       ),
       child: Scaffold(
-        body: peternakanController.isLoading == true && isPemilik
+        body: peternakanController.isLoading == true
             ? Center(
                 child: LoadingAnimationWidget.inkDrop(
                   color: AppColor.secondary,

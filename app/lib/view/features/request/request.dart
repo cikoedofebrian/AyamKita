@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/usercontroller.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
@@ -53,12 +54,26 @@ class _RequestState extends State<Request> {
           ],
         ).show(context);
         if (isConfirm) {
+          final dailyController =
+              Provider.of<DailyController>(context, listen: false);
+          final indexActive = dailyController.indexActive();
+          if (indexActive == -1) {
+            customDialog(
+                context, 'Ajuan gagal!', 'Tidak ada periode yang aktif');
+            return;
+          }
           final userController =
               Provider.of<UserController>(context, listen: false).user;
           formKey.currentState!.save();
           Provider.of<ConsultationRequestController>(context, listen: false)
-              .addData(judul, deskripsi, userController.peternakanId,
-                  FirebaseAuth.instance.currentUser!.uid, photo);
+              .addData(
+            judul,
+            deskripsi,
+            userController.peternakanId,
+            FirebaseAuth.instance.currentUser!.uid,
+            photo,
+            dailyController.musimList[indexActive].musimId,
+          );
           customDialog(context, 'Ajuan berhasil!',
                   'Usulan konsultasi telah berhasil dibuat')
               .then((value) => Navigator.pop(context));

@@ -9,6 +9,7 @@ import 'package:app/controller/workinghourscontroller.dart';
 import 'package:app/view/farm/add_data.dart';
 import 'package:app/view/features/profits/view_profit.dart';
 import 'package:app/view/home/dashboard.dart';
+import 'package:app/view/home/middle_page.dart';
 import 'package:app/view/profile/profile.dart';
 import 'package:app/widget/customnavbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,10 +61,10 @@ class _HomeState extends State<Home> {
         );
   }
 
-  List<Widget> _page = [
-    const DashBoard(),
-    const AddData(),
-    const Profile(),
+  final List<Widget> _page = const [
+    DashBoard(),
+    MiddlePage(),
+    Profile(),
   ];
   int _selectedPage = 0;
 
