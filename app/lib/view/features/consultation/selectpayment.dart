@@ -1,9 +1,9 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/controller/consultationcontroller.dart';
-import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
 import 'package:app/controller/findoctorcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/customtop.dart';
 import 'package:app/widget/paymentwidget.dart';
@@ -47,10 +47,11 @@ class _SelectPaymentState extends State<SelectPayment> {
       }
       consultationController.createNewConsultation(
           _selectedPayment,
-          Provider.of<UserController>(context, listen: false).user.peternakanId,
+          Provider.of<CAuth>(context, listen: false)
+              .getDataProfile()
+              .peternakanId,
           findDocController.selectedModel!.dokterId,
-          Provider.of<ConsultationRequestController>(context, listen: false)
-              .isSelected,
+          Provider.of<CUsulanKonsultasi>(context, listen: false).isSelected,
           findDocController.selectedModel!.harga);
       Navigator.pushReplacementNamed(context, '/payment-success');
     }

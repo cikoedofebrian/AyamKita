@@ -10,7 +10,6 @@ class WeatherHome extends StatelessWidget {
     final weathercontroller = Provider.of<WeatherController>(context);
     return Container(
       height: 180,
-      // width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(

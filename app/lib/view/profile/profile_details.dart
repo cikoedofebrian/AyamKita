@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/model/usermodel.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
@@ -36,21 +36,21 @@ class _ProfileDetailsState extends State<ProfileDetails> {
 
   @override
   void initState() {
-    final userController = Provider.of<UserController>(context, listen: false);
-    name = userController.user.nama;
-    role = userController.user.role;
-    number = userController.user.noTelepon;
-    address = userController.user.alamat;
-    email = userController.user.email;
-    since = userController.user.tanggalPendaftaran;
-    imageUrl = userController.user.downloadUrl;
-
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
+    name = cAuth.nama;
+    role = cAuth.role;
+    number = cAuth.noTelepon;
+    address = cAuth.alamat;
+    email = cAuth.email;
+    since = cAuth.tanggalPendaftaran;
+    imageUrl = cAuth.downloadUrl;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userController = Provider.of<UserController>(context);
+    final cAuth = Provider.of<CAuth>(context);
+    final userData = cAuth.getDataProfile();
 
     final UserModel? isFromConsultation =
         ModalRoute.of(context)!.settings.arguments as UserModel?;
@@ -103,22 +103,25 @@ class _ProfileDetailsState extends State<ProfileDetails> {
           final trimmedaddress = address.trim();
           final trimmedimageUrl = imageUrl.trim();
           final trimmednumber = number.trim();
-          if (trimmedname != userController.user.nama ||
-              trimmedaddress != userController.user.alamat ||
-              trimmednumber != userController.user.noTelepon ||
-              trimmedimageUrl != userController.user.downloadUrl) {
-            Provider.of<UserController>(context, listen: false).updateData(
+          if (trimmedname != userData.nama ||
+              trimmedaddress != userData.alamat ||
+              trimmednumber != userData.noTelepon ||
+              trimmedimageUrl != userData.downloadUrl) {
+            cAuth.updateData(
               trimmedname,
               trimmednumber,
               trimmedaddress,
               trimmedimageUrl,
             );
+
+            // ignore: use_build_context_synchronously
             customDialog(
                 context, "Berhasil!", "Perubahan data berhasil dilakukan");
             setState(() {
               isEditable = !isEditable;
             });
           } else {
+            // ignore: use_build_context_synchronously
             customDialog(
                 context, "Tidak berhasil", "Tidak ada data yang dirubah");
           }
@@ -241,7 +244,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                 isEditable = !isEditable;
                               });
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.edit,
                               size: 30,
                               color: Colors.white,
@@ -266,6 +269,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           if (value!.isEmpty) {
                             return "Nama tidak boleh kosong!";
                           }
+                          return null;
                         },
                         initialValue: name,
                         enabled: isEditable,
@@ -323,7 +327,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                       const SizedBox(
                         height: 10,
                       ),
-                      if (userController.user.role == UserRole.dokter)
+                      if (userData.role == UserRole.dokter)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -333,13 +337,13 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             ),
                             TextFormField(
                               onSaved: (newValue) => address = newValue!,
-                              initialValue: userController.deskripsi,
+                              initialValue: cAuth.deskripsi,
                               validator: (value) {
-                                if (userController.user.role ==
-                                        UserRole.dokter &&
+                                if (userData.role == UserRole.dokter &&
                                     value!.isEmpty) {
                                   'Deskripsi tidak boleh kosong';
                                 }
+                                return null;
                               },
                               enabled: isEditable,
                               maxLines: 10,
@@ -357,7 +361,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             ),
                             TextFormField(
                               onSaved: (newValue) => address = newValue!,
-                              initialValue: userController.harga.toString(),
+                              initialValue: cAuth.harga.toString(),
                               enabled: isEditable,
                               key: const ValueKey('price'),
                             ),

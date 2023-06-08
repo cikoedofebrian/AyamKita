@@ -1,11 +1,9 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userController = Provider.of<UserController>(context, listen: false);
+    final cAuth = Provider.of<CAuth>(context, listen: false);
     void visible() {
       setState(() {
         isVisible = !isVisible;
@@ -53,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
         dokterDetailsId = id;
       }
 
-      final result = await userController.register(
+      final result = await cAuth.register(
         email,
         name,
         password,
@@ -66,59 +64,35 @@ class _RegisterPageState extends State<RegisterPage> {
       return result!;
     }
 
-    void trySignUp(BuildContext context) async {
-      formKey.currentState!.save();
-      if (email.isEmpty || password.isEmpty || name.isEmpty || alamat.isEmpty) {
-        customDialog(context, 'Gagal', 'Data tidak boleh kosong!');
-      } else if (!EmailValidator.validate(email)) {
-        customDialog(context, 'Gagal', 'Email tidak valid!');
-      } else if (password.length < 8) {
-        customDialog(
-            context, 'Gagal', 'Password tidak boleh kurang dari 8 karakter!');
-      } else {
-        final checkEmail =
-            await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-        if (checkEmail.isNotEmpty) {
-          customDialog(context, 'Gagal', 'Email sudah terdaftar!');
-          return;
-        }
-        if (roleValue == UserRole.pemilik) {
-          customDialog(context, 'Informasi Tambahan',
-                  'Isi data peternakan baru untuk melanjutkan proses pendaftaran')
-              .then(
-            (value) => Navigator.of(context)
-                .pushNamed('/add-farm', arguments: onCompleteRegistration),
-          );
-        } else if (roleValue == UserRole.pengelola) {
-          final isExist = await userController.checkPeternakanId(peternakanId);
-          if (isExist) {
-            onCompleteRegistration(peternakanId, UserRole.pengelola);
-            Navigator.pushReplacementNamed(context, '/home');
-          }
-          Navigator.of(context).pop();
-        } else if (roleValue == UserRole.dokter) {
-          Navigator.pushNamed(context, '/add-dokter',
-              arguments: onCompleteRegistration);
-        }
+    void tryRegister(BuildContext context) async {
+      final validasi = await cAuth.validasiForm(
+          context, formKey, email, password, alamat, name);
+      if (validasi) {
+        return;
       }
-      //   FirebaseAuth.instance
-      //       .createUserWithEmailAndPassword(email: email, password: password)
-      //       .then((value) {
-      //     FirebaseFirestore.instance
-      //         .collection('account')
-      //         .doc(value.user!.uid)
-      //         .set(
-      //       {"role": roleValue, "name": name, "email": email},
-      //     ).then((value) => Navigator.pop(context));
-      //   });
-      // } else {
-      //   showDialog(
-      //     context: context,
-      //     builder: (context) => const AlertDialog(
-      //       content: Text('Something went wrong, Please try again!'),
-      //     ),
-      //   );
-      // }
+      if (roleValue == UserRole.pemilik) {
+        // ignore: use_build_context_synchronously
+        customDialog(context, 'Informasi Tambahan',
+                'Isi data peternakan baru untuk melanjutkan proses pendaftaran')
+            .then(
+          (value) => Navigator.of(context)
+              .pushNamed('/add-farm', arguments: onCompleteRegistration),
+        );
+      } else if (roleValue == UserRole.pengelola) {
+        final isExist = await cAuth.checkPeternakanId(peternakanId);
+        if (isExist) {
+          onCompleteRegistration(peternakanId, UserRole.pengelola);
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          // ignore: use_build_context_synchronously
+          customDialog(context, 'Gagal!', 'ID Peternakan tidak ditemukan!');
+        }
+      } else if (roleValue == UserRole.dokter) {
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/add-dokter',
+            arguments: onCompleteRegistration);
+      }
     }
 
     final size = MediaQuery.of(context).size;
@@ -256,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                     : Icons
                                                         .visibility_outlined)),
                                             contentPadding:
-                                                EdgeInsets.symmetric(
+                                                const EdgeInsets.symmetric(
                                                     horizontal: 15)),
                                       ),
                                     ),
@@ -423,10 +397,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                             child: Text('Dokter'),
                                           )
                                         ],
-                                        // decoration: InputDecoration(
-                                        //     contentPadding:
-                                        //         const EdgeInsets.symmetric(
-                                        //             horizontal: 15)),
                                       ),
                                     ),
                                     Positioned(
@@ -491,7 +461,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   height: 15,
                                 ),
                                 InkWell(
-                                  onTap: () => trySignUp(context),
+                                  onTap: () => tryRegister(context),
                                   child: Container(
                                     width: 260,
                                     height: 40,

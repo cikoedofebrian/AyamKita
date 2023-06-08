@@ -2,7 +2,7 @@ import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/feedcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/helper/customexception.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +14,7 @@ class FeedSchedule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userController =
-        Provider.of<UserController>(context, listen: false).user;
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
     final feedController = Provider.of<FeedController>(context);
     return Material(
       borderRadius: BorderRadius.circular(20),
@@ -76,7 +75,7 @@ class FeedSchedule extends StatelessWidget {
               },
             ),
             GestureDetector(
-              onTap: userController.role == UserRole.pengelola
+              onTap: cAuth.role == UserRole.pengelola
                   ? () {
                       try {
                         feedController.fillAbsence();
@@ -125,7 +124,7 @@ class FeedSchedule extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  userController.role == UserRole.pengelola
+                  cAuth.role == UserRole.pengelola
                       ? "Isi Jadwal Pakan"
                       : "Ubah Jadwal Pakan",
                   style: const TextStyle(

@@ -1,8 +1,6 @@
-import 'dart:ui';
-
-import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
+import 'package:app/widget/profile_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,9 +10,8 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserController>(context);
-    final isPemilik = userData.user.role == UserRole.pemilik;
-
+    final cAuth = Provider.of<CAuth>(context);
+    final userData = cAuth.getDataProfile();
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
@@ -49,13 +46,13 @@ class Profile extends StatelessWidget {
                         SizedBox(
                           height: 100,
                           width: 100,
-                          child: userData.user.downloadUrl.isEmpty
+                          child: userData.downloadUrl.isEmpty
                               ? Image.asset(
                                   "assets/images/profile.png",
                                 )
                               : CircleAvatar(
                                   backgroundImage:
-                                      NetworkImage(userData.user.downloadUrl)),
+                                      NetworkImage(userData.downloadUrl)),
                         ),
                         const SizedBox(
                           width: 12,
@@ -69,7 +66,7 @@ class Profile extends StatelessWidget {
                               ),
                               FittedBox(
                                 child: Text(
-                                  userData.user.nama,
+                                  userData.nama,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 24,
@@ -77,7 +74,7 @@ class Profile extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                userData.user.role,
+                                userData.role,
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ],
@@ -89,253 +86,62 @@ class Profile extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 6,
-            ),
-            if (userData.user.role != UserRole.dokter)
-              InkWell(
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  '/farm-data',
-                ),
-                child: SizedBox(
-                  height: 95,
-                  child: Stack(children: [
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 20),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.white,
-                                Color.fromRGBO(234, 92, 43, 0.1),
-                              ]),
-                          // image: const DecorationImage(
-                          //     image: AssetImage("assets/images/farm_bg.png"),
-                          //     fit: BoxFit.cover),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        height: 80,
-                        child: Text(
-                          'Profil Peternakan',
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 18,
-                      child: Image.asset(
-                        "assets/images/barn.jpg",
-                        scale: 6,
-                      ),
-                    ),
-                  ]),
-                ),
+            if (userData.role != UserRole.dokter) ...[
+              const SizedBox(
+                height: 10,
               ),
-
-            const SizedBox(
-              height: 6,
-            ),
-            if (userData.user.role != UserRole.dokter)
-              InkWell(
-                onTap: () => Navigator.pushNamed(context, '/request-list',
-                    arguments: false),
-                child: SizedBox(
-                  height: 90,
-                  child: Stack(children: [
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 20),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
-                              image: AssetImage("assets/images/request_bg.png"),
-                              fit: BoxFit.cover),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        height: 80,
-                        child: const Text(
-                          'Usul Konsultasi',
-                          style: TextStyle(
-                              color: AppColor.secondary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 5,
-                      right: 18,
-                      child: Image.asset(
-                        "assets/images/req.png",
-                        scale: 7,
-                      ),
-                    ),
-                  ]),
-                ),
+              const ProfileItem(
+                  assetName: 'assets/images/barn.jpg',
+                  routeName: '/farm-data',
+                  title: 'Profil Peternakan'),
+            ],
+            if (userData.role != UserRole.dokter) ...[
+              const SizedBox(
+                height: 10,
               ),
-            const SizedBox(
-              height: 6,
-            ),
-            // Expanded(child: Container())
-            if (userData.user.role != UserRole.dokter)
-              SizedBox(
-                height: 90,
-                child: Stack(children: [
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: () => Navigator.pushNamed(context, '/season-list'),
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 20),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
-                              image: AssetImage(
-                                  "assets/images/daily_background.png"),
-                              fit: BoxFit.cover),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        height: 80,
-                        child: const Text(
-                          'Data Harian',
-                          style: TextStyle(
-                              color: Color.fromRGBO(255, 195, 85, 1),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 25,
-                    child: Image.asset(
-                      "assets/images/book.png",
-                      scale: 3.3,
-                    ),
-                  ),
-                ]),
+              const ProfileItem(
+                assetName: "assets/images/req.png",
+                routeName: '/request-list',
+                title: 'Usulan Konsultasi',
+                size: 9,
+                argument: false,
               ),
-            const SizedBox(
-              height: 6,
-            ),
-            if (userData.user.role != UserRole.pengelola)
-              SizedBox(
-                height: 90,
-                child: Stack(children: [
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: () =>
-                          Navigator.pushNamed(context, '/consultation-list'),
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 20),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
-                              image: AssetImage(
-                                  "assets/images/daily_background.png"),
-                              fit: BoxFit.cover),
-                          // color: const Color.fromRGBO(213, 13, 0, 1),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        height: 80,
-                        child: const Text(
-                          'Konsultasi',
-                          style: TextStyle(
-                              color: Color.fromRGBO(255, 195, 85, 1),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 25,
-                    child: Image.asset(
-                      "assets/images/book.png",
-                      scale: 3.3,
-                    ),
-                  ),
-                ]),
+            ],
+            if (userData.role != UserRole.dokter) ...[
+              const SizedBox(
+                height: 10,
               ),
+              const ProfileItem(
+                  assetName: "assets/images/book.png",
+                  routeName: "/season-list",
+                  title: "Data Harian")
+            ],
+            if (userData.role != UserRole.pengelola) ...[
+              const SizedBox(
+                height: 10,
+              ),
+              const ProfileItem(
+                assetName: "assets/images/book.png",
+                routeName: "/consultation-list",
+                title: 'Konsultasi',
+              )
+            ],
             const SizedBox(
-              height: 6,
+              height: 10,
             ),
-            SizedBox(
-              height: 90,
-              child: Stack(children: [
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: InkWell(
-                    onTap: () {
-                      userData.setLoading(true);
-                      Navigator.pushNamed(context, '/login');
-                      FirebaseAuth.instance.signOut();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 20),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                            image: AssetImage(
-                                "assets/images/logout_background.png"),
-                            fit: BoxFit.cover),
-                        // color: const Color.fromRGBO(213, 13, 0, 1),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      height: 80,
-                      child: const Text(
-                        'Keluar',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 25,
-                  child: Image.asset(
-                    "assets/images/logout.png",
-                    scale: 3.3,
-                  ),
-                ),
-              ]),
+            ProfileItem(
+              assetName: "assets/images/logout.png",
+              routeName: "/login",
+              title: "Keluar",
+              function: () {
+                cAuth.setLoading(true);
+                Navigator.pushNamed(context, '/login');
+                FirebaseAuth.instance.signOut();
+              },
             ),
           ],
         ),
       ),
     );
-    // return Center(
-    //   child: ElevatedButton(
-    //     child: const Text('Log out'),
-    //     onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-    //   ),
-    // );
   }
 }

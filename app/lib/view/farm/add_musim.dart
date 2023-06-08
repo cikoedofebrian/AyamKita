@@ -1,6 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/dailycontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +29,8 @@ class _AddMusimState extends State<AddMusim> {
               tipe,
               jumlah,
               harga,
-              Provider.of<UserController>(context, listen: false)
-                  .user
+              Provider.of<CAuth>(context, listen: false)
+                  .getDataProfile()
                   .peternakanId)
           .then(
             (value) =>

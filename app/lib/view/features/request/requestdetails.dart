@@ -1,18 +1,15 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/requeststatus.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/consultationrequest.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/model/consultationrequestmodel.dart';
 import 'package:app/widget/consultationstatus.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
-import 'package:app/widget/image_shower.dart';
 import 'package:app/widget/requestpainter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ndialog/ndialog.dart';
@@ -40,8 +37,9 @@ class _RequestDetailsState extends State<RequestDetails> {
       return result.docs[0].data()['hasilId'] as String;
     }
 
-    final userController =
-        Provider.of<UserController>(context, listen: false).user;
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
+    final cUsulanKonsultasi =
+        Provider.of<CUsulanKonsultasi>(context, listen: false);
     void tryDelete() async {
       bool isConfirm = false;
       await NDialog(
@@ -66,8 +64,8 @@ class _RequestDetailsState extends State<RequestDetails> {
       ).show(context);
 
       if (isConfirm) {
-        Provider.of<ConsultationRequestController>(context, listen: false)
-            .deleteData(data.usulanKonsultasiId);
+        cUsulanKonsultasi.deleteData(data.usulanKonsultasiId);
+        // ignore: use_build_context_synchronously
         customDialog(context, 'Berhasil', 'Data berhasil dihapus')
             .then((value) => Navigator.pop(context));
       }
@@ -138,46 +136,6 @@ class _RequestDetailsState extends State<RequestDetails> {
                           const SizedBox(
                             height: 10,
                           ),
-                          // Container(
-                          //   width: double.infinity,
-                          //   alignment: Alignment.centerLeft,
-                          //   decoration: BoxDecoration(
-                          //       gradient: LinearGradient(
-                          //         colors: [
-                          //           data.getColor(),
-                          //           AppColor.secondary,
-                          //         ],
-                          //       ),
-                          //       borderRadius: BorderRadius.circular(10)),
-                          //   padding: const EdgeInsets.symmetric(
-                          //       horizontal: 10, vertical: 20),
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.only(left: 20),
-                          //     child: Column(
-                          //       crossAxisAlignment: CrossAxisAlignment.start,
-                          //       children: [
-                          //         const Text(
-                          //           'Status :',
-                          //           style: TextStyle(
-                          //             fontSize: 16,
-                          //             color: Colors.white,
-                          //           ),
-                          //         ),
-                          //         const SizedBox(
-                          //           height: 5,
-                          //         ),
-                          //         Text(
-                          //           data.status.capitalize(),
-                          //           style: const TextStyle(
-                          //             color: Colors.white,
-                          //             fontWeight: FontWeight.bold,
-                          //             fontSize: 22,
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
                           ConsultationStatus(
                               status: data.status,
                               hasilId: snapshot.data ?? ''),
@@ -259,7 +217,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                if (userController.role == UserRole.pengelola &&
+                                if (cAuth.role == UserRole.pengelola &&
                                     data.status == RequestStatus.menunggu)
                                   InkWell(
                                     onTap: () => tryDelete(),
@@ -279,11 +237,7 @@ class _RequestDetailsState extends State<RequestDetails> {
                                       ),
                                     ),
                                   ),
-                                if (Provider.of<UserController>(context,
-                                                listen: false)
-                                            .user
-                                            .role ==
-                                        UserRole.pemilik &&
+                                if (cAuth.role == UserRole.pemilik &&
                                     data.status == RequestStatus.menunggu)
                                   Expanded(
                                     child: Row(
@@ -295,28 +249,26 @@ class _RequestDetailsState extends State<RequestDetails> {
                                             bool isConfirm = false;
                                             await NDialog(
                                               title: const Text('Konfirmasi'),
-                                              content: Text(
+                                              content: const Text(
                                                   'Yakin ingin menyetujui?'),
                                               actions: [
                                                 TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: Text('Tidak')),
+                                                    child: const Text('Tidak')),
                                                 TextButton(
-                                                    onPressed: () {
-                                                      isConfirm = true;
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('Iya'))
+                                                  onPressed: () {
+                                                    isConfirm = true;
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text('Iya'),
+                                                )
                                               ],
                                             ).show(context);
                                             if (isConfirm) {
-                                              Provider.of<ConsultationRequestController>(
-                                                      context,
-                                                      listen: false)
-                                                  .changeStatus(
-                                                      RequestStatus.ditolak,
-                                                      data.usulanKonsultasiId);
+                                              cUsulanKonsultasi.changeStatus(
+                                                  RequestStatus.ditolak,
+                                                  data.usulanKonsultasiId);
                                               setState(() {
                                                 data.status =
                                                     RequestStatus.disetujui;
@@ -345,26 +297,23 @@ class _RequestDetailsState extends State<RequestDetails> {
                                             bool isConfirm = false;
                                             await NDialog(
                                               title: const Text('Konfirmasi'),
-                                              content:
-                                                  Text('Yakin ingin menolak?'),
+                                              content: const Text(
+                                                  'Yakin ingin menolak?'),
                                               actions: [
                                                 TextButton(
                                                     onPressed: () =>
                                                         Navigator.pop(context),
-                                                    child: Text('Tidak')),
+                                                    child: const Text('Tidak')),
                                                 TextButton(
                                                     onPressed: () {
                                                       isConfirm = true;
                                                       Navigator.pop(context);
                                                     },
-                                                    child: Text('Iya'))
+                                                    child: const Text('Iya'))
                                               ],
                                             ).show(context);
                                             if (isConfirm) {
-                                              Provider.of<ConsultationRequestController>(
-                                                      context,
-                                                      listen: false)
-                                                  .changeStatus(
+                                              cUsulanKonsultasi.changeStatus(
                                                 RequestStatus.disetujui,
                                                 data.usulanKonsultasiId,
                                               );

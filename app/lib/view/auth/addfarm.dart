@@ -1,7 +1,7 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,15 +50,13 @@ class _AddFarmState extends State<AddFarm> {
         return;
       } else {
         try {
-          final upload = await Provider.of<UserController>(context,
-                  listen: false)
-              .addNewFarm(
-                  nama,
-                  alamat,
-                  int.parse(luas),
-                  AppFormat.intDateFromDateTime(currentDate),
-                  "${hour1.hour.toString().padLeft(2, '0')}:${hour1.minute.toString().padLeft(2, '0')}",
-                  "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}");
+          final upload = await Provider.of<CAuth>(context, listen: false).addNewFarm(
+              nama,
+              alamat,
+              int.parse(luas),
+              AppFormat.intDateFromDateTime(currentDate),
+              "${hour1.hour.toString().padLeft(2, '0')}:${hour1.minute.toString().padLeft(2, '0')}",
+              "${hour2.hour.toString().padLeft(2, '0')}:${hour2.minute.toString().padLeft(2, '0')}");
           await completeRegistration(upload, UserRole.pemilik).then((value) =>
               customDialog(context, 'Berhasil', 'Akun berhasil dibuat!').then(
                   (value) => Navigator.pushReplacementNamed(context, '/home')));

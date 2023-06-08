@@ -1,10 +1,8 @@
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/requeststatus.dart';
 import 'package:app/model/usermodel.dart';
-import 'package:app/view/features/consultation/createresult.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,12 +11,25 @@ import 'package:app/model/consultationmodel.dart';
 class ConsultationController extends ChangeNotifier {
   List<ConsultationModel> _list = [];
   List<ConsultationModel> get list => _list;
-  List<ConsultationModel> get doneList => _list
-      .where((element) => element.status == RequestStatus.selesai)
-      .toList();
-  List<ConsultationModel> get activeList => _list
-      .where((element) => element.status == RequestStatus.berlangsung)
-      .toList();
+
+  bool isOnProgress = false;
+  void changesProgress(bool value) {
+    isOnProgress = value;
+    notifyListeners();
+  }
+
+  List<ConsultationModel> getDataUsulan() {
+    if (isOnProgress) {
+      return _list
+          .where((element) => element.status == RequestStatus.selesai)
+          .toList();
+    } else {
+      return _list
+          .where((element) => element.status == RequestStatus.berlangsung)
+          .toList();
+    }
+  }
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -46,7 +57,7 @@ class ConsultationController extends ChangeNotifier {
         _list.add(ConsultationModel.fromJson(i.data(), i.id));
       }
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -62,7 +73,7 @@ class ConsultationController extends ChangeNotifier {
         _list.add(ConsultationModel.fromJson(i.data(), i.id));
       }
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -108,7 +119,6 @@ class ConsultationController extends ChangeNotifier {
           .collection('usulan_konsultasi')
           .doc(data.usulanKonsultasiId)
           .update({'status': RequestStatus.selesai});
-      print(data.konsultasiId);
       await FirebaseFirestore.instance
           .collection('konsultasi')
           .doc(data.konsultasiId)
@@ -120,7 +130,7 @@ class ConsultationController extends ChangeNotifier {
       _list[index].hasilId = result.id;
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 

@@ -14,14 +14,13 @@ class ViewFarmData extends StatelessWidget {
   Widget build(BuildContext context) {
     final musimId = ModalRoute.of(context)!.settings.arguments as String;
     Future<List<DataHarianModel>> fetchData() async {
-      print(musimId);
       final result = await FirebaseFirestore.instance
           .collection('data_harian')
           // .orderBy('tanggal', descending: false)
           .where('musimId', isEqualTo: musimId)
           .get();
       List<DataHarianModel> emptyList = [];
-      print(result.docs);
+
       for (var e in result.docs) {
         final newData = DataHarianModel.fromJson(e.data());
         emptyList.add(newData);

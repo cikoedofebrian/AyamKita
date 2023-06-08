@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:app/constant/appcolor.dart';
-import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
 import 'package:app/controller/dailycontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:app/widget/imagepicker.dart';
@@ -30,6 +30,11 @@ class _RequestState extends State<Request> {
 
   @override
   Widget build(BuildContext context) {
+    final dailyController =
+        Provider.of<DailyController>(context, listen: false);
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
+    final cUsulanKonsultasi =
+        Provider.of<CUsulanKonsultasi>(context, listen: false);
     void trySave() async {
       if (formKey.currentState!.validate()) {
         bool isConfirm = false;
@@ -54,26 +59,24 @@ class _RequestState extends State<Request> {
           ],
         ).show(context);
         if (isConfirm) {
-          final dailyController =
-              Provider.of<DailyController>(context, listen: false);
           final indexActive = dailyController.indexActive();
           if (indexActive == -1) {
+            // ignore: use_build_context_synchronously
             customDialog(
                 context, 'Ajuan gagal!', 'Tidak ada periode yang aktif');
             return;
           }
-          final userController =
-              Provider.of<UserController>(context, listen: false).user;
+
           formKey.currentState!.save();
-          Provider.of<ConsultationRequestController>(context, listen: false)
-              .addData(
+          cUsulanKonsultasi.addData(
             judul,
             deskripsi,
-            userController.peternakanId,
+            cAuth.peternakanId,
             FirebaseAuth.instance.currentUser!.uid,
             photo,
             dailyController.musimList[indexActive].musimId,
           );
+          // ignore: use_build_context_synchronously
           customDialog(context, 'Ajuan berhasil!',
                   'Usulan konsultasi telah berhasil dibuat')
               .then((value) => Navigator.pop(context));

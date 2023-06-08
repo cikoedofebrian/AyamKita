@@ -1,7 +1,12 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
+import 'package:app/constant/role.dart';
+import 'package:app/controller/feedcontroller.dart';
+import 'package:app/controller/c_auth.dart';
+import 'package:app/model/feedmodel.dart';
 import 'package:app/widget/datalistdetails.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DataList extends StatefulWidget {
   const DataList({
@@ -29,8 +34,18 @@ class DataList extends StatefulWidget {
 
 class _DataListState extends State<DataList> {
   bool isDown = false;
+  List<bool>? feed;
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<CAuth>(context, listen: false).getDataProfile().role !=
+        UserRole.dokter) {
+      final FeedController feedController =
+          Provider.of<FeedController>(context, listen: false);
+      final FeedModel data = feedController.list
+          .firstWhere((element) => element.tanggal == widget.tanggal);
+      feed = [data.pagi, data.sore];
+    }
+
     return Container(
       margin: const EdgeInsets.only(top: 20),
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -84,6 +99,61 @@ class _DataListState extends State<DataList> {
                   type: 'Harga Obat', number: widget.hargaObat.toString()),
               DataListDetails(
                   type: 'Harga Pakan', number: widget.hargaPakan.toString()),
+              if (feed != null) ...[
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  'Presensi Pakan',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Pagi',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: feed![0] ? Colors.green : Colors.grey,
+                      size: 30,
+                    )
+                  ],
+                ),
+                const Divider(
+                  color: Colors.grey,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Sore',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: feed![1] ? Colors.green : Colors.grey,
+                      size: 30,
+                    )
+                  ],
+                ),
+                const Divider(
+                  color: Colors.grey,
+                ),
+              ]
             ],
           )
       ]),

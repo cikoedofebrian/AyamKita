@@ -1,6 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/feedschedule.dart';
 import 'package:app/widget/incomingconsultation.dart';
 import 'package:app/widget/todaysrice.dart';
@@ -14,14 +14,14 @@ class DashBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userController = Provider.of<UserController>(context);
+    final cAuth = Provider.of<CAuth>(context).getDataProfile();
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (userController.user.role == UserRole.pemilik)
+          if (cAuth.role == UserRole.pemilik)
             InkWell(
               onTap: () => Navigator.of(context).pushNamed('/find-doctor'),
               child: Row(
@@ -68,10 +68,9 @@ class DashBoard extends StatelessWidget {
               SizedBox(
                 height: 60,
                 width: 60,
-                child: userController.user.downloadUrl.isNotEmpty
+                child: cAuth.downloadUrl.isNotEmpty
                     ? CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(userController.user.downloadUrl))
+                        backgroundImage: NetworkImage(cAuth.downloadUrl))
                     : Image.asset("assets/images/profile.png"),
               ),
               const SizedBox(
@@ -85,7 +84,7 @@ class DashBoard extends StatelessWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(
-                    userController.user.nama,
+                    cAuth.nama,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20),
                   )
@@ -96,13 +95,11 @@ class DashBoard extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          if (userController.user.role == UserRole.pengelola)
-            const WeatherHome(),
-          if (userController.user.role == UserRole.pemilik)
-            const TodayExpenses(),
-          if (userController.user.role != UserRole.dokter)
-            Column(
-              children: const [
+          if (cAuth.role == UserRole.pengelola) const WeatherHome(),
+          if (cAuth.role == UserRole.pemilik) const TodayExpenses(),
+          if (cAuth.role != UserRole.dokter)
+            const Column(
+              children: [
                 SizedBox(
                   height: 20,
                 ),
@@ -119,10 +116,10 @@ class DashBoard extends StatelessWidget {
                 ),
               ],
             ),
-          if (userController.user.role == UserRole.dokter)
-            Column(
+          if (cAuth.role == UserRole.dokter)
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 IncomingSchedule(),
                 SizedBox(
                   height: 20,

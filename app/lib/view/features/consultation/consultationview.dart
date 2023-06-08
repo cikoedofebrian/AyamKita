@@ -2,7 +2,7 @@ import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/requeststatus.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/findoctorcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/model/consultationmodel.dart';
 import 'package:app/model/consultationrequestmodel.dart';
 import 'package:app/model/farmmodel.dart';
@@ -20,9 +20,9 @@ class ConsultationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = ModalRoute.of(context)!.settings.arguments as List<dynamic>;
-    final userController = Provider.of<UserController>(context, listen: false);
+    final cAuth = Provider.of<CAuth>(context, listen: false);
     final peternakanData = data[0] as PeternakanModel;
-    final isPemilik = userController.user.role == UserRole.pemilik;
+    final isPemilik = cAuth.getDataProfile().role == UserRole.pemilik;
     final dokterData = data[1] as UserModel;
     final consultationRequestData = data[2] as ConsultationRequestModel;
     final consultationData = data[3] as ConsultationModel;
@@ -60,7 +60,7 @@ class ConsultationView extends StatelessWidget {
           ),
           onPressed: () async {
             UserModel continuedData = dokterData;
-            if (userController.user.role == UserRole.dokter) {
+            if (cAuth.getDataProfile().role == UserRole.dokter) {
               final data = await FirebaseFirestore.instance
                   .collection('akun')
                   .where('peternakanId', isEqualTo: peternakanData.peternakanId)
@@ -70,6 +70,7 @@ class ConsultationView extends StatelessWidget {
               continuedData =
                   UserModel.fromJson(data.docs[0].data(), data.docs[0].id);
             }
+            // ignore: use_build_context_synchronously
             Navigator.pushNamed(context, '/chat-view',
                 arguments: continuedData);
           },
@@ -98,6 +99,7 @@ class ConsultationView extends StatelessWidget {
                                 context,
                                 listen: false)
                             .getSpecificDokter(dokterData);
+                        // ignore: use_build_context_synchronously
                         Navigator.pushNamed(context, '/doctor-view',
                             arguments: [result, false]);
                       } else {
@@ -115,7 +117,7 @@ class ConsultationView extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  if (userController.user.role == UserRole.dokter)
+                  if (cAuth.getDataProfile().role == UserRole.dokter)
                     InkWell(
                       onTap: () => Navigator.pushNamed(
                         context,

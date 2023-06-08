@@ -1,6 +1,6 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
-import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
 import 'package:app/model/consultationrequestmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class _RequestWidgetState extends State<RequestWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currentSelected = Provider.of<ConsultationRequestController>(context);
+    final currentSelected = Provider.of<CUsulanKonsultasi>(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),

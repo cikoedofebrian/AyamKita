@@ -1,8 +1,7 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/widget/customdialog.dart';
-import 'package:email_validator/email_validator.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,33 +28,10 @@ class _LoginPageState extends State<LoginPage> {
 
   final emailCon = TextEditingController();
   final passwordCon = TextEditingController();
-  void tryLogin(BuildContext context) async {
-    formKey.currentState!.save();
-    if (emailCon.text.isEmpty || passwordCon.text.isEmpty) {
-      customDialog(context, 'Gagal', 'Data tidak bolek kosong!');
-      return;
-    } else if (!EmailValidator.validate(emailCon.text)) {
-      customDialog(context, 'Gagal', 'Data tidak valid!');
-      return;
-    }
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailCon.text, password: passwordCon.text);
-      Navigator.pushReplacementNamed(context, '/home');
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'wrong-password' || error.code == 'user-not-found') {
-        customDialog(context, 'Gagal', 'Email/Password salah!');
-      } else {
-        customDialog(
-            context, 'Gagal', 'Terdapat kesalahan sistem, coba lagi nanti');
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final CAuth cAuth = Provider.of<CAuth>(context);
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) =>
@@ -66,13 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // ElevatedButton(
-                  //     onPressed: () {
-                  //       print(FirebaseAuth.instance.currentUser);
-                  //     },
-                  //     child: Text('tries')),
                   Image.asset("assets/images/login_image.png", width: 120),
                   const SizedBox(height: 30),
                   Container(
@@ -176,7 +146,12 @@ class _LoginPageState extends State<LoginPage> {
                               height: 15,
                             ),
                             InkWell(
-                              onTap: () => tryLogin(context),
+                              onTap: () => cAuth.resumeLogin(
+                                context,
+                                formKey,
+                                emailCon.text,
+                                passwordCon.text,
+                              ),
                               child: Container(
                                 width: 260,
                                 height: 40,
@@ -232,19 +207,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-
-
-                      // Container(
-                      //   child: InputDecorator(
-                      //     decoration: InputDecoration(
-                      //       labelText: 'XP',
-                      //       enabledBorder: OutlineInputBorder(
-                      //         borderRadius: BorderRadius.circular(5),
-                      //       ),
-                      //     ),
-                      //     child: TextField(
-                      //       decoration: InputDecoration.collapsed(hintText: ""),
-                      //     ),
-                      //   ),
-                      // )

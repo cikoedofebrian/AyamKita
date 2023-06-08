@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-class ConsultationRequestController extends ChangeNotifier {
+class CUsulanKonsultasi extends ChangeNotifier {
   List<ConsultationRequestModel> _list = [];
   List<ConsultationRequestModel> get list => _list;
   List<ConsultationRequestModel> get acceptedList => _list
@@ -35,17 +35,21 @@ class ConsultationRequestController extends ChangeNotifier {
   }
 
   Future<void> fetchData(String peternakanId) async {
-    _list = [];
-    final result = await FirebaseFirestore.instance
-        .collection('usulan_konsultasi')
-        .where('peternakanId', isEqualTo: peternakanId)
-        .get();
-    for (var i in result.docs) {
-      final mappedData = ConsultationRequestModel.fromJson(i.data(), i.id);
-      _list.add(mappedData);
+    try {
+      _list = [];
+      final result = await FirebaseFirestore.instance
+          .collection('usulan_konsultasi')
+          .where('peternakanId', isEqualTo: peternakanId)
+          .get();
+      for (var i in result.docs) {
+        final mappedData = ConsultationRequestModel.fromJson(i.data(), i.id);
+        _list.add(mappedData);
+      }
+      _isLoading = false;
+      notifyListeners();
+    } catch (error) {
+      rethrow;
     }
-    _isLoading = false;
-    notifyListeners();
   }
 
   void addData(
@@ -107,7 +111,7 @@ class ConsultationRequestController extends ChangeNotifier {
           .update({'status': newStatus});
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 }

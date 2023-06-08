@@ -22,7 +22,7 @@ class WorkingHoursControllers extends ChangeNotifier {
 
       _list.sort((a, b) => (a.day).compareTo(b.day));
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -83,7 +83,7 @@ class WorkingHoursControllers extends ChangeNotifier {
       );
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/consultationcontroller.dart';
 import 'package:app/model/usermodel.dart';

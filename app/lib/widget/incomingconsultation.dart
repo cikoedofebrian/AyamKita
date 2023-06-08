@@ -11,7 +11,7 @@ class IncomingSchedule extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        image: DecorationImage(
+        image: const DecorationImage(
           image: AssetImage("assets/images/weatherbackground.png"),
           fit: BoxFit.cover,
         ),
@@ -39,7 +39,7 @@ class IncomingSchedule extends StatelessWidget {
                         .length
                         .toString(),
                     textAlign: TextAlign.end,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 32,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -51,7 +51,7 @@ class IncomingSchedule extends StatelessWidget {
           ),
           InkWell(
             child: Container(
-              margin: EdgeInsets.all(10),
+              margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               width: double.infinity,

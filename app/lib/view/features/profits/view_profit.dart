@@ -34,8 +34,34 @@ class _ViewProfitState extends State<ViewProfit> {
     if (dailyController.musimList.isEmpty) {
       return SizedBox(
         height: MediaQuery.of(context).size.height,
-        child: const Center(
-          child: Text('Anda belum pernah memulai musim'),
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Anda belum pernah memulai musim'),
+            const SizedBox(
+              height: 20,
+            ),
+            InkWell(
+              onTap: () => Navigator.pushNamed(context, '/add-musim'),
+              child: SizedBox(
+                child: Material(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppColor.secondary,
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                    child: Text(
+                      'Tambah Musim',
+                      style: TextStyle(
+                          color: AppColor.tertiary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -57,17 +83,19 @@ class _ViewProfitState extends State<ViewProfit> {
           child: Column(
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text(
-                  'Pilih Periode',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
+                const Expanded(
+                  child: Text(
+                    'Data Keuntungan',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
                 DropdownButtonHideUnderline(
                   child: DropdownButton2(
                     hint: Text(
-                      'Select Item',
+                      'Pilih Musim',
                       style: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).hintColor,
@@ -186,6 +214,30 @@ class _ViewProfitState extends State<ViewProfit> {
                   ),
                 ],
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              if (!dailyController.anyActive())
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/add-musim'),
+                  child: SizedBox(
+                    child: Material(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColor.secondary,
+                      child: const Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                        child: Text(
+                          'Tambah Musim',
+                          style: TextStyle(
+                              color: AppColor.tertiary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ));

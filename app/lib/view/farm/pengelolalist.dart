@@ -77,9 +77,9 @@ class PengelolaList extends StatelessWidget {
                               ),
                             ],
                           )
-                        : Column(
+                        : const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Text(
                                 'Belum ada pengelola',
                                 style: TextStyle(

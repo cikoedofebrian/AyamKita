@@ -3,11 +3,9 @@ import 'package:app/controller/chickenpricecontroller.dart';
 import 'package:app/controller/consultationcontroller.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/controller/weathercontroller.dart';
 import 'package:app/controller/workinghourscontroller.dart';
-import 'package:app/view/farm/add_data.dart';
-import 'package:app/view/features/profits/view_profit.dart';
 import 'package:app/view/home/dashboard.dart';
 import 'package:app/view/home/middle_page.dart';
 import 'package:app/view/profile/profile.dart';
@@ -34,16 +32,16 @@ class _HomeState extends State<Home> {
 
   Future<void> getUserData() async {
     // isLoading = true;
-    final userController = Provider.of<UserController>(context, listen: false);
-    await userController.fetchData().then(
-          (value) => userController.user.role == UserRole.dokter
+    final cAuth = Provider.of<CAuth>(context, listen: false);
+    await cAuth.fetchData().then(
+          (value) => cAuth.getDataProfile().role == UserRole.dokter
               ? future = Future.wait([
-                  userController.fetchDokterDetails(),
+                  cAuth.fetchDokterDetails(),
                   Provider.of<ConsultationController>(context, listen: false)
                       .fetchDataForDokter(),
                   Provider.of<WorkingHoursControllers>(context, listen: false)
                       .fetchData(FirebaseAuth.instance.currentUser!.uid)
-                ]).then((value) => userController.setLoading(false))
+                ]).then((value) => cAuth.setLoading(false))
               : future = Future.wait(
                   [
                     Provider.of<WeatherController>(context, listen: false)
@@ -51,13 +49,14 @@ class _HomeState extends State<Home> {
                     Provider.of<ChickenPriceController>(context, listen: false)
                         .fetchData(),
                     Provider.of<FeedController>(context, listen: false)
-                        .fetchData(userController.user.peternakanId),
+                        .fetchData(cAuth.getDataProfile().peternakanId),
                     Provider.of<DailyController>(context, listen: false)
-                        .fetchData(userController.user.peternakanId),
+                        .fetchData(cAuth.getDataProfile().peternakanId),
                     Provider.of<ConsultationController>(context, listen: false)
-                        .fetchDataForPemilik(userController.user.peternakanId),
+                        .fetchDataForPemilik(
+                            cAuth.getDataProfile().peternakanId),
                   ],
-                ).then((value) => userController.setLoading(false)),
+                ).then((value) => cAuth.setLoading(false)),
         );
   }
 
@@ -76,18 +75,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final userController = Provider.of<UserController>(context);
-
-    // if (userController.isLoading != false &&
-    //     userController.user.role == UserRole.pemilik) {
-    //   _page = [
-    //     const DashBoard(),
-    //     const ViewProfit(),
-    //     const Profile(),
-    //   ];
-    // }
+    final cAuth = Provider.of<CAuth>(context);
     return Scaffold(
-      body: userController.isLoading == true
+      body: cAuth.isLoading == true
           ? Center(
               child: LoadingAnimationWidget.inkDrop(
                   color: Colors.orange, size: 60),
@@ -98,7 +88,7 @@ class _HomeState extends State<Home> {
                 children: [
                   RefreshIndicator(
                     onRefresh: () {
-                      userController.setLoading(true);
+                      cAuth.setLoading(true);
                       return getUserData();
                     },
                     child: SingleChildScrollView(

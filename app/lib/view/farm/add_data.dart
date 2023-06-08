@@ -3,7 +3,7 @@ import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/chickenpricecontroller.dart';
 import 'package:app/controller/dailycontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/customdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +31,10 @@ class _AddDataState extends State<AddData> {
 
   @override
   Widget build(BuildContext context) {
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
     final dailyController = Provider.of<DailyController>(context);
+    final ChickenPriceController chickenPriceController =
+        Provider.of<ChickenPriceController>(context, listen: false);
     final index = dailyController.indexActive();
     void save() async {
       if (dailyController.musimList[index].list.isNotEmpty) {
@@ -82,19 +85,17 @@ class _AddDataState extends State<AddData> {
           ).show(context);
           if (isConfirmed) {
             final int stockdifference = dailyController
-                    .musimList[index].jumlah -
-                dailyController
-                    .getTotalStock(dailyController.musimList[index].musimId);
+                .getTotalStock(dailyController.musimList[index].musimId);
 
             final total =
                 stockdifference - (int.parse(keluar) + int.parse(kematian));
             if (total < 0) {
+              // ignore: use_build_context_synchronously
               customDialog(
                   context, 'Gagal', 'Stok hanya tersisa $stockdifference');
               return;
             }
-            final ChickenPriceController chickenPriceController =
-                Provider.of<ChickenPriceController>(context, listen: false);
+
             final price = chickenPriceController.list.firstWhere(
               (element) =>
                   element.date ==
@@ -133,12 +134,13 @@ class _AddDataState extends State<AddData> {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context), child: Text('Tutup'))
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Tutup'))
             ],
           ).show(context);
         }
       } catch (error) {
-        print(error);
+        rethrow;
       }
     }
 
@@ -179,10 +181,7 @@ class _AddDataState extends State<AddData> {
               keluar = '';
               obat = '';
               hargaObat = '';
-              if (Provider.of<UserController>(context, listen: false)
-                      .user
-                      .role ==
-                  UserRole.pengelola) {
+              if (cAuth.role == UserRole.pengelola) {
                 editable = true;
               } else {
                 editable = false;
@@ -203,10 +202,7 @@ class _AddDataState extends State<AddData> {
                       const SizedBox(
                         height: 20,
                       ),
-                      if (Provider.of<UserController>(context, listen: false)
-                              .user
-                              .role ==
-                          UserRole.pemilik)
+                      if (cAuth.role == UserRole.pemilik)
                         InkWell(
                           onTap: () =>
                               Navigator.pushNamed(context, '/add-musim'),
@@ -292,12 +288,7 @@ class _AddDataState extends State<AddData> {
                           const SizedBox(
                             height: 20,
                           ),
-                          if (!editable &&
-                              Provider.of<UserController>(context,
-                                          listen: false)
-                                      .user
-                                      .role ==
-                                  UserRole.pengelola)
+                          if (!editable && cAuth.role == UserRole.pengelola)
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -538,10 +529,7 @@ class _AddDataState extends State<AddData> {
                     const SizedBox(
                       height: 20,
                     ),
-                    if (Provider.of<UserController>(context, listen: false)
-                            .user
-                            .role ==
-                        UserRole.pengelola)
+                    if (cAuth.role == UserRole.pengelola)
                       InkWell(
                         onTap: () => editable ? save() : null,
                         child: Material(

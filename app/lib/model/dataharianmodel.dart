@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class DataHarianModel {
   final String tanggal;
   final int umur;

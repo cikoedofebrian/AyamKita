@@ -51,13 +51,12 @@ class FindDoctorController extends ChangeNotifier {
         }
         _list.add(
             FindDoctorModel.fromJson(details.data()!, i.data(), i.id, dlist));
-        print(_list.length);
       }
 
       _isLoading = false;
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 

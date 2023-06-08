@@ -1,12 +1,8 @@
-import 'dart:ffi';
-
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
-import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
 import 'package:app/controller/findoctorcontroller.dart';
 import 'package:app/model/finddoctormodel.dart';
-import 'package:app/view/features/request/request.dart';
-import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customtop.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -166,10 +162,9 @@ class DoctorView extends StatelessWidget {
                         .setSelectedModel(data);
                     Navigator.pushNamed(context, '/request-list',
                             arguments: true)
-                        .then((value) =>
-                            Provider.of<ConsultationRequestController>(context,
-                                    listen: false)
-                                .selectRequest(""));
+                        .then((value) => Provider.of<CUsulanKonsultasi>(context,
+                                listen: false)
+                            .selectRequest(""));
                   },
                   child: Container(
                     decoration: BoxDecoration(

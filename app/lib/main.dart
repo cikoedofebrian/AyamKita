@@ -1,11 +1,11 @@
 import 'package:app/controller/chickenpricecontroller.dart';
 import 'package:app/controller/consultationcontroller.dart';
-import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
 import 'package:app/controller/dailycontroller.dart';
 import 'package:app/controller/farmcontroller.dart';
 import 'package:app/controller/feedcontroller.dart';
 import 'package:app/controller/findoctorcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/controller/weathercontroller.dart';
 import 'package:app/controller/workinghourscontroller.dart';
 import 'package:app/view/auth/adddokter.dart';
@@ -54,7 +54,7 @@ void main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (context) => UserController(),
+            create: (context) => CAuth(),
           ),
           ChangeNotifierProvider(
             create: (context) => DailyController(),
@@ -69,13 +69,10 @@ void main() async {
             create: (context) => FeedController(),
           ),
           ChangeNotifierProvider(
-            create: (context) => ConsultationRequestController(),
+            create: (context) => CUsulanKonsultasi(),
           ),
           ChangeNotifierProvider(
             create: (context) => PeternakanController(),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => ConsultationRequestController(),
           ),
           ChangeNotifierProvider(
             create: (context) => WorkingHoursControllers(),

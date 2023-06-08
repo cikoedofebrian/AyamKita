@@ -1,5 +1,5 @@
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/navbarbgpainter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -53,8 +53,8 @@ class _CustomNavbarState extends State<CustomNavbar> {
                   ),
                 ),
               ).animate(target: widget.index == 0 ? 1 : 0).shake(),
-              if (Provider.of<UserController>(context, listen: false)
-                      .user
+              if (Provider.of<CAuth>(context, listen: false)
+                      .getDataProfile()
                       .role !=
                   UserRole.dokter)
                 SizedBox(

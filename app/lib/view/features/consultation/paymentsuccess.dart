@@ -1,5 +1,5 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/controller/consultationrequest.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,10 +13,10 @@ class PaymentSuccess extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
           children: [
-            Expanded(
+            const Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
                     Icons.check_circle_rounded,
                     color: Colors.green,
@@ -41,8 +41,7 @@ class PaymentSuccess extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Provider.of<ConsultationRequestController>(context,
-                        listen: false)
+                Provider.of<CUsulanKonsultasi>(context, listen: false)
                     .selectRequest("");
                 Navigator.pushReplacementNamed(context, '/home');
               },

@@ -40,8 +40,8 @@ class ConsultationStatus extends StatelessWidget {
                     child: InkWell(
                       onTap: () => Navigator.of(context)
                           .pushNamed('/result-view', arguments: hasilId),
-                      child: Row(
-                        children: const [
+                      child: const Row(
+                        children: [
                           Text(
                             'Hasil',
                             style: TextStyle(

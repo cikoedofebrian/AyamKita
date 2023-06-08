@@ -1,7 +1,7 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/consultationcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/consultationwidget.dart';
 import 'package:app/widget/customtop.dart';
 import 'package:app/widget/selectstatus.dart';
@@ -16,22 +16,11 @@ class ConsultationList extends StatefulWidget {
 }
 
 class _ConsultationListState extends State<ConsultationList> {
-  bool isDone = false;
-
   @override
   Widget build(BuildContext context) {
-    final consultationController =
-        Provider.of<ConsultationController>(context, listen: false);
-    final userController = Provider.of<UserController>(context, listen: false);
-    var list = isDone
-        ? consultationController.activeList
-        : consultationController.doneList;
-
-    void changeStatus(bool newStatus) {
-      setState(() {
-        isDone = newStatus;
-      });
-    }
+    final consultationController = Provider.of<ConsultationController>(context);
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
+    var list = consultationController.getDataUsulan();
 
     return Scaffold(
       body: Stack(
@@ -41,7 +30,9 @@ class _ConsultationListState extends State<ConsultationList> {
             child: Column(
               children: [
                 const CustomTop(title: 'Konsultasi'),
-                SelectStatus(done: isDone, changeStatus: changeStatus),
+                SelectStatus(
+                    done: consultationController.isOnProgress,
+                    changeStatus: consultationController.changesProgress),
                 Expanded(
                   child: list.isNotEmpty
                       ? ListView.builder(
@@ -49,9 +40,9 @@ class _ConsultationListState extends State<ConsultationList> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 40, vertical: 40),
                           itemBuilder: (context, index) => ConsultationWidget(
-                              data: list[index],
-                              isPemilik:
-                                  userController.user.role != UserRole.pemilik),
+                            data: list[index],
+                            isPemilik: cAuth.role != UserRole.pemilik,
+                          ),
                           itemCount: list.length,
                         )
                       : Column(

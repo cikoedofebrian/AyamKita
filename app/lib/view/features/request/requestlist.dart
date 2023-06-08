@@ -1,8 +1,7 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/consultationrequest.dart';
-import 'package:app/controller/findoctorcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_usulan_konsultasi.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/requestwidget.dart';
 import 'package:app/widget/selectstatus.dart';
@@ -28,10 +27,9 @@ class _RequestListState extends State<RequestList> {
 
   @override
   Widget build(BuildContext context) {
-    final requestController =
-        Provider.of<ConsultationRequestController>(context);
-    final peternakanId =
-        Provider.of<UserController>(context, listen: false).user.peternakanId;
+    final requestController = Provider.of<CUsulanKonsultasi>(context);
+    final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
+    final peternakanId = cAuth.peternakanId;
     if (requestController.isLoading) {
       requestController.fetchData(peternakanId);
     }
@@ -41,9 +39,7 @@ class _RequestListState extends State<RequestList> {
         : isProgress
             ? requestController.progressList
             : requestController.doneList;
-    final isPengelola =
-        Provider.of<UserController>(context, listen: false).user.role ==
-            UserRole.pengelola;
+    final isPengelola = cAuth.role == UserRole.pengelola;
 
     return RefreshIndicator(
       onRefresh: () => requestController.fetchData(peternakanId),
@@ -119,9 +115,9 @@ class _RequestListState extends State<RequestList> {
                                   ),
                                   itemCount: list.length,
                                 )
-                              : Column(
+                              : const Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
+                                  children: [
                                     Text(
                                       'Belum ada usulan konsultasi',
                                       style: TextStyle(

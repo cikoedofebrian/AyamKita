@@ -5,7 +5,6 @@ import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/requestpainter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class PriceList extends StatelessWidget {
   const PriceList({super.key});

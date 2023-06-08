@@ -1,5 +1,4 @@
 import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
 import 'package:flutter/material.dart';
 
 class ProfitItem extends StatelessWidget {

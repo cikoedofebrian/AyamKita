@@ -108,7 +108,7 @@ class DailyController extends ChangeNotifier {
 
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -189,7 +189,7 @@ class DailyController extends ChangeNotifier {
       if (error is FirebaseException) {
         throw CustomException(error.message!);
       } else {
-        print(error);
+        rethrow;
       }
     }
   }
@@ -225,7 +225,7 @@ class DailyController extends ChangeNotifier {
 
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 }
