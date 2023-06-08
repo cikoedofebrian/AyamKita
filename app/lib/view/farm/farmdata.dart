@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/farmcontroller.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/model/farmmodel.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
@@ -31,16 +31,15 @@ class _FarmDataState extends State<FarmData> {
 
   @override
   Widget build(BuildContext context) {
-    final userController = Provider.of<UserController>(context, listen: false);
-    final isPemilik = userController.user.role == UserRole.pemilik;
+    final cAuth = Provider.of<CAuth>(context, listen: false);
+    final isPemilik = cAuth.getDataProfile().role == UserRole.pemilik;
     final peternakanController = Provider.of<PeternakanController>(context);
-    // late PeternakanModel peternakanData;
     PeternakanModel? peternakanData =
         ModalRoute.of(context)!.settings.arguments as PeternakanModel?;
     if (peternakanData == null) {
       if (peternakanController.isLoading) {
         peternakanController
-            .fetchFarmData(userController.user.peternakanId)
+            .fetchFarmData(cAuth.getDataProfile().peternakanId)
             .then((value) => peternakanData = peternakanController.farmData!);
       } else {
         peternakanData = peternakanController.farmData!;
@@ -64,6 +63,7 @@ class _FarmDataState extends State<FarmData> {
             photoUrl = await upload.ref.getDownloadURL();
           }
           peternakanController.updateData(nama, alamat, luas, photoUrl);
+          // ignore: use_build_context_synchronously
           customDialog(context, 'Berhasil', 'Perubahan data berhasil!');
         }
       } else {
@@ -245,6 +245,7 @@ class _FarmDataState extends State<FarmData> {
                                     if (value!.isEmpty) {
                                       return "Tidak boleh kosong";
                                     }
+                                    return null;
                                   },
                                   enabled: isEditable,
                                   key: const ValueKey('name'),
@@ -298,6 +299,7 @@ class _FarmDataState extends State<FarmData> {
                                     if (value!.isEmpty) {
                                       return "Wajib diisi";
                                     }
+                                    return null;
                                   },
                                   onSaved: (newValue) => alamat = newValue!,
                                   initialValue: peternakanData!.alamat,

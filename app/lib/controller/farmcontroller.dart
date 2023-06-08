@@ -1,4 +1,3 @@
-import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/model/farmmodel.dart';
 import 'package:app/model/usermodel.dart';
@@ -23,7 +22,7 @@ class PeternakanController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 

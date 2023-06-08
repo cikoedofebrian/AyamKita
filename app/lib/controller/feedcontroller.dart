@@ -14,7 +14,6 @@ class FeedController extends ChangeNotifier {
 
   Future<void> fetchData(String peternakanId) async {
     try {
-      // print('feed started');
       _list = [];
 
       final date = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -59,7 +58,7 @@ class FeedController extends ChangeNotifier {
       }
       _list.sort((a, b) => b.tanggal.compareTo(a.tanggal));
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 

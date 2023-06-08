@@ -1,8 +1,7 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/controller/findoctorcontroller.dart';
-import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customtop.dart';
-import 'package:app/widget/dokterList.dart';
+import 'package:app/widget/dokter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';

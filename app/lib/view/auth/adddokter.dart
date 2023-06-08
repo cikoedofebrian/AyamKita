@@ -1,7 +1,7 @@
 import 'package:app/constant/appcolor.dart';
 import 'package:app/constant/appformat.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/usercontroller.dart';
+import 'package:app/controller/c_auth.dart';
 import 'package:app/model/workinghours.dart';
 import 'package:app/widget/custombackbutton.dart';
 import 'package:app/widget/customdialog.dart';
@@ -113,12 +113,13 @@ class _AddDokterState extends State<AddDokter> {
         } else if (int.tryParse(price) == null) {
           customDialog(context, 'Gagal', 'Berikan harga yang valid!');
         }
-        final result = await Provider.of<UserController>(context, listen: false)
+        final result = await Provider.of<CAuth>(context, listen: false)
             .addDokterData(deskripsi, int.parse(price));
         await completeRegistration(result, UserRole.dokter).then((value) =>
-            Provider.of<UserController>(context, listen: false)
+            Provider.of<CAuth>(context, listen: false)
                 .addJamKerja(value, hoursList));
 
+        // ignore: use_build_context_synchronously
         await customDialog(context, 'Berhasil', 'Pendaftaran Akun Berhasil!')
             .then((value) => Navigator.pushReplacementNamed(context, '/home'));
       }

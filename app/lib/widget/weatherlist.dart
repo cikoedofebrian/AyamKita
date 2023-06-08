@@ -51,9 +51,9 @@ class WeatherList extends StatelessWidget {
               temp.toStringAsFixed(0),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 46),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, left: 2),
-              child: Row(children: const [
+            const Padding(
+              padding: EdgeInsets.only(top: 10, left: 2),
+              child: Row(children: [
                 Text('°'),
                 SizedBox(
                   width: 2,

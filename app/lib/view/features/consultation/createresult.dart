@@ -21,8 +21,7 @@ class _CreateResultState extends State<CreateResult> {
   Widget build(BuildContext context) {
     final consultationData =
         ModalRoute.of(context)!.settings.arguments as ConsultationModel;
-    print(consultationData.konsultasiId);
-    print(consultationData.usulanKonsultasiId);
+
     void tryCreate() async {
       final diagnosa = diagnosaController.text;
       final penjelasan = penjelasanController.text;
@@ -70,26 +69,54 @@ class _CreateResultState extends State<CreateResult> {
                       height: 20,
                     ),
                     const Text('Diagnosa'),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextField(
                       controller: diagnosaController,
                     ),
-                    Text('Penjelasan'),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text('Penjelasan'),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextField(
                       controller: penjelasanController,
                       maxLines: 10,
-                      decoration:
-                          InputDecoration(contentPadding: EdgeInsets.all(20)),
+                      decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(20)),
+                    ),
+                    const SizedBox(
+                      height: 20,
                     ),
                     InkWell(
                       onTap: tryCreate,
-                      child: Text('ss'),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Berikan Hasil',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          CustomTop(title: 'Berikan Hasil')
+          const CustomTop(title: 'Berikan Hasil')
         ]),
       ),
     );
