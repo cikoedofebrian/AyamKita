@@ -1,6 +1,6 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
-import 'package:app/controller/dailycontroller.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/constant/app_format.dart';
+import 'package:app/controller/c_data_harian.dart';
 import 'package:app/widget/profit_item.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +18,7 @@ class _ViewProfitState extends State<ViewProfit> {
 
   @override
   void initState() {
-    final DailyController dailyController =
-        Provider.of<DailyController>(context, listen: false);
+    final dailyController = Provider.of<CDataHarian>(context, listen: false);
     if (dailyController.musimList.isNotEmpty) {
       musimId = dailyController.musimList.last.musimId;
     }
@@ -28,8 +27,7 @@ class _ViewProfitState extends State<ViewProfit> {
 
   @override
   Widget build(BuildContext context) {
-    final DailyController dailyController =
-        Provider.of<DailyController>(context, listen: false);
+    final dailyController = Provider.of<CDataHarian>(context, listen: false);
 
     if (dailyController.musimList.isEmpty) {
       return SizedBox(

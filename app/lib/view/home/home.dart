@@ -1,15 +1,15 @@
 import 'package:app/constant/role.dart';
-import 'package:app/controller/chickenpricecontroller.dart';
-import 'package:app/controller/consultationcontroller.dart';
-import 'package:app/controller/dailycontroller.dart';
-import 'package:app/controller/feedcontroller.dart';
+import 'package:app/controller/c_harga_pasar.dart';
+import 'package:app/controller/c_konsultasi.dart';
+import 'package:app/controller/c_data_harian.dart';
+import 'package:app/controller/c_jadwal_pakan.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/controller/weathercontroller.dart';
-import 'package:app/controller/workinghourscontroller.dart';
+import 'package:app/controller/c_info_cuaca.dart';
+import 'package:app/controller/c_jam_kerja.dart';
 import 'package:app/view/home/dashboard.dart';
 import 'package:app/view/home/middle_page.dart';
 import 'package:app/view/profile/profile.dart';
-import 'package:app/widget/customnavbar.dart';
+import 'package:app/widget/custom_navbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -37,22 +37,21 @@ class _HomeState extends State<Home> {
           (value) => cAuth.getDataProfile().role == UserRole.dokter
               ? future = Future.wait([
                   cAuth.fetchDokterDetails(),
-                  Provider.of<ConsultationController>(context, listen: false)
+                  Provider.of<CKonsultasi>(context, listen: false)
                       .fetchDataForDokter(),
-                  Provider.of<WorkingHoursControllers>(context, listen: false)
+                  Provider.of<MJamKerjaControllers>(context, listen: false)
                       .fetchData(FirebaseAuth.instance.currentUser!.uid)
                 ]).then((value) => cAuth.setLoading(false))
               : future = Future.wait(
                   [
-                    Provider.of<WeatherController>(context, listen: false)
+                    Provider.of<CInfoCuaca>(context, listen: false).fetchData(),
+                    Provider.of<CHargaPasar>(context, listen: false)
                         .fetchData(),
-                    Provider.of<ChickenPriceController>(context, listen: false)
-                        .fetchData(),
-                    Provider.of<FeedController>(context, listen: false)
+                    Provider.of<CJadwalPakan>(context, listen: false)
                         .fetchData(cAuth.getDataProfile().peternakanId),
-                    Provider.of<DailyController>(context, listen: false)
+                    Provider.of<CDataHarian>(context, listen: false)
                         .fetchData(cAuth.getDataProfile().peternakanId),
-                    Provider.of<ConsultationController>(context, listen: false)
+                    Provider.of<CKonsultasi>(context, listen: false)
                         .fetchDataForPemilik(
                             cAuth.getDataProfile().peternakanId),
                   ],

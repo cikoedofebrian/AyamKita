@@ -1,16 +1,12 @@
 import 'dart:io';
-import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/app_color.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/model/usermodel.dart';
-import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/customdialog.dart';
-import 'package:app/widget/imagepicker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:app/model/m_akun.dart';
+import 'package:app/widget/custom_back_button.dart';
+import 'package:app/widget/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -52,8 +48,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
     final cAuth = Provider.of<CAuth>(context);
     final userData = cAuth.getDataProfile();
 
-    final UserModel? isFromConsultation =
-        ModalRoute.of(context)!.settings.arguments as UserModel?;
+    final MAkun? isFromConsultation =
+        ModalRoute.of(context)!.settings.arguments as MAkun?;
+
     if (isFromConsultation != null) {
       name = isFromConsultation.nama;
       role = isFromConsultation.role;
@@ -62,71 +59,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       email = isFromConsultation.email;
       since = isFromConsultation.tanggalPendaftaran;
       imageUrl = isFromConsultation.downloadUrl;
-    }
-    void trySave() async {
-      if (formKey.currentState!.validate()) {
-        bool isConfirm = false;
-        await NDialog(
-          title: const Text(
-            'Konfirmasi',
-            textAlign: TextAlign.center,
-          ),
-          content: const Text("Apakah yakin ingin menyimpan data?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                isConfirm = true;
-                Navigator.of(context).pop();
-              },
-              child: const Text('Iya'),
-            )
-          ],
-        ).show(context);
-        if (isConfirm) {
-          formKey.currentState!.save();
-          if (photo != null) {
-            final upload = await FirebaseStorage.instance
-                .ref(
-                    '/profile-images/${FirebaseAuth.instance.currentUser!.uid}')
-                .putFile(
-                  File(photo!.path),
-                );
-            final url = await upload.ref.getDownloadURL();
-            imageUrl = url;
-          }
-
-          final trimmedname = name.trim();
-          final trimmedaddress = address.trim();
-          final trimmedimageUrl = imageUrl.trim();
-          final trimmednumber = number.trim();
-          if (trimmedname != userData.nama ||
-              trimmedaddress != userData.alamat ||
-              trimmednumber != userData.noTelepon ||
-              trimmedimageUrl != userData.downloadUrl) {
-            cAuth.updateData(
-              trimmedname,
-              trimmednumber,
-              trimmedaddress,
-              trimmedimageUrl,
-            );
-
-            // ignore: use_build_context_synchronously
-            customDialog(
-                context, "Berhasil!", "Perubahan data berhasil dilakukan");
-            setState(() {
-              isEditable = !isEditable;
-            });
-          } else {
-            // ignore: use_build_context_synchronously
-            customDialog(
-                context, "Tidak berhasil", "Tidak ada data yang dirubah");
-          }
-        }
-      }
     }
 
     return Theme(
@@ -415,7 +347,10 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                         width: double.infinity,
                         alignment: Alignment.bottomRight,
                         child: InkWell(
-                          onTap: isEditable ? trySave : null,
+                          onTap: isEditable
+                              ? () => cAuth.updateDataProfile(context, formKey,
+                                  photo, imageUrl, name, address, number)
+                              : null,
                           child: Material(
                             borderRadius: BorderRadius.circular(16),
                             color: isEditable ? AppColor.tertiary : Colors.grey,

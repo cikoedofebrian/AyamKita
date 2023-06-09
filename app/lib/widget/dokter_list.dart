@@ -1,11 +1,11 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
-import 'package:app/model/finddoctormodel.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/constant/app_format.dart';
+import 'package:app/model/m_doctor.dart';
 import 'package:flutter/material.dart';
 
 class DokterListWidget extends StatelessWidget {
   const DokterListWidget({super.key, required this.data});
-  final FindDoctorModel data;
+  final MDokter data;
 
   @override
   Widget build(BuildContext context) {

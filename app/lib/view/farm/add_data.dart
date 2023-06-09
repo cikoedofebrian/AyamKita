@@ -1,13 +1,10 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
+import 'package:app/constant/app_color.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/controller/chickenpricecontroller.dart';
-import 'package:app/controller/dailycontroller.dart';
+import 'package:app/controller/c_harga_pasar.dart';
+import 'package:app/controller/c_data_harian.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/widget/customdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ndialog/ndialog.dart';
 import 'package:provider/provider.dart';
 
 class AddData extends StatefulWidget {
@@ -32,115 +29,37 @@ class _AddDataState extends State<AddData> {
   @override
   Widget build(BuildContext context) {
     final cAuth = Provider.of<CAuth>(context, listen: false).getDataProfile();
-    final dailyController = Provider.of<DailyController>(context);
-    final ChickenPriceController chickenPriceController =
-        Provider.of<ChickenPriceController>(context, listen: false);
+    final dailyController = Provider.of<CDataHarian>(context);
+    final chickenPriceController =
+        Provider.of<CHargaPasar>(context, listen: false);
     final index = dailyController.indexActive();
     void save() async {
-      if (dailyController.musimList[index].list.isNotEmpty) {
-        final parsedDate = DateFormat('dd-MM-yyyy')
-            .parse(dailyController.musimList[index].list.last.tanggal);
-        Duration difference = initialDate.difference(parsedDate);
-        if (difference > const Duration(days: 1)) {
-          customDialog(context, 'Gagal',
-              'Isilah data harian sebelumnya terlebih dahulu!');
-          return;
-        }
-      } else {
-        if (AppFormat.intDateFromDateTime(initialDate) !=
-            dailyController.musimList[index].mulai) {
-          customDialog(context, 'Gagal',
-              'Isilah data harian sebelumnya terlebih dahulu!');
-          return;
-        }
-      }
-
-      if (initialDate.isAfter(DateTime.now())) {
-        customDialog(context, 'Gagal', 'Tidak boleh mengisi di masa depan');
-        return;
-      }
-
-      try {
-        if (formKey.currentState!.validate()) {
-          formKey.currentState!.save();
-          var isConfirmed = false;
-          await NDialog(
-            title: const Text('Konfirmasi'),
-            content: const Text(
-                'Yakin ingin menyimpan data? Data yang sudah disimpan tidak dapat dirubah'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Tidak'),
+      final isConfirmed = await dailyController.validasiForm(
+          context, index, initialDate, formKey);
+      if (isConfirmed) {
+        final selectedPrice = chickenPriceController.list.firstWhere(
+          (element) =>
+              element.date ==
+              DateTime(
+                initialDate.year,
+                initialDate.month,
+                initialDate.day,
               ),
-              TextButton(
-                  onPressed: () {
-                    isConfirmed = true;
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Iya'))
-            ],
-          ).show(context);
-          if (isConfirmed) {
-            final int stockdifference = dailyController
-                .getTotalStock(dailyController.musimList[index].musimId);
-
-            final total =
-                stockdifference - (int.parse(keluar) + int.parse(kematian));
-            if (total < 0) {
-              // ignore: use_build_context_synchronously
-              customDialog(
-                  context, 'Gagal', 'Stok hanya tersisa $stockdifference');
-              return;
-            }
-
-            final price = chickenPriceController.list.firstWhere(
-              (element) =>
-                  element.date ==
-                  DateTime(
-                    initialDate.year,
-                    initialDate.month,
-                    initialDate.day,
-                  ),
-            );
-            await dailyController
-                .addData(
-              initialDate,
-              int.parse(umur),
-              double.parse(pakan),
-              int.parse(hargaPakan),
-              int.parse(kematian),
-              int.parse(keluar),
-              int.parse(hargaObat),
-              obat,
-              index,
-              price.price,
-              total == 0,
-            )
-                .then((value) {
-              customDialog(context, 'Berhasil!', 'Data berhasil ditambahkan!');
-            });
-          }
-        } else {
-          NDialog(
-            content: const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'Simpan data gagal!',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Tutup'))
-            ],
-          ).show(context);
-        }
-      } catch (error) {
-        rethrow;
+        );
+        // ignore: use_build_context_synchronously
+        dailyController.updateDataHarian(
+          initialDate,
+          int.parse(umur),
+          double.parse(pakan),
+          int.parse(hargaPakan),
+          int.parse(kematian),
+          int.parse(keluar),
+          int.parse(hargaObat),
+          obat,
+          index,
+          selectedPrice.price,
+          context,
+        );
       }
     }
 
@@ -161,8 +80,9 @@ class _AddDataState extends State<AddData> {
             fillColor: AppColor.formcolor),
       ),
       child: FutureBuilder(
-          future:
-              index >= 0 ? dailyController.checkDate(initialDate, index) : null,
+          future: index >= 0
+              ? dailyController.getTambahData(initialDate, index)
+              : null,
           builder: (context, snapshot) {
             if (snapshot.data != null) {
               umur = snapshot.data!.umur.toString();

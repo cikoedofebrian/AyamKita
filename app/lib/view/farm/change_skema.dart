@@ -1,7 +1,9 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/customdialog.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/controller/c_auth.dart';
+import 'package:app/controller/c_jadwal_pakan.dart';
+import 'package:app/widget/custom_back_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChangeSkema extends StatefulWidget {
   const ChangeSkema({super.key});
@@ -26,12 +28,8 @@ class _ChangeSkemaState extends State<ChangeSkema> {
 
   @override
   Widget build(BuildContext context) {
-    void tryChange() {
-      customDialog(
-              context, 'Berhasil', 'Jadwal baru akan mulai diberlakukan besok')
-          .then((value) => Navigator.of(context).pop());
-    }
-
+    final cAuth = Provider.of<CAuth>(context, listen: false);
+    final cJadwalPakan = Provider.of<CJadwalPakan>(context, listen: false);
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
@@ -237,7 +235,11 @@ class _ChangeSkemaState extends State<ChangeSkema> {
                               height: 10,
                             ),
                             InkWell(
-                              onTap: tryChange,
+                              onTap: () => cJadwalPakan.updateJadwalPakan(
+                                  hour1,
+                                  hour2,
+                                  cAuth.getDataProfile().peternakanId,
+                                  context),
                               child: Container(
                                 width: 260,
                                 height: 40,

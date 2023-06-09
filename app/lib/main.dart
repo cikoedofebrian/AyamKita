@@ -1,43 +1,44 @@
-import 'package:app/controller/chickenpricecontroller.dart';
-import 'package:app/controller/consultationcontroller.dart';
+import 'package:app/controller/c_harga_pasar.dart';
+import 'package:app/controller/c_konsultasi.dart';
 import 'package:app/controller/c_usulan_konsultasi.dart';
-import 'package:app/controller/dailycontroller.dart';
-import 'package:app/controller/farmcontroller.dart';
-import 'package:app/controller/feedcontroller.dart';
-import 'package:app/controller/findoctorcontroller.dart';
+import 'package:app/controller/c_data_harian.dart';
+import 'package:app/controller/c_peternakan.dart';
+import 'package:app/controller/c_jadwal_pakan.dart';
+import 'package:app/controller/c_doctor.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/controller/weathercontroller.dart';
-import 'package:app/controller/workinghourscontroller.dart';
-import 'package:app/view/auth/adddokter.dart';
-import 'package:app/view/auth/addfarm.dart';
+import 'package:app/controller/c_info_cuaca.dart';
+import 'package:app/controller/c_jam_kerja.dart';
+import 'package:app/view/auth/add_dokter.dart';
+import 'package:app/view/auth/add_farm.dart';
 import 'package:app/view/auth/login.dart';
 import 'package:app/view/auth/register.dart';
+import 'package:app/view/auth/splash_screen.dart';
 import 'package:app/view/farm/add_musim.dart';
 import 'package:app/view/farm/change_skema.dart';
-import 'package:app/view/farm/farmdata.dart';
-import 'package:app/view/farm/pengelolalist.dart';
+import 'package:app/view/farm/farm_data.dart';
+import 'package:app/view/farm/pengelola_list.dart';
 import 'package:app/view/farm/add_data.dart';
-import 'package:app/view/farm/datahistory.dart';
-import 'package:app/view/farm/seasonhistory.dart';
-import 'package:app/view/features/chat/chatview.dart';
-import 'package:app/view/features/consultation/consultationlist.dart';
-import 'package:app/view/features/consultation/consultationview.dart';
-import 'package:app/view/features/consultation/createresult.dart';
-import 'package:app/view/features/consultation/doctorview.dart';
-import 'package:app/view/features/consultation/finddoc.dart';
-import 'package:app/view/features/consultation/paymentsuccess.dart';
-import 'package:app/view/features/consultation/resultview.dart';
-import 'package:app/view/features/consultation/selectpayment.dart';
+import 'package:app/view/farm/data_harian.dart';
+import 'package:app/view/farm/season_history.dart';
+import 'package:app/view/features/chat/chat_view.dart';
+import 'package:app/view/features/consultation/consultation_list.dart';
+import 'package:app/view/features/consultation/consultation_view.dart';
+import 'package:app/view/features/consultation/create_result.dart';
+import 'package:app/view/features/consultation/doctor_view.dart';
+import 'package:app/view/features/consultation/find_doc.dart';
+import 'package:app/view/features/consultation/payment_success.dart';
+import 'package:app/view/features/consultation/result_view.dart';
+import 'package:app/view/features/consultation/select_payment.dart';
 import 'package:app/view/features/consultation/view_farm_data.dart';
 import 'package:app/view/features/price/price_list.dart';
-import 'package:app/view/features/request/request.dart';
-import 'package:app/view/features/request/requestdetails.dart';
-import 'package:app/view/features/request/requestlist.dart';
+import 'package:app/view/features/request/add_request.dart';
+import 'package:app/view/features/request/request_details.dart';
+import 'package:app/view/features/request/request_list.dart';
 import 'package:app/view/features/weather/weather_hours.dart';
 import 'package:app/view/features/workhours/change_workhours.dart';
 import 'package:app/view/home/home.dart';
 import 'package:app/view/profile/profile_details.dart';
-import 'package:app/view/profile/profiledummy.dart';
+import 'package:app/view/profile/profile_other_user.dart';
 import 'package:app/widget/image_shower.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,31 +58,31 @@ void main() async {
             create: (context) => CAuth(),
           ),
           ChangeNotifierProvider(
-            create: (context) => DailyController(),
+            create: (context) => CDataHarian(),
           ),
           ChangeNotifierProvider(
-            create: (context) => WeatherController(),
+            create: (context) => CInfoCuaca(),
           ),
           ChangeNotifierProvider(
-            create: (context) => ChickenPriceController(),
+            create: (context) => CHargaPasar(),
           ),
           ChangeNotifierProvider(
-            create: (context) => FeedController(),
+            create: (context) => CJadwalPakan(),
           ),
           ChangeNotifierProvider(
             create: (context) => CUsulanKonsultasi(),
           ),
           ChangeNotifierProvider(
-            create: (context) => PeternakanController(),
+            create: (context) => CPeternakan(),
           ),
           ChangeNotifierProvider(
-            create: (context) => WorkingHoursControllers(),
+            create: (context) => MJamKerjaControllers(),
           ),
           ChangeNotifierProvider(
-            create: (context) => FindDoctorController(),
+            create: (context) => CDoctor(),
           ),
           ChangeNotifierProvider(
-            create: (context) => ConsultationController(),
+            create: (context) => CKonsultasi(),
           ),
         ],
         child: const MyApp(),
@@ -121,7 +122,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.data != null) {
             return const Home();
           } else {
-            return const LoginPage();
+            return const SplashScreen();
           }
         },
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -131,11 +132,11 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Home(),
         '/add-dokter': (context) => const AddDokter(),
         '/register': (context) => const RegisterPage(),
-        '/weather-hours': (context) => const WeatherHours(),
+        '/weather-hours': (context) => const MInfoCuacaHours(),
         '/add-data': (context) => const AddData(),
         '/profile-details': (context) => const ProfileDetails(),
-        '/data-history': (context) => const DataHistory(),
-        '/request': (context) => const Request(),
+        '/data-history': (context) => const DataHarian(),
+        '/request': (context) => const AddRequest(),
         '/request-list': (context) => const RequestList(),
         '/request-details': (context) => const RequestDetails(),
         '/add-farm': (context) => const AddFarm(),

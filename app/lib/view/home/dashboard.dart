@@ -1,11 +1,11 @@
-import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/app_color.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/widget/feedschedule.dart';
-import 'package:app/widget/incomingconsultation.dart';
-import 'package:app/widget/todaysrice.dart';
-import 'package:app/widget/weatherhome.dart';
-import 'package:app/widget/workinghours.dart';
+import 'package:app/widget/feed_schedule.dart';
+import 'package:app/widget/incoming_consultation.dart';
+import 'package:app/widget/todays_price.dart';
+import 'package:app/widget/weather_home.dart';
+import 'package:app/widget/working_hours.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -95,7 +95,7 @@ class DashBoard extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          if (cAuth.role == UserRole.pengelola) const WeatherHome(),
+          if (cAuth.role == UserRole.pengelola) const MInfoCuacaHome(),
           if (cAuth.role == UserRole.pemilik) const TodayExpenses(),
           if (cAuth.role != UserRole.dokter)
             const Column(
@@ -131,7 +131,7 @@ class DashBoard extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                WorkingHoursWiget()
+                MJamKerjaWiget()
               ],
             )
         ],

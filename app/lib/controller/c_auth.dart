@@ -1,16 +1,19 @@
-import 'package:app/constant/appformat.dart';
+import 'dart:io';
+import 'package:app/constant/app_format.dart';
 import 'package:app/constant/role.dart';
-import 'package:app/model/usermodel.dart';
-import 'package:app/model/workinghours.dart';
-import 'package:app/widget/customdialog.dart';
+import 'package:app/model/m_akun.dart';
+import 'package:app/model/m_jam_kerja.dart';
+import 'package:app/widget/custom_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:ndialog/ndialog.dart';
 
 class CAuth extends ChangeNotifier {
-  UserModel? _user;
-  UserModel getDataProfile() {
+  MAkun? _user;
+  MAkun getDataProfile() {
     return _user!;
   }
 
@@ -57,6 +60,85 @@ class CAuth extends ChangeNotifier {
     }
   }
 
+  void updateDataProfile(
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    File? photo,
+    String imageUrl,
+    String name,
+    String address,
+    String number,
+  ) async {
+    if (formKey.currentState!.validate()) {
+      bool isConfirm = false;
+      await NDialog(
+        title: const Text(
+          'Konfirmasi',
+          textAlign: TextAlign.center,
+        ),
+        content: const Text("Apakah yakin ingin menyimpan data?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              isConfirm = true;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Iya'),
+          )
+        ],
+      ).show(context);
+      if (isConfirm) {
+        formKey.currentState!.save();
+        if (photo != null) {
+          final upload = await FirebaseStorage.instance
+              .ref('/profile-images/${FirebaseAuth.instance.currentUser!.uid}')
+              .putFile(
+                File(photo.path),
+              );
+          final url = await upload.ref.getDownloadURL();
+          imageUrl = url;
+        }
+
+        final trimmedname = name.trim();
+        final trimmedaddress = address.trim();
+        final trimmedimageUrl = imageUrl.trim();
+        final trimmednumber = number.trim();
+        if (trimmedname != _user!.nama ||
+            trimmedaddress != _user!.alamat ||
+            trimmednumber != _user!.noTelepon ||
+            trimmedimageUrl != _user!.downloadUrl) {
+          await FirebaseFirestore.instance
+              .collection('akun')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update(
+            {
+              'nama': name,
+              'alamat': address,
+              'downloadUrl': imageUrl,
+              'noTelepon': int.parse(number)
+            },
+          );
+          _user!.nama = name;
+          _user!.noTelepon = number;
+          _user!.alamat = address;
+          _user!.downloadUrl = imageUrl;
+          notifyListeners();
+          // ignore: use_build_context_synchronously
+          customDialog(
+              context, "Berhasil!", "Perubahan data berhasil dilakukan");
+        } else {
+          // ignore: use_build_context_synchronously
+          customDialog(
+              context, "Tidak berhasil", "Tidak ada data yang dirubah");
+        }
+      }
+    }
+  }
+
   Future<void> fetchDokterDetails() async {
     final result = await FirebaseFirestore.instance
         .collection('dokter-details')
@@ -66,20 +148,24 @@ class CAuth extends ChangeNotifier {
     _harga = result.data()!['harga'];
   }
 
-  Future<UserModel> getUserFromId(String userId) async {
+  Future<MAkun> getUserFromId(String userId) async {
     final result =
         await FirebaseFirestore.instance.collection('akun').doc(userId).get();
-    return UserModel.fromJson(result.data()!, result.id);
+    return MAkun.fromJson(result.data()!, result.id);
   }
 
   Future<void> fetchData() async {
-    if (FirebaseAuth.instance.currentUser != null) {
-      final result = await FirebaseFirestore.instance
-          .collection('akun')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get();
+    try {
+      if (FirebaseAuth.instance.currentUser != null) {
+        final result = await FirebaseFirestore.instance
+            .collection('akun')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get();
 
-      _user = UserModel.fromJson(result.data()!, result.id);
+        _user = MAkun.fromJson(result.data()!, result.id);
+      }
+    } catch (error) {
+      FirebaseAuth.instance.signOut();
     }
   }
 
@@ -138,7 +224,7 @@ class CAuth extends ChangeNotifier {
     return result.id;
   }
 
-  Future<void> addJamKerja(String userId, List<WorkingHours> list) async {
+  Future<void> addJamKerja(String userId, List<MJamKerja> list) async {
     try {
       for (var element in list) {
         await FirebaseFirestore.instance.collection('jam-kerja').add({
@@ -178,58 +264,12 @@ class CAuth extends ChangeNotifier {
     }
   }
 
-  Future<List<UserModel>> getUserData(String role) async {
+  Future<List<MAkun>> getUserData(String role) async {
     final data = await FirebaseFirestore.instance
         .collection('akun')
         .where('role', isEqualTo: UserRole.pemilik)
         .limit(1)
         .get();
-    return [UserModel.fromJson(data.docs[0].data(), data.docs[0].id)];
-  }
-
-  Future<String> addNewFarm(String nama, String alamat, int luas,
-      String semenjak, String pagi, String sore) async {
-    try {
-      final onFirestore =
-          await FirebaseFirestore.instance.collection('peternakan').add({
-        'nama': nama,
-        'luas': luas,
-        'alamat': alamat,
-        'semenjak': semenjak,
-      });
-      await FirebaseFirestore.instance.collection('skema_jadwal').add({
-        'peternakanId': onFirestore.id,
-        'pagi': pagi,
-        'sore': sore,
-        'tanggal_dibuat': AppFormat.intDateFromDateTime(DateTime.now())
-      });
-      return onFirestore.id;
-    } on FirebaseException catch (_) {
-      rethrow;
-    }
-  }
-
-  void updateData(
-    String nama,
-    String number,
-    String alamat,
-    String downloadUrl,
-  ) async {
-    await FirebaseFirestore.instance
-        .collection('akun')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update(
-      {
-        'nama': nama,
-        'alamat': alamat,
-        'downloadUrl': downloadUrl,
-        'noTelepon': int.parse(number)
-      },
-    );
-    _user!.nama = nama;
-    _user!.noTelepon = number;
-    _user!.alamat = alamat;
-    _user!.downloadUrl = downloadUrl;
-    notifyListeners();
+    return [MAkun.fromJson(data.docs[0].data(), data.docs[0].id)];
   }
 }

@@ -1,9 +1,9 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
-import 'package:app/controller/workinghourscontroller.dart';
-import 'package:app/model/workinghours.dart';
-import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/customdialog.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/constant/app_format.dart';
+import 'package:app/controller/c_jam_kerja.dart';
+import 'package:app/model/m_jam_kerja.dart';
+import 'package:app/widget/custom_back_button.dart';
+import 'package:app/widget/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class _ChangeWorkHoursState extends State<ChangeWorkHours> {
   String deskripsi = '';
   final hour1Controller = TextEditingController();
   final hour2Controller = TextEditingController();
-  late List<WorkingHours> hoursList;
+  late List<MJamKerja> hoursList;
   TimeOfDay hour1 = TimeOfDay.now();
   TimeOfDay hour2 = TimeOfDay.now();
 
@@ -35,17 +35,17 @@ class _ChangeWorkHoursState extends State<ChangeWorkHours> {
 
   @override
   void initState() {
-    hoursList = List<WorkingHours>.from(
-        Provider.of<WorkingHoursControllers>(context, listen: false).list);
+    hoursList = List<MJamKerja>.from(
+        Provider.of<MJamKerjaControllers>(context, listen: false).list);
     super.initState();
   }
 
-  // List<WorkingHours> hoursList = [];
+  // List<MJamKerja> hoursList = [];
 
   void addNewHour(int index, TimeOfDay start, TimeOfDay end) {
     setState(() {
       hoursList.add(
-        WorkingHours(
+        MJamKerja(
           jamKerjaId: null,
           dokterId: null,
           mulai: hour1,
@@ -108,7 +108,7 @@ class _ChangeWorkHoursState extends State<ChangeWorkHours> {
         customDialog(context, 'Gagal', 'Data tidak boleh kosong!');
         return;
       }
-      await Provider.of<WorkingHoursControllers>(context, listen: false)
+      await Provider.of<MJamKerjaControllers>(context, listen: false)
           .updateData(hoursList)
           .then((value) {
         customDialog(context, 'Berhasil', 'Data berhasil diubah!')

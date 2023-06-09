@@ -1,25 +1,76 @@
 import 'dart:io';
 
-import 'package:app/constant/appformat.dart';
-import 'package:app/constant/requeststatus.dart';
-import 'package:app/model/consultationrequestmodel.dart';
+import 'package:app/constant/app_format.dart';
+import 'package:app/constant/request_status.dart';
+import 'package:app/model/m_usulan_konsultasi.dart';
+import 'package:app/model/m_periode.dart';
+import 'package:app/widget/custom_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:ndialog/ndialog.dart';
 
 class CUsulanKonsultasi extends ChangeNotifier {
-  List<ConsultationRequestModel> _list = [];
-  List<ConsultationRequestModel> get list => _list;
-  List<ConsultationRequestModel> get acceptedList => _list
+  List<MUsulanKonsultasi> _list = [];
+
+  bool isOnProgress = false;
+  void changesProgress(bool value) {
+    isOnProgress = value;
+    notifyListeners();
+  }
+
+  List<MUsulanKonsultasi> getDataUsulan() {
+    if (isOnProgress) {
+      return _list
+          .where((element) => element.status == RequestStatus.selesai)
+          .toList();
+    } else {
+      return _list
+          .where((element) => element.status == RequestStatus.berlangsung)
+          .toList();
+    }
+  }
+
+  Future<bool> validasiForm(
+      GlobalKey<FormState> formKey, BuildContext context) async {
+    bool isConfirm = false;
+    if (formKey.currentState!.validate()) {
+      await NDialog(
+        title: const Text(
+          'Konfirmasi',
+          textAlign: TextAlign.center,
+        ),
+        content: const Text("Yakin ingin menyimpan data?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              isConfirm = true;
+              Navigator.of(context).pop();
+            },
+            child: const Text('Iya'),
+          )
+        ],
+      ).show(context);
+    } else {
+      customDialog(context, 'Gagal!', 'Data tidak boleh kosong');
+    }
+    return isConfirm;
+  }
+
+  List<MUsulanKonsultasi> get acceptedList => _list
       .where((element) => element.status == RequestStatus.disetujui)
       .toList();
 
-  List<ConsultationRequestModel> get doneList => _list
+  List<MUsulanKonsultasi> get doneList => _list
       .where((element) =>
           element.status == RequestStatus.selesai ||
           element.status == RequestStatus.ditolak)
       .toList();
-  List<ConsultationRequestModel> get progressList => _list
+  List<MUsulanKonsultasi> get progressList => _list
       .where((element) =>
           element.status != RequestStatus.ditolak &&
           element.status != RequestStatus.selesai)
@@ -42,7 +93,7 @@ class CUsulanKonsultasi extends ChangeNotifier {
           .where('peternakanId', isEqualTo: peternakanId)
           .get();
       for (var i in result.docs) {
-        final mappedData = ConsultationRequestModel.fromJson(i.data(), i.id);
+        final mappedData = MUsulanKonsultasi.fromJson(i.data(), i.id);
         _list.add(mappedData);
       }
       _isLoading = false;
@@ -52,34 +103,43 @@ class CUsulanKonsultasi extends ChangeNotifier {
     }
   }
 
-  void addData(
+  void simpanUsulan(
     String judul,
     String deskripsi,
     String peternakanId,
     String pengelolaId,
     File? photo,
-    String musimId,
+    List<MPeriode> musim,
+    int indexActive,
+    BuildContext context,
   ) async {
-    String downloadUrl = '';
-    if (photo != null) {
-      final result = await FirebaseStorage.instance
-          .ref(
-              'usulan_konsultasi/${peternakanId + DateTime.now().toIso8601String()}')
-          .putFile(photo);
-      downloadUrl = await result.ref.getDownloadURL();
+    if (indexActive == -1) {
+      // ignore: use_build_context_synchronously
+      customDialog(context, 'Ajuan gagal!', 'Tidak ada periode yang aktif');
+      return;
     }
-    final date = AppFormat.intDateFromDateTime(DateTime.now());
-    await FirebaseFirestore.instance.collection('usulan_konsultasi').add({
-      'peternakanId': peternakanId,
-      'judul': judul,
-      'deskripsi': deskripsi,
-      'status': 'menunggu',
-      'pengelolaId': pengelolaId,
-      'downloadUrl': downloadUrl,
-      'tanggal': date,
-      'musimId': musimId,
-    }).then((value) => _list.add(
-          ConsultationRequestModel(
+    try {
+      String downloadUrl = '';
+      if (photo != null) {
+        final result = await FirebaseStorage.instance
+            .ref(
+                'usulan_konsultasi/${peternakanId + DateTime.now().toIso8601String()}')
+            .putFile(photo);
+        downloadUrl = await result.ref.getDownloadURL();
+      }
+      final date = AppFormat.intDateFromDateTime(DateTime.now());
+      await FirebaseFirestore.instance.collection('usulan_konsultasi').add({
+        'peternakanId': peternakanId,
+        'judul': judul,
+        'deskripsi': deskripsi,
+        'status': 'menunggu',
+        'pengelolaId': pengelolaId,
+        'downloadUrl': downloadUrl,
+        'tanggal': date,
+        'musimId': musim[indexActive].musimId,
+      }).then(
+        (value) => _list.add(
+          MUsulanKonsultasi(
             usulanKonsultasiId: value.id,
             peternakanId: peternakanId,
             pengelolaId: pengelolaId,
@@ -88,13 +148,22 @@ class CUsulanKonsultasi extends ChangeNotifier {
             downloadUrl: downloadUrl,
             status: 'menunggu',
             tanggal: date,
-            musimId: musimId,
+            musimId: musim[indexActive].musimId,
           ),
-        ));
-    notifyListeners();
+        ),
+      );
+
+      // ignore: use_build_context_synchronously
+      customDialog(context, 'Ajuan berhasil!',
+              'Usulan konsultasi telah berhasil dibuat')
+          .then((value) => Navigator.pop(context));
+      notifyListeners();
+    } catch (err) {
+      customDialog(context, 'Gagal', 'Konsultasi gagal dibuat!');
+    }
   }
 
-  void deleteData(String id) {
+  void hapusUsulan(String id) {
     _list.removeWhere((element) => element.usulanKonsultasiId == id);
     FirebaseFirestore.instance.collection('usulan_konsultasi').doc(id).delete();
     notifyListeners();
@@ -103,7 +172,7 @@ class CUsulanKonsultasi extends ChangeNotifier {
   void changeStatus(String newStatus, String id) async {
     try {
       final selectedIndex =
-          list.indexWhere((element) => element.usulanKonsultasiId == id);
+          _list.indexWhere((element) => element.usulanKonsultasiId == id);
       _list[selectedIndex].status = newStatus;
       await FirebaseFirestore.instance
           .collection('usulan_konsultasi')

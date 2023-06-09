@@ -1,5 +1,5 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/widget/custombackbutton.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/widget/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 

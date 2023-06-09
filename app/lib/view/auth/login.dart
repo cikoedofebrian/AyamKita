@@ -1,4 +1,4 @@
-import 'package:app/constant/appcolor.dart';
+import 'package:app/constant/app_color.dart';
 import 'package:app/controller/c_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

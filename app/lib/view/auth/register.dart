@@ -1,9 +1,9 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/constant/appformat.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/constant/app_format.dart';
 import 'package:app/constant/role.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/customdialog.dart';
+import 'package:app/widget/custom_back_button.dart';
+import 'package:app/widget/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

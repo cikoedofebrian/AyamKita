@@ -1,7 +1,7 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/model/dataharianmodel.dart';
-import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/datalist.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/model/m_data_harian.dart';
+import 'package:app/widget/custom_back_button.dart';
+import 'package:app/widget/data_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,16 +13,16 @@ class ViewFarmData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final musimId = ModalRoute.of(context)!.settings.arguments as String;
-    Future<List<DataHarianModel>> fetchData() async {
+    Future<List<MDataHarian>> fetchData() async {
       final result = await FirebaseFirestore.instance
           .collection('data_harian')
           // .orderBy('tanggal', descending: false)
           .where('musimId', isEqualTo: musimId)
           .get();
-      List<DataHarianModel> emptyList = [];
+      List<MDataHarian> emptyList = [];
 
       for (var e in result.docs) {
-        final newData = DataHarianModel.fromJson(e.data());
+        final newData = MDataHarian.fromJson(e.data());
         emptyList.add(newData);
       }
       emptyList.sort((a, b) => DateFormat('dd-MM-yyyy')
@@ -41,7 +41,7 @@ class ViewFarmData extends StatelessWidget {
             );
           }
 
-          List<DataHarianModel> realList = snapshot.data!;
+          List<MDataHarian> realList = snapshot.data!;
           return Stack(
             children: [
               SizedBox(

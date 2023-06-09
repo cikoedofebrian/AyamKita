@@ -1,8 +1,8 @@
-import 'package:app/constant/appcolor.dart';
-import 'package:app/controller/dailycontroller.dart';
+import 'package:app/constant/app_color.dart';
+import 'package:app/controller/c_data_harian.dart';
 import 'package:app/controller/c_auth.dart';
-import 'package:app/widget/custombackbutton.dart';
-import 'package:app/widget/customdialog.dart';
+import 'package:app/widget/custom_back_button.dart';
+import 'package:app/widget/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +24,7 @@ class _AddMusimState extends State<AddMusim> {
     if (harga <= 0 || jumlah <= 0 || tipe.isEmpty) {
       customDialog(context, 'Gagal', 'Data tidak boleh kosong!');
     } else {
-      await Provider.of<DailyController>(context, listen: false)
+      await Provider.of<CDataHarian>(context, listen: false)
           .addMusim(
               tipe,
               jumlah,
